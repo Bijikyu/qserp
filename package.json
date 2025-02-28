@@ -4,7 +4,7 @@
   "description": "Module for search engine search functions. A module for performing Google custom searches using the Google API.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test.js"
   },
   "keywords": [
     "google",

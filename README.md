@@ -29,6 +29,16 @@ googleSearch('Node.js tutorials').then(results => console.log(results));
 getTopSearchResults(['Node.js', 'Express.js']).then(urls => console.log(urls));
 ```
 
+## Testing
+
+To run the included tests:
+
+```bash
+npm test
+```
+
+Make sure you've set the required environment variables before running tests.
+
 ## License
 
 ISC
