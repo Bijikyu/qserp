@@ -12,6 +12,8 @@ async function runTests() {
     console.log(`Found ${results.length} results for 'Node.js tutorials'`);
     if (results.length > 0) {
       console.log('First result:', results[0]);
+    } else {
+      console.warn('Warning: No results found for googleSearch test');
     }
     
     // Test multiple search queries
@@ -20,9 +22,16 @@ async function runTests() {
     console.log('Top results for JavaScript and TypeScript:');
     console.log(urls);
     
+    if (urls.length === 0) {
+      console.warn('Warning: No URLs returned from getTopSearchResults test');
+    } else if (urls.length < 2) {
+      console.warn(`Warning: Only ${urls.length}/2 queries returned results`);
+    }
+    
     console.log('\nAll tests completed successfully!');
   } catch (error) {
     console.error('Test failed:', error.message);
+    console.error('Stack trace:', error.stack);
     process.exit(1);
   }
 }
