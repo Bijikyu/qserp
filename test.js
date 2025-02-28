@@ -43,4 +43,9 @@ if (!process.env.GOOGLE_API_KEY || !process.env.GOOGLE_CX) {
   process.exit(1);
 }
 
+if (!process.env.OPENAI_TOKEN) {
+  console.warn('Warning: OPENAI_TOKEN environment variable is not set. This is required by the qerrors dependency.');
+  console.log('Consider setting this in the Secrets tool in Replit.');
+}
+
 runTests();
