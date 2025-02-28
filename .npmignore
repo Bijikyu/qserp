@@ -1,0 +1,16 @@
+
+# Test files
+test.js
+
+# Replit specific
+.replit
+replit.nix
+.config/
+generated-icon.png
+
+# Git files
+.git/
+.gitignore
+
+# Miscellaneous
+node_modules/
