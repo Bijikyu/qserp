@@ -1,6 +1,6 @@
 {
   "name": "qserp",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Module for search engine search functions and performing Google custom searches using the Google API.",
   "main": "index.js",
   "scripts": {
