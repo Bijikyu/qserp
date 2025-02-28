@@ -1,15 +1,34 @@
 {
-  "name": "nodejs",
+  "name": "qsearch",
   "version": "1.0.0",
-  "description": "",
+  "description": "Module for search engine search functions. A module for performing Google custom searches using the Google API.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "google",
+    "search",
+    "customsearch",
+    "axios"
+  ],
+  "author": "Q",
   "license": "ISC",
   "dependencies": {
-    "@types/node": "^18.0.6"
-  }
+    "@types/node": "^18.0.6",
+    "axios": "^1.2.0",
+    "qerrors": "^1.0.1"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bijikyu/qsearch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Bijikyu/qsearch/issues"
+  },
+  "homepage": "https://github.com/Bijikyu/qsearch#readme"
 }
