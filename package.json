@@ -1,7 +1,7 @@
 {
   "name": "qsearch",
   "version": "1.0.0",
-  "description": "Module for search engine search functions. A module for performing Google custom searches using the Google API.",
+  "description": "Module for search engine search functions and performing Google custom searches using the Google API.",
   "main": "index.js",
   "scripts": {
     "test": "node test.js"
