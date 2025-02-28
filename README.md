@@ -15,7 +15,7 @@ Before using the module, set the following environment variables:
 - `GOOGLE_CX` – Your Custom Search Engine ID. Set this up at [Google Programmable Search Engine](https://programmablesearchengine.google.com/).
 - `OPENAI_TOKEN` – Required by the qerrors dependency for error logging.
 
-To set environment variables in Replit, use the Secrets tool in the left sidebar.
+
 
 ## Usage
 
