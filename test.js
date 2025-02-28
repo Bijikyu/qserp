@@ -1,9 +1,9 @@
 
-// Simple test file for qsearch module
+// Simple test file for qserp module
 const { googleSearch, getTopSearchResults } = require('./index');
 
 async function runTests() {
-  console.log('Testing qsearch module...');
+  console.log('Testing qserp module...');
   
   try {
     // Test single search query

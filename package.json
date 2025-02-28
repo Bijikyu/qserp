@@ -1,5 +1,5 @@
 {
-  "name": "qsearch",
+  "name": "qserp",
   "version": "1.0.0",
   "description": "Module for search engine search functions and performing Google custom searches using the Google API.",
   "main": "index.js",
@@ -17,18 +17,18 @@
   "dependencies": {
     "@types/node": "^18.0.6",
     "axios": "^1.2.0",
+    "bottleneck": "^2.19.5",
     "qerrors": "^1.0.1"
   },
   "directories": {
     "lib": "lib"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Bijikyu/qsearch.git"
+    "url": "git+https://github.com/Bijikyu/qserp.git"
   },
   "bugs": {
-    "url": "https://github.com/Bijikyu/qsearch/issues"
+    "url": "https://github.com/Bijikyu/qserp/issues"
   },
-  "homepage": "https://github.com/Bijikyu/qsearch#readme"
+  "homepage": "https://github.com/Bijikyu/qserp#readme"
 }

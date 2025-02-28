@@ -1,11 +1,11 @@
-# qsearch
+# qserp
 
 This module provides functions to perform Google Custom Searches using the Google API.
 
 ## Installation
 
 ```bash
-npm install qsearch
+npm install qserp
 ```
 
 ## Environment Variables
@@ -20,7 +20,7 @@ Before using the module, set the following environment variables:
 ## Usage
 
 ```
-const { googleSearch, getTopSearchResults } = require('qsearch');
+const { googleSearch, getTopSearchResults } = require('qserp');
 
 // Example: Search for a single query
 googleSearch('Node.js tutorials').then(results => console.log(results));
