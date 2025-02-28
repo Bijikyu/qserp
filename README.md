@@ -19,7 +19,7 @@ This module also has qerrors module as a dependency, which requires you to set O
 ## Usage
 
 ```
-const { googleSearch, getTopSearchResults } = require('googlesearchmodule');
+const { googleSearch, getTopSearchResults } = require('qsearch');
 
 // Example: Search for a single query
 googleSearch('Node.js tutorials').then(results => console.log(results));
