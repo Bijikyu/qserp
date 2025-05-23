@@ -1,4 +1,3 @@
-
 // Simple test file for qserp module
 const { googleSearch, getTopSearchResults } = require('./index');
 
