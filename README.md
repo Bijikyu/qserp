@@ -31,13 +31,14 @@ getTopSearchResults(['Node.js', 'Express.js']).then(urls => console.log(urls));
 
 ## Testing
 
-To run the included tests:
+To run the included tests (executed with Jest):
 
 ```bash
 npm test
 ```
 
-Make sure you've set the required environment variables before running tests.
+Make sure you've set the following environment variables before running tests:
+`GOOGLE_API_KEY`, `GOOGLE_CX`, and `OPENAI_TOKEN`.
 
 ## License
 

@@ -34,5 +34,8 @@
   "bugs": {
     "url": "https://github.com/Bijikyu/qserp/issues"
   },
-  "homepage": "https://github.com/Bijikyu/qserp#readme"
+  "homepage": "https://github.com/Bijikyu/qserp#readme",
+  "devDependencies": {
+    "jest": "^29.6.1"
+  }
 }
