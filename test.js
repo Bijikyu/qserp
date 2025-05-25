@@ -1,5 +1,6 @@
 // Simple test file for qserp module
 const { googleSearch, getTopSearchResults } = require('./index');
+const { getMissingEnvVars } = require('./lib/envUtils'); // reuse env util
 
 async function runTests() {
   console.log('Testing qserp module...');
@@ -36,13 +37,15 @@ async function runTests() {
 }
 
 // Check if environment variables are set before running tests
-if (!process.env.GOOGLE_API_KEY || !process.env.GOOGLE_CX) {
-  console.error('Error: GOOGLE_API_KEY and GOOGLE_CX environment variables must be set to run tests');
+const testVars = ['GOOGLE_API_KEY', 'GOOGLE_CX']; // define required vars
+const missingVars = getMissingEnvVars(testVars); // get missing vars
+if (missingVars.length > 0) { // check for any missing
+  console.error(`Error: Missing required environment variables: ${missingVars.join(', ')}`); // log error
   console.log('Set these in the Secrets tool in Replit before running tests');
   process.exit(1);
 }
 
-if (!process.env.OPENAI_TOKEN) {
+if (getMissingEnvVars(['OPENAI_TOKEN']).length > 0) { // warn about optional token
   console.warn('Warning: OPENAI_TOKEN environment variable is not set. This is required by the qerrors dependency.');
   console.log('Consider setting this in the Secrets tool in Replit.');
 }
