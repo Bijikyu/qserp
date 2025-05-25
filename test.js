@@ -1,6 +1,6 @@
 // Simple test file for qserp module
 const { googleSearch, getTopSearchResults } = require('./index');
-const { getMissingEnvVars } = require('./lib/envUtils'); // reuse env util
+const { getMissingEnvVars, warnIfMissingEnvVars } = require('./lib/envUtils'); // reuse env utils
 
 async function runTests() {
   console.log('Testing qserp module...');
@@ -45,9 +45,6 @@ if (missingVars.length > 0) { // check for any missing
   process.exit(1);
 }
 
-if (getMissingEnvVars(['OPENAI_TOKEN']).length > 0) { // warn about optional token
-  console.warn('Warning: OPENAI_TOKEN environment variable is not set. This is required by the qerrors dependency.');
-  console.log('Consider setting this in the Secrets tool in Replit.');
-}
+warnIfMissingEnvVars(['OPENAI_TOKEN'], 'Warning: OPENAI_TOKEN environment variable is not set. This is required by the qerrors dependency.'); // ADDED util warning
 
 runTests();
