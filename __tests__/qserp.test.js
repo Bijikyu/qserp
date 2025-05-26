@@ -1,23 +1,57 @@
-const { googleSearch, getTopSearchResults } = require('../index'); //load functions under test
-const { getMissingEnvVars, throwIfMissingEnvVars, warnIfMissingEnvVars } = require('../lib/envUtils'); //load environment helpers
-const { REQUIRED_VARS, OPTIONAL_VARS } = require('../lib/constants'); //load required variable lists
+const MockAdapter = require('axios-mock-adapter'); //import mock adapter for axios
+const axios = require('axios'); //import axios for requests
 
-describe('qserp module', () => {
-  beforeAll(() => { //check env vars before tests
-    const missing = getMissingEnvVars(REQUIRED_VARS); //get missing required vars
-    if (missing.length > 0) { //throw if any missing
-      throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
-    }
-    warnIfMissingEnvVars(OPTIONAL_VARS, `Warning: OPENAI_TOKEN environment variable is not set. This is required by the qerrors dependency.`); //warn if optional missing
+process.env.GOOGLE_API_KEY = 'key'; //set mock api key for tests
+process.env.GOOGLE_CX = 'cx'; //set mock custom search id for tests
+process.env.OPENAI_TOKEN = 'token'; //set mock openai token for qerrors
+
+const scheduleMock = jest.fn(fn => Promise.resolve(fn())); //create bottleneck schedule mock
+jest.mock('bottleneck', () => jest.fn().mockImplementation(() => ({ schedule: scheduleMock }))); //mock bottleneck to use schedule mock
+
+const qerrorsMock = jest.fn(); //create qerrors mock function
+jest.mock('qerrors', () => (...args) => qerrorsMock(...args)); //mock qerrors module
+
+const { googleSearch, getTopSearchResults } = require('../lib/qserp'); //load functions under test from library
+
+const mock = new MockAdapter(axios); //create axios mock adapter instance
+
+describe('qserp module', () => { //group qserp tests
+  beforeEach(() => { //reset mocks before each test
+    mock.reset(); //clear axios mock history
+    scheduleMock.mockClear(); //clear bottleneck schedule mock
+    qerrorsMock.mockClear(); //clear qerrors mock history
   });
 
-  test('googleSearch returns results', async () => { //verify googleSearch works
-    const results = await googleSearch('Node.js tutorials'); //perform search
-    expect(Array.isArray(results)).toBe(true); //confirm result array
+  test('googleSearch returns parsed results', async () => { //verify googleSearch formatting
+    mock.onGet(/customsearch/).reply(200, { //mock google search api response
+      items: [{ title: 'A', snippet: 'B', link: 'C' }] //provide mock items array
+    });
+    const results = await googleSearch('hi'); //perform search with mocked data
+    expect(results).toEqual([{ title: 'A', snippet: 'B', link: 'C' }]); //expect formatted result
+    expect(scheduleMock).toHaveBeenCalled(); //ensure rate limiter used
   });
 
-  test('getTopSearchResults returns urls', async () => { //verify multi-search
-    const urls = await getTopSearchResults(['JavaScript', 'TypeScript']); //get urls
-    expect(Array.isArray(urls)).toBe(true); //confirm result array
+  test('getTopSearchResults returns top links', async () => { //verify top links returned
+    mock.onGet(/Java/).reply(200, { items: [{ link: 'http://j' }] }); //mock java search
+    mock.onGet(/Python/).reply(200, { items: [{ link: 'http://p' }] }); //mock python search
+    const urls = await getTopSearchResults(['Java', 'Python']); //get urls from mocked data
+    expect(urls).toEqual(['http://j', 'http://p']); //expect urls array
+    expect(scheduleMock).toHaveBeenCalledTimes(2); //ensure rate limiter called twice
+  });
+
+  test('handles empty or invalid input', async () => { //verify validation paths
+    await expect(googleSearch('')).rejects.toThrow(); //expect empty query throw
+    await expect(getTopSearchResults('bad')).rejects.toThrow(); //expect invalid input throw
+    const emptyUrls = await getTopSearchResults([]); //call with empty list
+    expect(emptyUrls).toEqual([]); //expect empty array result
+  });
+
+  test('logs errors via helper on request failure', async () => { //verify error logging path
+    mock.onGet(/customsearch/).reply(500); //mock failed request
+    const res = await googleSearch('err'); //search expecting failure
+    const urls = await getTopSearchResults(['err']); //multi search expecting failure
+    expect(res).toEqual([]); //result should be empty array
+    expect(urls).toEqual([]); //urls should be empty array
+    expect(qerrorsMock).toHaveBeenCalled(); //qerrors should log error
   });
 });
