@@ -37,8 +37,8 @@ To run the included tests (executed with Jest):
 npm test
 ```
 
-Make sure you've set the following environment variables before running tests:
-`GOOGLE_API_KEY`, `GOOGLE_CX`, and `OPENAI_TOKEN`.
+These tests mock network requests and set the necessary environment variables
+internally, so no API credentials are required.
 
 ## License
 
