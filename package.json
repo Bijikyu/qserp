@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "axios-mock-adapter": "^1.21.2",
-    "jest": "^29.6.0"
+    "jest": "^29.6.1"
   },
   "directories": {
     "lib": "lib"
@@ -34,8 +34,5 @@
   "bugs": {
     "url": "https://github.com/Bijikyu/qserp/issues"
   },
-  "homepage": "https://github.com/Bijikyu/qserp#readme",
-  "devDependencies": {
-    "jest": "^29.6.1"
-  }
+  "homepage": "https://github.com/Bijikyu/qserp#readme"
 }
