@@ -44,4 +44,18 @@ describe('integration googleSearch and getTopSearchResults', () => { //describe 
     expect(scheduleMock).toHaveBeenCalledTimes(3); //schedule called for each attempt
     expect(qerrorsMock).toHaveBeenCalled(); //ensure qerrors invoked
   });
+
+  test('warns when optional token missing but still returns results', async () => { //new warning path test
+    const saveToken = process.env.OPENAI_TOKEN; //store original token
+    delete process.env.OPENAI_TOKEN; //remove token to trigger warning
+    jest.resetModules(); //reset modules to reread env vars
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {}); //spy on console.warn
+    const { googleSearch: tokenlessSearch } = require('../lib/qserp'); //require module without token
+    mock.onGet(/Warn/).reply(200, { items: [{ title: 't', snippet: 's', link: 'l' }] }); //mock search success
+    const res = await tokenlessSearch('Warn'); //perform search with mocked data
+    expect(res).toEqual([{ title: 't', snippet: 's', link: 'l' }]); //ensure results returned
+    expect(warnSpy).toHaveBeenCalledWith('OPENAI_TOKEN environment variable is not set. This is required by the qerrors dependency for error logging.'); //check warning message
+    warnSpy.mockRestore(); //restore console.warn
+    process.env.OPENAI_TOKEN = saveToken; //restore original token
+  });
 });
