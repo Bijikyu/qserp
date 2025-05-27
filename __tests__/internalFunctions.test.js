@@ -30,6 +30,13 @@ test('rateLimitedRequest calls limiter and sets headers', async () => {
   expect(config.headers['User-Agent']).toMatch(/Mozilla/);
 });
 
+test('rateLimitedRequest rejects on axios failure and schedules call', async () => {
+  axios.get.mockRejectedValue(new Error('net')); //mock axios failure & schedule check
+  const { rateLimitedRequest } = require('../lib/qserp');
+  await expect(rateLimitedRequest('http://bad')).rejects.toThrow('net'); //promise rejects with error
+  expect(scheduleMock).toHaveBeenCalled(); //ensure schedule invoked despite rejection
+});
+
 test('getGoogleURL builds proper url', () => {
   const { getGoogleURL } = require('../lib/qserp');
   const url = getGoogleURL('hello world');
