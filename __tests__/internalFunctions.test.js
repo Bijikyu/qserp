@@ -43,3 +43,13 @@ test('handleAxiosError logs with qerrors and returns true', () => {
   expect(res).toBe(true);
   expect(qerrorsMock).toHaveBeenCalled();
 });
+
+test('handleAxiosError logs response object and returns true', () => { //added new test for console.error
+  const { handleAxiosError } = require('../lib/qserp'); //require function under test
+  const err = { response: { status: 500 } }; //mock error with response
+  const spy = jest.spyOn(console, 'error').mockImplementation(() => {}); //spy on console.error
+  const res = handleAxiosError(err, 'ctx'); //call function with response error
+  expect(res).toBe(true); //should return true
+  expect(spy).toHaveBeenCalledWith(err.response); //console.error called with response
+  spy.mockRestore(); //restore console.error
+});
