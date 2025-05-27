@@ -31,6 +31,13 @@ describe('qserp module', () => { //group qserp tests
     expect(scheduleMock).toHaveBeenCalled(); //ensure rate limiter used
   });
 
+  test('googleSearch handles missing items field', async () => { //verify empty array when items missing
+    mock.onGet(/customsearch/).reply(200, {}); //mock response without items
+    const results = await googleSearch('none'); //perform search expecting empty
+    expect(results).toEqual([]); //should resolve to empty array
+    expect(scheduleMock).toHaveBeenCalledTimes(1); //schedule called once
+  });
+
   test('getTopSearchResults returns top links', async () => { //verify top links returned
     mock.onGet(/Java/).reply(200, { items: [{ link: 'http://j' }] }); //mock java search
     mock.onGet(/Python/).reply(200, { items: [{ link: 'http://p' }] }); //mock python search
