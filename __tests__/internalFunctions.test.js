@@ -60,3 +60,15 @@ test('handleAxiosError logs response object and returns true', () => { //added n
   expect(spy).toHaveBeenCalledWith(err.response); //console.error called with response
   spy.mockRestore(); //restore console.error
 });
+
+test('handleAxiosError returns false when qerrors throws', () => { //verify fallback on qerrors failure
+  const { handleAxiosError } = require('../lib/qserp'); //load function under test
+  const err = new Error('bad'); //mock basic error
+  qerrorsMock.mockImplementationOnce(() => { throw new Error('qe'); }); //first call throws
+  qerrorsMock.mockImplementation(() => {}); //subsequent calls succeed
+  const spy = jest.spyOn(console, 'error').mockImplementation(() => {}); //spy on console.error
+  const res = handleAxiosError(err, 'ctx'); //invoke handler expecting false
+  expect(res).toBe(false); //should return false due to catch block
+  expect(spy).toHaveBeenCalled(); //console.error should log error message
+  spy.mockRestore(); //restore console.error
+}); //end test ensuring failure path
