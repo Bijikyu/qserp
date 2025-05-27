@@ -11,15 +11,15 @@ jest.mock('bottleneck', () => jest.fn().mockImplementation(() => ({ schedule: sc
 const qerrorsMock = jest.fn(); //create qerrors mock function
 jest.mock('qerrors', () => (...args) => qerrorsMock(...args)); //mock qerrors module
 
+const { resetTestMocks } = require('./utils/testSetup'); //import helper to reset mocks
+
 const { googleSearch, getTopSearchResults } = require('../lib/qserp'); //load functions under test from library
 
 const mock = new MockAdapter(axios); //create axios mock adapter instance
 
 describe('qserp module', () => { //group qserp tests
   beforeEach(() => { //reset mocks before each test
-    mock.reset(); //clear axios mock history
-    scheduleMock.mockClear(); //clear bottleneck schedule mock
-    qerrorsMock.mockClear(); //clear qerrors mock history
+    resetTestMocks(mock, scheduleMock, qerrorsMock); //invoke shared reset helper
   });
 
   test('googleSearch returns parsed results', async () => { //verify googleSearch formatting
