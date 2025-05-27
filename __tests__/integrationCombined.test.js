@@ -1,19 +1,12 @@
-const MockAdapter = require('axios-mock-adapter'); //setup axios mock adapter
-const axios = require('axios'); //import axios for mocking
+const { setTestEnv, createScheduleMock, createQerrorsMock, createAxiosMock } = require('./utils/testSetup'); //load shared helpers
 
-process.env.GOOGLE_API_KEY = 'key'; //set fake google api key
-process.env.GOOGLE_CX = 'cx'; //set fake google cx id
-process.env.OPENAI_TOKEN = 'token'; //set fake openai token
+setTestEnv(); //set env vars for tests
+const scheduleMock = createScheduleMock(); //mock bottleneck schedule
+const qerrorsMock = createQerrorsMock(); //mock qerrors
 
-const scheduleMock = jest.fn(fn => Promise.resolve(fn())); //mock bottleneck schedule
-jest.mock('bottleneck', () => jest.fn().mockImplementation(() => ({ schedule: scheduleMock }))); //mock Bottleneck constructor
-
-const qerrorsMock = jest.fn(); //mock qerrors logging
-jest.mock('qerrors', () => (...args) => qerrorsMock(...args)); //replace qerrors with mock
+const mock = createAxiosMock(); //axios mock adapter instance
 
 const { googleSearch, getTopSearchResults } = require('../lib/qserp'); //load functions under test
-
-const mock = new MockAdapter(axios); //create axios mock instance
 
 describe('integration googleSearch and getTopSearchResults', () => { //describe block
   beforeEach(() => { //reset mocks
