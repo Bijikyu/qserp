@@ -1,17 +1,12 @@
 const axios = require('axios');
+const { setTestEnv, createScheduleMock, createQerrorsMock } = require('./utils/testSetup'); //import helpers
 
-// mocks and env setup
-process.env.GOOGLE_API_KEY = 'key';
-process.env.GOOGLE_CX = 'cx';
-process.env.OPENAI_TOKEN = 'tkn';
+setTestEnv(); //set up env vars
+const scheduleMock = createScheduleMock(); //mock Bottleneck
 
-const scheduleMock = jest.fn(fn => Promise.resolve(fn()));
-jest.mock('bottleneck', () => jest.fn().mockImplementation(() => ({ schedule: scheduleMock })));
+jest.mock('axios'); //mock axios module
 
-jest.mock('axios');
-
-const qerrorsMock = jest.fn();
-jest.mock('qerrors', () => (...args) => qerrorsMock(...args));
+const qerrorsMock = createQerrorsMock(); //mock qerrors
 
 beforeEach(() => {
   jest.resetModules();

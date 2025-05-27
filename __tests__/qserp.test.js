@@ -1,19 +1,12 @@
-const MockAdapter = require('axios-mock-adapter'); //import mock adapter for axios
-const axios = require('axios'); //import axios for requests
+const { setTestEnv, createScheduleMock, createQerrorsMock, createAxiosMock } = require('./utils/testSetup'); //load shared test helpers
 
-process.env.GOOGLE_API_KEY = 'key'; //set mock api key for tests
-process.env.GOOGLE_CX = 'cx'; //set mock custom search id for tests
-process.env.OPENAI_TOKEN = 'token'; //set mock openai token for qerrors
+setTestEnv(); //initialize common env vars
+const scheduleMock = createScheduleMock(); //setup bottleneck mock
+const qerrorsMock = createQerrorsMock(); //setup qerrors mock
 
-const scheduleMock = jest.fn(fn => Promise.resolve(fn())); //create bottleneck schedule mock
-jest.mock('bottleneck', () => jest.fn().mockImplementation(() => ({ schedule: scheduleMock }))); //mock bottleneck to use schedule mock
-
-const qerrorsMock = jest.fn(); //create qerrors mock function
-jest.mock('qerrors', () => (...args) => qerrorsMock(...args)); //mock qerrors module
+const mock = createAxiosMock(); //setup axios mock adapter
 
 const { googleSearch, getTopSearchResults } = require('../lib/qserp'); //load functions under test from library
-
-const mock = new MockAdapter(axios); //create axios mock adapter instance
 
 describe('qserp module', () => { //group qserp tests
   beforeEach(() => { //reset mocks before each test
