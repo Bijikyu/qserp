@@ -1,18 +1,12 @@
-const { setTestEnv, createScheduleMock, createQerrorsMock, createAxiosMock } = require('./utils/testSetup'); //load shared helpers
+const { initSearchTest, resetMocks } = require('./utils/testSetup'); //use new helpers
 
-setTestEnv(); //set env vars for tests
-const scheduleMock = createScheduleMock(); //mock bottleneck schedule
-const qerrorsMock = createQerrorsMock(); //mock qerrors
-
-const mock = createAxiosMock(); //axios mock adapter instance
+const { mock, scheduleMock, qerrorsMock } = initSearchTest(); //init environment and mocks
 
 const { googleSearch, getTopSearchResults } = require('../lib/qserp'); //load functions under test
 
 describe('integration googleSearch and getTopSearchResults', () => { //describe block
   beforeEach(() => { //reset mocks
-    mock.reset(); //reset axios mock
-    scheduleMock.mockClear(); //clear schedule calls
-    qerrorsMock.mockClear(); //clear qerrors calls
+    resetMocks(mock, scheduleMock, qerrorsMock); //use helper to clear mocks
   });
 
   test('multiple terms return arrays of urls and schedule invoked per request', async () => { //success path test

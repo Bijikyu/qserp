@@ -32,5 +32,24 @@ function createAxiosMock() {
   return mock; //export axios mock
 }
 
-module.exports = { setTestEnv, createScheduleMock, createQerrorsMock, createAxiosMock }; //export helpers
+function resetMocks(mock, scheduleMock, qerrorsMock) { //helper to clear mocks
+  console.log(`resetMocks is running with mocks`); //initial log
+  mock.reset(); //clear axios mock history
+  scheduleMock.mockClear(); //clear Bottleneck schedule calls
+  qerrorsMock.mockClear(); //clear qerrors call history
+  console.log(`resetMocks returning true`); //final log
+  return true; //confirm reset
+}
+
+function initSearchTest() { //helper to init env and mocks
+  console.log(`initSearchTest is running with none`); //initial log
+  setTestEnv(); //prepare environment variables
+  const scheduleMock = createScheduleMock(); //create schedule mock
+  const qerrorsMock = createQerrorsMock(); //create qerrors mock
+  const mock = createAxiosMock(); //create axios mock
+  console.log(`initSearchTest returning mocks`); //final log
+  return { mock, scheduleMock, qerrorsMock }; //return configured mocks
+}
+
+module.exports = { setTestEnv, createScheduleMock, createQerrorsMock, createAxiosMock, resetMocks, initSearchTest }; //export helpers
 
