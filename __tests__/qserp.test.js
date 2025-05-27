@@ -54,4 +54,13 @@ describe('qserp module', () => { //group qserp tests
     expect(urls).toEqual([]); //urls should be empty array
     expect(qerrorsMock).toHaveBeenCalled(); //qerrors should log error
   });
+
+  test('filters invalid terms and limits schedule calls', async () => { //added new mixed input test
+    mock.onGet(/Alpha/).reply(200, { items: [] }); //mock no items result
+    mock.onGet(/Beta/).reply(200, { items: [{ link: 'http://b' }] }); //mock valid result
+    const terms = ['Alpha', '', 1, null, 'Beta']; //prepare mixed array
+    const urls = await getTopSearchResults(terms); //execute search with mixed array
+    expect(urls).toEqual(['http://b']); //should only include valid link
+    expect(scheduleMock).toHaveBeenCalledTimes(2); //rate limiter for valid terms only
+  });
 });
