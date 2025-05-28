@@ -7,6 +7,20 @@ function setTestEnv() {
   return true; //confirm env set
 }
 
+function saveEnv() { //(capture current process.env)
+  console.log(`saveEnv is running with none`); //initial log
+  const savedEnv = { ...process.env }; //copy environment vars
+  console.log(`saveEnv returning ${JSON.stringify(savedEnv)}`); //final log
+  return savedEnv; //return copy
+}
+
+function restoreEnv(savedEnv) { //(restore saved environment)
+  console.log(`restoreEnv is running with ${JSON.stringify(savedEnv)}`); //initial log
+  process.env = { ...savedEnv }; //restore env vars
+  console.log(`restoreEnv returning true`); //final log
+  return true; //confirm restore
+}
+
 function createScheduleMock() {
   console.log(`createScheduleMock is running with none`); //initial log
   const scheduleMock = jest.fn(fn => Promise.resolve(fn())); //mock schedule fn
@@ -51,5 +65,5 @@ function initSearchTest() { //helper to init env and mocks
   return { mock, scheduleMock, qerrorsMock }; //return configured mocks
 }
 
-module.exports = { setTestEnv, createScheduleMock, createQerrorsMock, createAxiosMock, resetMocks, initSearchTest }; //export helpers
+module.exports = { setTestEnv, saveEnv, restoreEnv, createScheduleMock, createQerrorsMock, createAxiosMock, resetMocks, initSearchTest }; //export helpers
 
