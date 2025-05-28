@@ -67,3 +67,20 @@ test('handleAxiosError returns false when qerrors throws', () => { //verify fall
   expect(spy).toHaveBeenCalled(); //console.error should log error message
   spy.mockRestore(); //restore console.error
 }); //end test ensuring failure path
+
+test('fetchSearchItems returns array of items on success', async () => { //verify helper success
+  axios.get.mockResolvedValue({ data: { items: ['a'] } }); //mock axios response
+  const { fetchSearchItems } = require('../lib/qserp'); //import helper under test
+  const items = await fetchSearchItems('ok'); //call helper
+  expect(items).toEqual(['a']); //expect returned items
+  expect(scheduleMock).toHaveBeenCalled(); //ensure rate limiter used
+});
+
+test('fetchSearchItems returns empty array and logs on failure', async () => { //verify helper failure
+  axios.get.mockRejectedValue(new Error('net')); //mock axios error
+  const { fetchSearchItems } = require('../lib/qserp'); //import helper
+  const items = await fetchSearchItems('bad'); //invoke failing helper
+  expect(items).toEqual([]); //should return empty array
+  expect(scheduleMock).toHaveBeenCalled(); //rate limiter should still run
+  expect(qerrorsMock).toHaveBeenCalled(); //error should be logged
+});
