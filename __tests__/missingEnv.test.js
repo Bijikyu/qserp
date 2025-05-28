@@ -1,6 +1,7 @@
 
 let saveApi; //variable to store original api key
 let saveCx; //variable to store original cx
+let axiosMock; //adapter instance
 
 describe('throwIfMissingEnvVars', () => { //describe missing env block
   beforeAll(() => { //setup before tests
@@ -10,7 +11,8 @@ describe('throwIfMissingEnvVars', () => { //describe missing env block
     delete process.env.GOOGLE_CX; //clear cx
     process.env.OPENAI_TOKEN = 'token'; //set token for qerrors
     jest.resetModules(); //reset modules to apply env changes
-    jest.mock('axios'); //mock axios to avoid module error
+    const { createAxiosMock } = require('./utils/testSetup'); //import adapter
+    axiosMock = createAxiosMock(); //create axios adapter
   });
 
   afterAll(() => { //restore env vars
