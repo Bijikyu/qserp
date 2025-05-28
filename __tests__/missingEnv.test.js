@@ -1,11 +1,9 @@
-
-let saveApi; //variable to store original api key
-let saveCx; //variable to store original cx
+const { saveEnv, restoreEnv } = require('./utils/testSetup'); //import env helpers //(new utilities)
+let savedEnv; //variable to store original env //(for restore)
 
 describe('throwIfMissingEnvVars', () => { //describe missing env block
   beforeAll(() => { //setup before tests
-    saveApi = process.env.GOOGLE_API_KEY; //save key
-    saveCx = process.env.GOOGLE_CX; //save cx
+    savedEnv = saveEnv(); //snapshot env //(using util)
     delete process.env.GOOGLE_API_KEY; //clear key
     delete process.env.GOOGLE_CX; //clear cx
     process.env.OPENAI_TOKEN = 'token'; //set token for qerrors
@@ -14,8 +12,7 @@ describe('throwIfMissingEnvVars', () => { //describe missing env block
   });
 
   afterAll(() => { //restore env vars
-    process.env.GOOGLE_API_KEY = saveApi; //restore key
-    process.env.GOOGLE_CX = saveCx; //restore cx
+    restoreEnv(savedEnv); //restore full env //(using util)
   });
 
   test('module throws when env vars missing', () => { //test thrown error on require
