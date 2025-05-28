@@ -1,19 +1,20 @@
+const { saveEnv, restoreEnv } = require('./utils/testSetup'); //import env helpers //(refactored for reuse)
 jest.mock('qerrors', () => jest.fn()); //switch to jest mock //(changed to clarify usage and current mocking)
 const qerrors = require('qerrors'); //get the mocked function //(added note that qerrors is mocked)
 
-const originalEnv = { ...process.env }; //capture starting environment //(store snapshot for reset)
+let envCopy; //var to hold env snapshot //(prepare restore)
 
 describe('envUtils', () => { //wrap all env util tests //(use describe as requested)
   let warnSpy; //declare warn spy //(track console warning)
 
   beforeEach(() => { //prepare each test //(reset env and mocks)
-    process.env = { ...originalEnv }; //reset environment between tests //(ensures isolation)
+    envCopy = saveEnv(); //capture env for restore //(use helper)
     warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {}); //mock console.warn //(avoid actual warnings)
     jest.resetModules(); //reload modules so env vars re-evaluated //(ensures clean require)
   });
 
   afterEach(() => { //cleanup after each test //(restore settings)
-    process.env = { ...originalEnv }; //restore environment after test //(reset env)
+    restoreEnv(envCopy); //restore environment after test //(use helper)
     warnSpy.mockRestore(); //restore console.warn //(remove spy)
     jest.clearAllMocks(); //clear any mock usage //(reset mock counts)
   });
