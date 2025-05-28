@@ -32,6 +32,14 @@ test('rateLimitedRequest rejects on axios failure and schedules call', async () 
   expect(scheduleMock).toHaveBeenCalled(); //ensure schedule invoked despite rejection
 });
 
+test('fetchSearchItems returns items and schedules call', async () => { //new helper test
+  axios.get.mockResolvedValue({ data: { items: [{ link: 'x' }] } }); //mock success
+  const { fetchSearchItems } = require('../lib/qserp'); //load helper
+  const items = await fetchSearchItems('term'); //invoke helper
+  expect(items).toEqual([{ link: 'x' }]); //check items array
+  expect(scheduleMock).toHaveBeenCalled(); //ensure schedule used
+});
+
 test('getGoogleURL builds proper url', () => {
   const { getGoogleURL } = require('../lib/qserp');
   const url = getGoogleURL('hello world');
