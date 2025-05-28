@@ -3,6 +3,7 @@ const { initSearchTest, resetMocks } = require('./utils/testSetup'); //use new h
 const { mock, scheduleMock, qerrorsMock } = initSearchTest(); //init environment and mocks
 
 const { googleSearch, getTopSearchResults } = require('../lib/qserp'); //load functions under test
+const { OPENAI_WARN_MSG } = require('../lib/constants'); //import warn constant
 
 describe('integration googleSearch and getTopSearchResults', () => { //describe block
   beforeEach(() => { //reset mocks
@@ -41,7 +42,7 @@ describe('integration googleSearch and getTopSearchResults', () => { //describe 
     mock.onGet(/Warn/).reply(200, { items: [{ title: 't', snippet: 's', link: 'l' }] }); //mock search success
     const res = await tokenlessSearch('Warn'); //perform search with mocked data
     expect(res).toEqual([{ title: 't', snippet: 's', link: 'l' }]); //ensure results returned
-    expect(warnSpy).toHaveBeenCalledWith('OPENAI_TOKEN environment variable is not set. This is required by the qerrors dependency for error logging.'); //check warning message
+    expect(warnSpy).toHaveBeenCalledWith(OPENAI_WARN_MSG); //check warning message via constant
     warnSpy.mockRestore(); //restore console.warn
     process.env.OPENAI_TOKEN = saveToken; //restore original token
   });
