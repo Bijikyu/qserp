@@ -1,34 +1,29 @@
 const axios = require('axios');
-const { setTestEnv, createScheduleMock, createQerrorsMock } = require('./utils/testSetup'); //import helpers
+const { setTestEnv, createScheduleMock, createQerrorsMock, createAxiosMock, resetMocks } = require('./utils/testSetup'); //import helpers with axios mock
 
 setTestEnv(); //set up env vars
 const scheduleMock = createScheduleMock(); //mock Bottleneck
-
-jest.mock('axios'); //mock axios module
-
 const qerrorsMock = createQerrorsMock(); //mock qerrors
+const mock = createAxiosMock(); //create axios mock adapter
 
 beforeEach(() => {
   jest.resetModules();
-  axios.get.mockClear();
-  scheduleMock.mockClear();
-  qerrorsMock.mockClear();
+  resetMocks(mock, scheduleMock, qerrorsMock); //reuse helper to clear mocks
 });
 
 test('rateLimitedRequest calls limiter and sets headers', async () => {
-  axios.get.mockResolvedValue({ data: {} });
+  mock.onGet('http://test').reply(200, {}); //mock successful request
   const { rateLimitedRequest } = require('../lib/qserp');
   await rateLimitedRequest('http://test');
   expect(scheduleMock).toHaveBeenCalled();
   expect(typeof scheduleMock.mock.calls[0][0]).toBe('function');
-  const config = axios.get.mock.calls[0][1];
-  expect(config.headers['User-Agent']).toMatch(/Mozilla/);
+  expect(mock.history.get[0].headers['User-Agent']).toMatch(/Mozilla/); //check header
 });
 
 test('rateLimitedRequest rejects on axios failure and schedules call', async () => {
-  axios.get.mockRejectedValue(new Error('net')); //mock axios failure & schedule check
+  mock.onGet('http://bad').reply(500); //mock failure response
   const { rateLimitedRequest } = require('../lib/qserp');
-  await expect(rateLimitedRequest('http://bad')).rejects.toThrow('net'); //promise rejects with error
+  await expect(rateLimitedRequest('http://bad')).rejects.toThrow('Request failed with status code 500'); //axios error text
   expect(scheduleMock).toHaveBeenCalled(); //ensure schedule invoked despite rejection
 });
 
