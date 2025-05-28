@@ -2,7 +2,7 @@ const { initSearchTest, resetMocks } = require('./utils/testSetup'); //use new h
 
 const { mock, scheduleMock, qerrorsMock } = initSearchTest(); //initialize env and mocks
 
-const { googleSearch, getTopSearchResults } = require('../lib/qserp'); //load functions under test from library
+const { googleSearch, getTopSearchResults, fetchSearchItems } = require('../lib/qserp'); //load functions under test from library
 
 describe('qserp module', () => { //group qserp tests
   beforeEach(() => { //reset mocks before each test
@@ -23,6 +23,13 @@ describe('qserp module', () => { //group qserp tests
     const results = await googleSearch('none'); //perform search expecting empty
     expect(results).toEqual([]); //should resolve to empty array
     expect(scheduleMock).toHaveBeenCalledTimes(1); //schedule called once
+  });
+
+  test('fetchSearchItems returns raw items', async () => { //test helper directly
+    mock.onGet(/raw/).reply(200, { items: [{ title: 'r', snippet: 's', link: 'l' }] }); //mock response
+    const items = await fetchSearchItems('raw'); //call helper
+    expect(items).toEqual([{ title: 'r', snippet: 's', link: 'l' }]); //expect raw array
+    expect(scheduleMock).toHaveBeenCalled(); //schedule used
   });
 
   test('getTopSearchResults returns top links', async () => { //verify top links returned

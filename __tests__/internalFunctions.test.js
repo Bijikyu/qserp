@@ -1,35 +1,41 @@
 const axios = require('axios');
-const { setTestEnv, createScheduleMock, createQerrorsMock } = require('./utils/testSetup'); //import helpers
+const { setTestEnv, createScheduleMock, createQerrorsMock, createAxiosMock, resetMocks } = require('./utils/testSetup'); //import helpers
 
 setTestEnv(); //set up env vars
 const scheduleMock = createScheduleMock(); //mock Bottleneck
-
-jest.mock('axios'); //mock axios module
+let mock = createAxiosMock(); //create axios adapter
 
 const qerrorsMock = createQerrorsMock(); //mock qerrors
 
 beforeEach(() => {
-  jest.resetModules();
-  axios.get.mockClear();
-  scheduleMock.mockClear();
-  qerrorsMock.mockClear();
+  jest.resetModules(); //reset modules each test
+  mock = createAxiosMock(); //recreate axios adapter
+  resetMocks(mock, scheduleMock, qerrorsMock); //clear histories
 });
 
 test('rateLimitedRequest calls limiter and sets headers', async () => {
-  axios.get.mockResolvedValue({ data: {} });
+  mock.onGet('http://test').reply(200, {}); //mock axios success
   const { rateLimitedRequest } = require('../lib/qserp');
   await rateLimitedRequest('http://test');
   expect(scheduleMock).toHaveBeenCalled();
   expect(typeof scheduleMock.mock.calls[0][0]).toBe('function');
-  const config = axios.get.mock.calls[0][1];
-  expect(config.headers['User-Agent']).toMatch(/Mozilla/);
+  const config = mock.history.get[0].headers; //fetch request headers
+  expect(config['User-Agent']).toMatch(/Mozilla/);
 });
 
 test('rateLimitedRequest rejects on axios failure and schedules call', async () => {
-  axios.get.mockRejectedValue(new Error('net')); //mock axios failure & schedule check
+  mock.onGet('http://bad').networkError(); //simulate network error
   const { rateLimitedRequest } = require('../lib/qserp');
-  await expect(rateLimitedRequest('http://bad')).rejects.toThrow('net'); //promise rejects with error
+  await expect(rateLimitedRequest('http://bad')).rejects.toThrow('Network Error'); //axios rejects with error
   expect(scheduleMock).toHaveBeenCalled(); //ensure schedule invoked despite rejection
+});
+
+test('fetchSearchItems returns items and schedules call', async () => { //new helper test
+  axios.get.mockResolvedValue({ data: { items: [{ link: 'x' }] } }); //mock success
+  const { fetchSearchItems } = require('../lib/qserp'); //load helper
+  const items = await fetchSearchItems('term'); //invoke helper
+  expect(items).toEqual([{ link: 'x' }]); //check items array
+  expect(scheduleMock).toHaveBeenCalled(); //ensure schedule used
 });
 
 test('getGoogleURL builds proper url', () => {
