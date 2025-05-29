@@ -1,67 +1,69 @@
+const { logStart, logReturn } = require('../../lib/logUtils'); //import log helpers
+
 function setTestEnv() {
-  console.log(`setTestEnv is running with default values`); //initial log
+  logStart('setTestEnv', 'default values'); //initial log via util
   process.env.GOOGLE_API_KEY = 'key'; //set common api key
   process.env.GOOGLE_CX = 'cx'; //set common cx id
   process.env.OPENAI_TOKEN = 'token'; //set common openai token
-  console.log(`setTestEnv returning true`); //final log
+  logReturn('setTestEnv', true); //final log via util
   return true; //confirm env set
 }
 
 function saveEnv() { //(capture current process.env)
-  console.log(`saveEnv is running with none`); //initial log
+  logStart('saveEnv', 'none'); //initial log via util
   const savedEnv = { ...process.env }; //copy environment vars
-  console.log(`saveEnv returning ${JSON.stringify(savedEnv)}`); //final log
+  logReturn('saveEnv', JSON.stringify(savedEnv)); //final log via util
   return savedEnv; //return copy
 }
 
 function restoreEnv(savedEnv) { //(restore saved environment)
-  console.log(`restoreEnv is running with ${JSON.stringify(savedEnv)}`); //initial log
+  logStart('restoreEnv', JSON.stringify(savedEnv)); //initial log via util
   process.env = { ...savedEnv }; //restore env vars
-  console.log(`restoreEnv returning true`); //final log
+  logReturn('restoreEnv', true); //final log via util
   return true; //confirm restore
 }
 
 function createScheduleMock() {
-  console.log(`createScheduleMock is running with none`); //initial log
+  logStart('createScheduleMock', 'none'); //initial log via util
   const scheduleMock = jest.fn(fn => Promise.resolve(fn())); //mock schedule fn
   jest.mock('bottleneck', () => jest.fn().mockImplementation(() => ({ schedule: scheduleMock }))); //mock bottleneck
-  console.log(`createScheduleMock returning mock`); //final log
+  logReturn('createScheduleMock', 'mock'); //final log via util
   return scheduleMock; //export schedule mock
 }
 
 function createQerrorsMock() {
-  console.log(`createQerrorsMock is running with none`); //initial log
+  logStart('createQerrorsMock', 'none'); //initial log via util
   const qerrorsMock = jest.fn(); //mock qerrors fn
   jest.mock('qerrors', () => (...args) => qerrorsMock(...args)); //mock qerrors
-  console.log(`createQerrorsMock returning mock`); //final log
+  logReturn('createQerrorsMock', 'mock'); //final log via util
   return qerrorsMock; //export qerrors mock
 }
 
 function createAxiosMock() {
-  console.log(`createAxiosMock is running with none`); //initial log
+  logStart('createAxiosMock', 'none'); //initial log via util
   const MockAdapter = require('axios-mock-adapter'); //import mock adapter
   const axios = require('axios'); //import axios instance
   const mock = new MockAdapter(axios); //create adapter instance
-  console.log(`createAxiosMock returning adapter`); //final log
+  logReturn('createAxiosMock', 'adapter'); //final log via util
   return mock; //export axios mock
 }
 
 function resetMocks(mock, scheduleMock, qerrorsMock) { //helper to clear mocks
-  console.log(`resetMocks is running with mocks`); //initial log
+  logStart('resetMocks', 'mocks'); //initial log via util
   mock.reset(); //clear axios mock history
   scheduleMock.mockClear(); //clear Bottleneck schedule calls
   qerrorsMock.mockClear(); //clear qerrors call history
-  console.log(`resetMocks returning true`); //final log
+  logReturn('resetMocks', true); //final log via util
   return true; //confirm reset
 }
 
 function initSearchTest() { //helper to init env and mocks
-  console.log(`initSearchTest is running with none`); //initial log
+  logStart('initSearchTest', 'none'); //initial log via util
   setTestEnv(); //prepare environment variables
   const scheduleMock = createScheduleMock(); //create schedule mock
   const qerrorsMock = createQerrorsMock(); //create qerrors mock
   const mock = createAxiosMock(); //create axios mock
-  console.log(`initSearchTest returning mocks`); //final log
+  logReturn('initSearchTest', 'mocks'); //final log via util
   return { mock, scheduleMock, qerrorsMock }; //return configured mocks
 }
 
