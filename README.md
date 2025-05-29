@@ -9,11 +9,12 @@ npm install qserp
 ```
 
 ## Environment Variables
-Before using the module, set the following environment variables:
+Before using the module, set the following environment variables. `OPENAI_TOKEN` and `CODEX` are optional:
 
 - `GOOGLE_API_KEY` – Your Google API key. You can obtain this from the [Google Cloud Console](https://console.cloud.google.com/).
 - `GOOGLE_CX` – Your Custom Search Engine ID. Set this up at [Google Programmable Search Engine](https://programmablesearchengine.google.com/).
-- `OPENAI_TOKEN` – Required by the qerrors dependency for error logging.
+- `OPENAI_TOKEN` – Optional. Used by the `qerrors` dependency for enhanced logging.
+- `CODEX` – When set to `True`, network calls are mocked so the module can run without internet access.
 
 
 
