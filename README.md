@@ -40,6 +40,21 @@ npm test
 These tests mock network requests and set the necessary environment variables
 internally, so no API credentials are required.
 
+## Running on Codex
+
+When the environment variable `CODEX` is set to `True`, the library avoids
+network requests and instead returns a mocked response from search functions.
+This behavior enables local execution inside Codex where outbound internet
+access is disabled.
+
+Example:
+
+```javascript
+process.env.CODEX = 'True';
+const { googleSearch } = require('qserp');
+googleSearch('test').then(res => console.log(res)); // returns []
+```
+
 ## License
 
 ISC
