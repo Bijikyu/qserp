@@ -1,4 +1,5 @@
 const { initSearchTest, resetMocks } = require('./utils/testSetup'); //use new helpers
+const { mockConsole } = require('./utils/consoleSpies'); //added console spy helper
 
 const { mock, scheduleMock, qerrorsMock } = initSearchTest(); //init environment and mocks
 
@@ -37,7 +38,7 @@ describe('integration googleSearch and getTopSearchResults', () => { //describe 
     const saveToken = process.env.OPENAI_TOKEN; //store original token
     delete process.env.OPENAI_TOKEN; //remove token to trigger warning
     jest.resetModules(); //reset modules to reread env vars
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {}); //spy on console.warn
+    const warnSpy = mockConsole('warn'); //spy on console.warn using helper
     const { googleSearch: tokenlessSearch } = require('../lib/qserp'); //require module without token
     mock.onGet(/Warn/).reply(200, { items: [{ title: 't', snippet: 's', link: 'l' }] }); //mock search success
     const res = await tokenlessSearch('Warn'); //perform search with mocked data
