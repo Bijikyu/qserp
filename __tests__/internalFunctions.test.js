@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { setTestEnv, createScheduleMock, createQerrorsMock, createAxiosMock, resetMocks } = require('./utils/testSetup'); //import helpers
+const { mockConsole } = require('./utils/consoleSpies'); //added console spy helper
 
 setTestEnv(); //set up env vars
 const scheduleMock = createScheduleMock(); //mock Bottleneck
@@ -55,7 +56,7 @@ test('handleAxiosError logs with qerrors and returns true', () => {
 test('handleAxiosError logs response object and returns true', () => { //added new test for console.error
   const { handleAxiosError } = require('../lib/qserp'); //require function under test
   const err = { response: { status: 500 } }; //mock error with response
-  const spy = jest.spyOn(console, 'error').mockImplementation(() => {}); //spy on console.error
+  const spy = mockConsole('error'); //spy on console.error via helper
   const res = handleAxiosError(err, 'ctx'); //call function with response error
   expect(res).toBe(true); //should return true
   expect(spy).toHaveBeenCalledWith(err.response); //console.error called with response
@@ -67,7 +68,7 @@ test('handleAxiosError returns false when qerrors throws', () => { //verify fall
   const err = new Error('bad'); //mock basic error
   qerrorsMock.mockImplementationOnce(() => { throw new Error('qe'); }); //first call throws
   qerrorsMock.mockImplementation(() => {}); //subsequent calls succeed
-  const spy = jest.spyOn(console, 'error').mockImplementation(() => {}); //spy on console.error
+  const spy = mockConsole('error'); //spy on console.error via helper
   const res = handleAxiosError(err, 'ctx'); //invoke handler expecting false
   expect(res).toBe(false); //should return false due to catch block
   expect(spy).toHaveBeenCalled(); //console.error should log error message
