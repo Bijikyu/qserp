@@ -35,7 +35,7 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     process.env.A = '1'; //define env A only //(setup)
     delete process.env.B; //remove env B //(force missing)
     expect(getMissingEnvVars(['A', 'B'])).toEqual(['B']); //should detect B missing //(assert)
-    expect(throwIfMissingEnvVars(['A', 'B'])).toEqual([]); //error path handled //(assert)
+    expect(() => throwIfMissingEnvVars(['A', 'B'])).toThrow('Missing required'); //should throw on missing vars //(assert)
     expect(warnIfMissingEnvVars(['A', 'B'], 'warn')).toBe(false); //should warn //(assert)
     expect(warnSpy).toHaveBeenCalledWith('warn'); //warn called with message //(check)
     expect(qerrors).toHaveBeenCalledTimes(1); //qerrors invoked once //(check)
