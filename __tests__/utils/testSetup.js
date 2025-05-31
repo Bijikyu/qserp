@@ -18,7 +18,8 @@ function saveEnv() { //(capture current process.env)
 
 function restoreEnv(savedEnv) { //(restore saved environment)
   logStart('restoreEnv', JSON.stringify(savedEnv)); //initial log via util
-  process.env = { ...savedEnv }; //restore env vars
+  Object.keys(process.env).forEach(k => delete process.env[k]); //clear current env //(avoid reassignment)
+  Object.assign(process.env, savedEnv); //copy saved vars back //(restore vars)
   logReturn('restoreEnv', true); //final log via util
   return true; //confirm restore
 }
