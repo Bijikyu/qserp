@@ -12,12 +12,12 @@ function setTestEnv() {
 function saveEnv() { //(capture current process.env)
   logStart('saveEnv', 'none'); //initial log via util
   const savedEnv = { ...process.env }; //copy environment vars
-  logReturn('saveEnv', JSON.stringify(savedEnv)); //final log via util
+  logReturn('saveEnv', 'env stored'); //final log via util //(mask env data)
   return savedEnv; //return copy
 }
 
 function restoreEnv(savedEnv) { //(restore saved environment)
-  logStart('restoreEnv', JSON.stringify(savedEnv)); //initial log via util
+  logStart('restoreEnv', 'env restore'); //initial log via util //(mask env data)
   Object.keys(process.env).forEach(k => delete process.env[k]); //clear current env //(avoid reassignment)
   Object.assign(process.env, savedEnv); //copy saved vars back //(restore vars)
   logReturn('restoreEnv', true); //final log via util
