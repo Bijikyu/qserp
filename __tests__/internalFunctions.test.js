@@ -74,3 +74,13 @@ test('handleAxiosError returns false when qerrors throws', () => { //verify fall
   expect(spy).toHaveBeenCalled(); //console.error should log error message
   spy.mockRestore(); //restore console.error
 }); //end test ensuring failure path
+
+test.each(['True', 'true', 'TRUE', true])('rateLimitedRequest returns mock when CODEX=%s', async val => {
+  process.env.CODEX = val; //set CODEX variant to trigger mock response
+  const { rateLimitedRequest } = require('../lib/qserp'); //import after setting env
+  const res = await rateLimitedRequest('http://codex'); //call function expecting mock
+  expect(res).toEqual({ data: { items: [] } }); //mocked empty items returned
+  expect(scheduleMock).not.toHaveBeenCalled(); //limiter should be bypassed
+  expect(mock.history.get.length).toBe(0); //axios should not receive any request
+  delete process.env.CODEX; //clean up env variable for other tests
+}); //test ensures CODEX casings bypass network
