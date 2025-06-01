@@ -42,6 +42,7 @@ describe('qserp module', () => { //group qserp tests
 
   test('handles empty or invalid input', async () => { //verify validation paths
     await expect(googleSearch('')).rejects.toThrow(); //expect empty query throw
+    await expect(fetchSearchItems('')).rejects.toThrow(); //expect empty query throw for helper
     await expect(getTopSearchResults('bad')).rejects.toThrow(); //expect invalid input throw
     const emptyUrls = await getTopSearchResults([]); //call with empty list
     expect(emptyUrls).toEqual([]); //expect empty array result
