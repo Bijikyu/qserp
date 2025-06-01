@@ -32,7 +32,7 @@ test('rateLimitedRequest rejects on axios failure and schedules call', async () 
 });
 
 test('fetchSearchItems returns items and schedules call', async () => { //new helper test
-  axios.get.mockResolvedValue({ data: { items: [{ link: 'x' }] } }); //mock success
+  mock.onGet(/term/).reply(200, { items: [{ link: 'x' }] }); //mock success using adapter
   const { fetchSearchItems } = require('../lib/qserp'); //load helper
   const items = await fetchSearchItems('term'); //invoke helper
   expect(items).toEqual([{ link: 'x' }]); //check items array
