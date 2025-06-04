@@ -3,14 +3,16 @@ const { setTestEnv, createScheduleMock, createQerrorsMock, createAxiosMock, rese
 const { mockConsole } = require('./utils/consoleSpies'); //added console spy helper
 
 setTestEnv(); //set up env vars
-const scheduleMock = createScheduleMock(); //mock Bottleneck
+let scheduleMock = createScheduleMock(); //mock Bottleneck
 let mock = createAxiosMock(); //create axios adapter
 
-const qerrorsMock = createQerrorsMock(); //mock qerrors
+let qerrorsMock = createQerrorsMock(); //mock qerrors
 
 beforeEach(() => {
   jest.resetModules(); //reset modules each test
   mock = createAxiosMock(); //recreate axios adapter
+  scheduleMock = createScheduleMock(); //reapply bottleneck mock after module reset
+  qerrorsMock = createQerrorsMock(); //reapply qerrors mock after module reset
   resetMocks(mock, scheduleMock, qerrorsMock); //clear histories
 });
 

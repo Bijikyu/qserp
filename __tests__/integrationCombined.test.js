@@ -1,7 +1,7 @@
-const { initSearchTest, resetMocks } = require('./utils/testSetup'); //use new helpers
+const { initSearchTest, resetMocks, createScheduleMock, createQerrorsMock, createAxiosMock } = require('./utils/testSetup'); //use helpers
 const { mockConsole } = require('./utils/consoleSpies'); //added console spy helper
 
-const { mock, scheduleMock, qerrorsMock } = initSearchTest(); //init environment and mocks
+let { mock, scheduleMock, qerrorsMock } = initSearchTest(); //init environment and mocks
 
 const { googleSearch, getTopSearchResults } = require('../lib/qserp'); //load functions under test
 const { OPENAI_WARN_MSG } = require('../lib/constants'); //import warning constant
@@ -38,6 +38,9 @@ describe('integration googleSearch and getTopSearchResults', () => { //describe 
     const saveToken = process.env.OPENAI_TOKEN; //store original token
     delete process.env.OPENAI_TOKEN; //remove token to trigger warning
     jest.resetModules(); //reset modules to reread env vars
+    mock = createAxiosMock(); //recreate axios adapter for new module instance
+    createScheduleMock(); //recreate bottleneck mock after reset
+    createQerrorsMock(); //recreate qerrors mock after reset
     const warnSpy = mockConsole('warn'); //spy on console.warn using helper
     const { googleSearch: tokenlessSearch } = require('../lib/qserp'); //require module without token
     mock.onGet(/Warn/).reply(200, { items: [{ title: 't', snippet: 's', link: 'l' }] }); //mock search success
