@@ -1,5 +1,12 @@
 const { logStart, logReturn } = require('../../lib/logUtils'); //import log helpers
 
+// Prepare top level mocks without closures to comply with Jest restrictions
+let scheduleMock; //Bottleneck schedule spy reference
+jest.mock('bottleneck', () => jest.fn()); //mock Bottleneck constructor as jest function
+
+let qerrorsMock; //qerrors spy reference
+jest.mock('qerrors', () => jest.fn()); //mock qerrors as jest function
+
 function setTestEnv() {
   logStart('setTestEnv', 'default values'); //initial log via util
   process.env.GOOGLE_API_KEY = 'key'; //set common api key
@@ -26,16 +33,17 @@ function restoreEnv(savedEnv) { //(restore saved environment)
 
 function createScheduleMock() {
   logStart('createScheduleMock', 'none'); //initial log via util
-  const scheduleMock = jest.fn(fn => Promise.resolve(fn())); //mock schedule fn
-  jest.mock('bottleneck', () => jest.fn().mockImplementation(() => ({ schedule: scheduleMock }))); //mock bottleneck
+  scheduleMock = jest.fn(fn => Promise.resolve(fn())); //reset schedule spy for new test
+  const Bottleneck = require('bottleneck'); //require mocked Bottleneck
+  Bottleneck.mockImplementation(() => ({ schedule: scheduleMock })); //inject schedule spy into mock
   logReturn('createScheduleMock', 'mock'); //final log via util
   return scheduleMock; //export schedule mock
 }
 
 function createQerrorsMock() {
   logStart('createQerrorsMock', 'none'); //initial log via util
-  const qerrorsMock = jest.fn(); //mock qerrors fn
-  jest.mock('qerrors', () => (...args) => qerrorsMock(...args)); //mock qerrors
+  qerrorsMock = require('qerrors'); //retrieve jest mock function
+  qerrorsMock.mockReset(); //reset mock call history
   logReturn('createQerrorsMock', 'mock'); //final log via util
   return qerrorsMock; //export qerrors mock
 }
@@ -60,6 +68,7 @@ function resetMocks(mock, scheduleMock, qerrorsMock) { //helper to clear mocks
 
 function initSearchTest() { //helper to init env and mocks
   logStart('initSearchTest', 'none'); //initial log via util
+  jest.resetModules(); //ensure fresh modules for each test suite
   setTestEnv(); //prepare environment variables
   const scheduleMock = createScheduleMock(); //create schedule mock
   const qerrorsMock = createQerrorsMock(); //create qerrors mock
