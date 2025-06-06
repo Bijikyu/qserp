@@ -1,7 +1,9 @@
+const { logStart, logReturn } = require('../../lib/logUtils'); //import logging utilities
+
 function mockConsole(method) {
-  console.log(`mockConsole is running with ${method}`); //log start & method
+  logStart('mockConsole', method); //log start & method
   const spy = jest.spyOn(console, method).mockImplementation(() => {}); //create spy with blank impl
-  console.log(`mockConsole returning spy`); //log returning spy
+  logReturn('mockConsole', 'spy'); //log returning spy
   return spy; //return jest spy
 }
 
