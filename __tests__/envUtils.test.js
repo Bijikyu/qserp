@@ -1,5 +1,4 @@
-jest.mock('qerrors', () => jest.fn()); //switch to jest mock //(clarify usage)
-let qerrors; //will hold mocked function after module reset
+let qerrors; //holds mock loaded after reset (setup in testSetup)
 const { saveEnv, restoreEnv } = require('./utils/testSetup'); //import env helpers //(new utilities)
 const { mockConsole } = require('./utils/consoleSpies'); //added console spy helper
 
