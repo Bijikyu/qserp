@@ -1,18 +1,12 @@
-const axios = require('axios');
-const { setTestEnv, createScheduleMock, createQerrorsMock, createAxiosMock, resetMocks } = require('./utils/testSetup'); //import helpers
+const { initSearchTest, resetMocks } = require('./utils/testSetup'); //import helpers for env and mocks
 const { mockConsole } = require('./utils/consoleSpies'); //added console spy helper
 
-setTestEnv(); //set up env vars
-let scheduleMock = createScheduleMock(); //mock Bottleneck
-let mock = createAxiosMock(); //create axios adapter
-
-let qerrorsMock = createQerrorsMock(); //mock qerrors
+let mock; //axios mock reference
+let scheduleMock; //bottleneck schedule reference
+let qerrorsMock; //qerrors mock reference
 
 beforeEach(() => {
-  jest.resetModules(); //reset modules each test
-  mock = createAxiosMock(); //recreate axios adapter
-  scheduleMock = createScheduleMock(); //reapply bottleneck mock after module reset
-  qerrorsMock = createQerrorsMock(); //reapply qerrors mock after module reset
+  ({ mock, scheduleMock, qerrorsMock } = initSearchTest()); //reinit env and mocks
   resetMocks(mock, scheduleMock, qerrorsMock); //clear histories
 });
 
@@ -79,7 +73,8 @@ test('handleAxiosError returns false when qerrors throws', () => { //verify fall
 
 test.each(['True', 'true', 'TRUE', true])('rateLimitedRequest returns mock when CODEX=%s', async val => {
   process.env.CODEX = val; //set CODEX variant to trigger mock response
-  const { rateLimitedRequest } = require('../lib/qserp'); //import after setting env
+  ({ mock, scheduleMock, qerrorsMock } = initSearchTest()); //reinit with CODEX set
+  const { rateLimitedRequest } = require('../lib/qserp'); //import after env setup
   const res = await rateLimitedRequest('http://codex'); //call function expecting mock
   expect(res).toEqual({ data: { items: [] } }); //mocked empty items returned
   expect(scheduleMock).not.toHaveBeenCalled(); //limiter should be bypassed
