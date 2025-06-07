@@ -27,4 +27,12 @@ describe('loadQerrors', () => { //group loader tests
       expect(fn()).toBe('prop'); //returned function works
     });
   });
+
+  test('throws when export is not function', () => { //invalid export should throw
+    jest.isolateModules(() => { //isolate module for mocking
+      jest.doMock('qerrors', () => ({ qerrors: 'bad' })); //mock bad export shape
+      const loadQerrors = require('../lib/qerrorsLoader'); //import loader
+      expect(loadQerrors).toThrow('qerrors module does not export a callable function'); //assert error message
+    });
+  });
 });
