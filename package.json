@@ -15,7 +15,6 @@
   "author": "Q",
   "license": "ISC",
   "dependencies": {
-    "@types/node": "^18.0.6",
     "axios": "^1.2.0",
     "bottleneck": "^2.19.5",
     "qerrors": "^1.1.7"
