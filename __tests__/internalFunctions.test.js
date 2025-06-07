@@ -81,3 +81,13 @@ test.each(['True', 'true', 'TRUE', true])('rateLimitedRequest returns mock when 
   expect(mock.history.get.length).toBe(0); //axios should not receive any request
   delete process.env.CODEX; //clean up env variable for other tests
 }); //test ensures CODEX casings bypass network
+
+test('validateSearchQuery accepts non-empty strings', () => { //(verify valid input)
+  const { validateSearchQuery } = require('../lib/qserp'); //import helper
+  expect(validateSearchQuery('ok')).toBe(true); //should return true for normal string
+});
+
+test.each(['', '   ', 1, {}, []])('validateSearchQuery throws for %p', val => { //(verify invalid inputs)
+  const { validateSearchQuery } = require('../lib/qserp'); //import helper
+  expect(() => validateSearchQuery(val)).toThrow('Query must be a non-empty string'); //expect error thrown
+});
