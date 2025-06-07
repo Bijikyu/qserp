@@ -26,4 +26,13 @@ describe('throwIfMissingEnvVars', () => { //describe missing env block
   test('module throws when env vars missing', () => { //test thrown error on require
     expect(() => require('../lib/qserp')).toThrow(); //expect require to throw
   });
+
+  test('module does not throw when CODEX true', () => { //verify codex bypasses env check
+    process.env.CODEX = 'true'; //enable codex mode
+    jest.resetModules(); //reload module with codex flag
+    const { createAxiosMock } = require('./utils/testSetup'); //recreate axios mock
+    createAxiosMock(); //initialize axios adapter for module
+    expect(() => require('../lib/qserp')).not.toThrow(); //module should load without error
+    delete process.env.CODEX; //cleanup codex flag
+  });
 });
