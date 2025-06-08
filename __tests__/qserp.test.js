@@ -53,6 +53,7 @@ describe('qserp module', () => { //group qserp tests
     mock.onGet(/customsearch/).reply(500); //mock failed request
     const res = await googleSearch('err'); //search expecting failure
     const urls = await getTopSearchResults(['err']); //multi search expecting failure
+    await new Promise(setImmediate); //wait for async qerrors
     expect(res).toEqual([]); //result should be empty array
     expect(urls).toEqual([]); //urls should be empty array
     expect(qerrorsMock).toHaveBeenCalled(); //qerrors should log error

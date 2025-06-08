@@ -30,6 +30,7 @@ describe('integration googleSearch and getTopSearchResults', () => { //describe 
     const urls = await getTopSearchResults(['Fail', 'Good']); //call multi search with one fail
     expect(searchRes).toEqual([]); //googleSearch should return empty array
     expect(urls).toEqual(['g']); //only successful url returned
+    await new Promise(setImmediate); //wait for async qerrors
     expect(scheduleMock).toHaveBeenCalledTimes(3); //schedule called for each attempt
     expect(qerrorsMock).toHaveBeenCalled(); //ensure qerrors invoked
   });

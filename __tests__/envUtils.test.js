@@ -41,12 +41,13 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     expect(qerrors).toHaveBeenCalledTimes(1); //qerrors invoked once //(check)
   });
 
-  test('handles undefined variable array', () => { //verify undefined input //(third case)
+  test('handles undefined variable array', async () => { //verify undefined input //(third case)
     const { getMissingEnvVars, throwIfMissingEnvVars, warnIfMissingEnvVars } = require('../lib/envUtils'); //require utils fresh //(ensure env captured)
     expect(getMissingEnvVars(undefined)).toEqual([]); //returns empty array //(assert)
     expect(throwIfMissingEnvVars(undefined)).toEqual([]); //throws handled //(assert)
     expect(warnIfMissingEnvVars(undefined, 'warn')).toBe(true); //should not warn //(assert)
     expect(warnSpy).not.toHaveBeenCalled(); //warn not called //(check)
+    await new Promise(setImmediate); //wait for async qerrors
     expect(qerrors).toHaveBeenCalledTimes(3); //qerrors invoked three times //(check)
   });
 });

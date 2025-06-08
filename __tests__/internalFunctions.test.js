@@ -41,34 +41,48 @@ test('getGoogleURL builds proper url', () => {
   expect(url).toBe('https://www.googleapis.com/customsearch/v1?q=hello%20world&key=key&cx=cx');
 });
 
-test('handleAxiosError logs with qerrors and returns true', () => {
+test('handleAxiosError logs with qerrors and returns true', async () => {
   const { handleAxiosError } = require('../lib/qserp');
   const err = new Error('fail');
   const res = handleAxiosError(err, 'ctx');
+  await new Promise(setImmediate); //wait for async qerrors
   expect(res).toBe(true);
   expect(qerrorsMock).toHaveBeenCalled();
 });
 
-test('handleAxiosError logs response object and returns true', () => { //added new test for console.error
+test('handleAxiosError logs response object and returns true', async () => { //added new test for console.error
   const { handleAxiosError } = require('../lib/qserp'); //require function under test
   const err = { response: { status: 500 } }; //mock error with response
   const spy = mockConsole('error'); //spy on console.error via helper
   const res = handleAxiosError(err, 'ctx'); //call function with response error
+  await new Promise(setImmediate); //wait for async qerrors
   expect(res).toBe(true); //should return true
   expect(spy).toHaveBeenCalledWith(err.response); //console.error called with response
   spy.mockRestore(); //restore console.error
 });
 
-test('handleAxiosError returns false when qerrors throws', () => { //verify fallback on qerrors failure
+test('handleAxiosError ignores qerrors failure', async () => { //verify async error handling
   const { handleAxiosError } = require('../lib/qserp'); //load function under test
   const err = new Error('bad'); //mock basic error
   qerrorsMock.mockImplementationOnce(() => { throw new Error('qe'); }); //first call throws
   qerrorsMock.mockImplementation(() => {}); //subsequent calls succeed
   const spy = mockConsole('error'); //spy on console.error via helper
-  const res = handleAxiosError(err, 'ctx'); //invoke handler expecting false
-  expect(res).toBe(false); //should return false due to catch block
+  const res = handleAxiosError(err, 'ctx'); //invoke handler expecting true
+  await new Promise(setImmediate); //wait for async qerrors
+  expect(res).toBe(true); //handler should still return true
   expect(spy).toHaveBeenCalled(); //console.error should log error message
   spy.mockRestore(); //restore console.error
+}); //end test ensuring failure path
+
+test('handleAxiosError skips qerrors when QERRORS_DISABLE set', async () => { //new disable test
+  process.env.QERRORS_DISABLE = '1'; //set flag
+  const { handleAxiosError } = require('../lib/qserp');
+  const err = new Error('x');
+  const res = handleAxiosError(err, 'ctx');
+  await new Promise(setImmediate); //wait for async qerrors
+  expect(res).toBe(true); //should return true
+  expect(qerrorsMock).not.toHaveBeenCalled(); //qerrors bypassed
+  delete process.env.QERRORS_DISABLE; //cleanup
 }); //end test ensuring failure path
 
 test.each(['True', 'true', 'TRUE', true])('rateLimitedRequest returns mock when CODEX=%s', async val => {
