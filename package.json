@@ -1,7 +1,7 @@
 {
   "name": "qserp",
   "version": "1.0.7",
-  "description": "Module for search engine search functions and performing Google custom searches using the Google API.",
+  "description": "Robust Node.js module for Google Custom Search with rate limiting, error handling, and offline testing capabilities. Supports parallel searches and comprehensive result formatting.",
   "main": "index.js",
   "scripts": {
     "test": "jest"
@@ -10,7 +10,17 @@
     "google",
     "search",
     "customsearch",
-    "axios"
+    "api",
+    "rate-limiting",
+    "parallel",
+    "batch",
+    "error-handling",
+    "offline",
+    "testing",
+    "axios",
+    "bottleneck",
+    "search-engine",
+    "web-scraping"
   ],
   "author": "Q",
   "license": "ISC",
