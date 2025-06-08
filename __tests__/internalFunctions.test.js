@@ -1,3 +1,4 @@
+require('qtests/setup'); //enable automatic stubbing for tests
 const { initSearchTest, resetMocks } = require('./utils/testSetup'); //import helpers for env and mocks
 const { mockConsole } = require('./utils/consoleSpies'); //added console spy helper
 

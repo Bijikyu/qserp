@@ -1,3 +1,4 @@
+require('qtests/setup'); //enable automatic stubbing for tests
 const { createQerrorsMock } = require('./utils/testSetup'); //import qerrors mock helper
 
 const { safeRun } = require('../lib/utils'); //import function under test

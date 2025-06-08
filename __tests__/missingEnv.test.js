@@ -1,4 +1,4 @@
-
+require('qtests/setup'); //enable automatic stubbing for tests
 const { saveEnv, restoreEnv } = require('./utils/testSetup'); //import env helpers //(new utilities)
 let savedEnv; //variable to store original env //(for restore)
 

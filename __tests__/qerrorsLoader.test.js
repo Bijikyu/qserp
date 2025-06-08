@@ -1,3 +1,4 @@
+require('qtests/setup'); //enable automatic stubbing for tests
 describe('loadQerrors', () => { //group loader tests
   test('returns default exported function', () => { //test default export shape
     jest.isolateModules(() => { //isolate module for mocking

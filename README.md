@@ -31,6 +31,8 @@ These variables enhance functionality but are not required:
 
 - `OPENAI_TOKEN` – Used by the `qerrors` dependency for enhanced error analysis and logging
 - `CODEX` – When set to any case-insensitive `true` value, enables offline mode with mocked responses
+- `CACHE_TTL` – Milliseconds entries remain valid in the search cache
+- `CACHE_MAX` – Maximum number of queries stored in the cache
 
 ## Usage
 

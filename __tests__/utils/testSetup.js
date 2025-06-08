@@ -12,6 +12,8 @@ function setTestEnv() {
   process.env.GOOGLE_API_KEY = 'key'; //set common api key
   process.env.GOOGLE_CX = 'cx'; //set common cx id
   process.env.OPENAI_TOKEN = 'token'; //set common openai token
+  process.env.CACHE_TTL = '100'; //set cache ttl in ms for tests
+  process.env.CACHE_MAX = '5'; //set cache max size for tests
   logReturn('setTestEnv', true); //final log via util
   return true; //confirm env set
 }

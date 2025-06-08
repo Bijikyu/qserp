@@ -1,3 +1,4 @@
+require('qtests/setup'); //enable automatic stubbing for tests
 const { mockConsole } = require('./utils/consoleSpies'); //import helper for spies
 
 const { logStart, logReturn } = require('../lib/logUtils'); //functions under test

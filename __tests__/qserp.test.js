@@ -1,3 +1,4 @@
+require('qtests/setup'); //enable automatic stubbing for tests
 const { initSearchTest, resetMocks } = require('./utils/testSetup'); //use new helpers
 
 const { mock, scheduleMock, qerrorsMock } = initSearchTest(); //initialize env and mocks
@@ -84,5 +85,25 @@ describe('qserp module', () => { //group qserp tests
     expect(warnSpy).toHaveBeenCalledWith(OPENAI_WARN_MSG); //warning should reference constant
     warnSpy.mockRestore(); //restore console.warn spy
     process.env.OPENAI_TOKEN = tokenSave; //restore original token
+  });
+
+  test('fetchSearchItems uses cache on repeat query', async () => { //verify cache hit
+    mock.onGet(/cache/).reply(200, { items: [{ link: 'h' }] }); //mock response
+    const first = await fetchSearchItems('cache'); //first call populates cache
+    const second = await fetchSearchItems('cache'); //second call should hit cache
+    expect(first).toEqual([{ link: 'h' }]); //ensure first response correct
+    expect(second).toEqual([{ link: 'h' }]); //ensure cached response
+    expect(scheduleMock).toHaveBeenCalledTimes(1); //only first call hits api
+  });
+
+  test('cache entry expires based on TTL', async () => { //verify ttl expiration
+    mock.onGet(/ttl/).reply(200, { items: [{ link: 't1' }] }); //mock first value
+    const first = await fetchSearchItems('ttl'); //populate cache
+    await new Promise(r => setTimeout(r, Number(process.env.CACHE_TTL) + 20)); //wait past ttl
+    mock.onGet(/ttl/).reply(200, { items: [{ link: 't2' }] }); //mock new value after ttl
+    const second = await fetchSearchItems('ttl'); //should fetch again
+    expect(first).toEqual([{ link: 't1' }]); //first response
+    expect(second).toEqual([{ link: 't2' }]); //updated response after ttl
+    expect(scheduleMock).toHaveBeenCalledTimes(2); //api called twice due to expiry
   });
 });

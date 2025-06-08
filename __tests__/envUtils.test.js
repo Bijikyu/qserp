@@ -1,3 +1,4 @@
+require('qtests/setup'); //enable automatic stubbing for tests
 let qerrors; //holds mock loaded after reset (setup in testSetup)
 const { saveEnv, restoreEnv } = require('./utils/testSetup'); //import env helpers //(new utilities)
 const { mockConsole } = require('./utils/consoleSpies'); //added console spy helper
