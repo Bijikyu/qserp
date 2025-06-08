@@ -55,13 +55,13 @@ googleSearch('Node.js tutorials')
 
 ### Batch Top Results
 
-Get just the top URL for multiple search terms efficiently:
+Get just the top URL for multiple search terms efficiently. Duplicate terms are ignored:
 
 ```javascript
 const { getTopSearchResults } = require('qserp');
 
 // Parallel searches return array of top result URLs
-getTopSearchResults(['Node.js', 'Express.js', 'MongoDB'])
+getTopSearchResults(['Node.js', 'Express.js', 'MongoDB', 'Node.js'])
   .then(urls => {
     console.log('Top results:', urls);
     // Output: ['https://nodejs.org/', 'https://expressjs.com/', ...]
@@ -103,7 +103,7 @@ Performs a single Google Custom Search and returns formatted results.
 
 ### getTopSearchResults(searchTerms)
 
-Performs parallel searches for multiple terms and returns only the top result URL for each.
+Performs parallel searches for multiple terms and returns only the top result URL for each. Duplicate terms are removed before searching and results follow the order of the unique terms.
 
 **Parameters:**
 - `searchTerms` (string[]): Array of search terms to process
