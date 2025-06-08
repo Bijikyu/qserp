@@ -1,6 +1,6 @@
 {
   "name": "qserp",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Robust Node.js module for Google Custom Search with rate limiting, error handling, and offline testing capabilities. Supports parallel searches and comprehensive result formatting.",
   "main": "index.js",
   "scripts": {
