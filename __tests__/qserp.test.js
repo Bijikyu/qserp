@@ -67,6 +67,14 @@ describe('qserp module', () => { //group qserp tests
     expect(scheduleMock).toHaveBeenCalledTimes(2); //rate limiter for valid terms only
   });
 
+  test('deduplicates duplicate terms before searching', async () => { //ensure unique fetching only
+    mock.onGet(/Alpha/).reply(200, { items: [{ link: 'http://a' }] }); //mock alpha search
+    mock.onGet(/Beta/).reply(200, { items: [{ link: 'http://b' }] }); //mock beta search
+    const urls = await getTopSearchResults(['Alpha', 'Beta', 'Alpha']); //call with duplicate term
+    expect(urls).toEqual(['http://a', 'http://b']); //should match order of unique terms
+    expect(scheduleMock).toHaveBeenCalledTimes(2); //schedule called once per unique term
+  });
+
   test('warns on missing OPENAI_TOKEN for getTopSearchResults', async () => { //new warning test
     const tokenSave = process.env.OPENAI_TOKEN; //store existing token for restore
     delete process.env.OPENAI_TOKEN; //remove token to trigger warning logic
