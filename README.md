@@ -114,12 +114,13 @@ Performs parallel searches for multiple terms and returns only the top result UR
 **Throws:**
 - `Error`: If searchTerms is not an array
 
-### fetchSearchItems(query)
+### fetchSearchItems(query, num)
 
-Fetches raw Google Custom Search API items for a query.
+Fetches raw Google Custom Search API items for a query. Optional `num` limits the number of returned items.
 
 **Parameters:**
 - `query` (string): The search query (must be non-empty)
+- `num` (number, optional): Maximum number of items to return
 
 **Returns:**
 - `Promise<Array>`: Raw items array from Google API or empty array on error
