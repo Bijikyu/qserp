@@ -45,15 +45,15 @@ test('fetchSearchItems returns items and uses num argument', async () => { //ens
   const items = await fetchSearchItems('term', 2); //invoke helper with num
   expect(items).toEqual([{ link: 'x' }]); //check items array
   expect(scheduleMock).toHaveBeenCalled(); //ensure schedule used
-  expect(mock.history.get[0].url).toBe('https://www.googleapis.com/customsearch/v1?q=term&key=key&cx=cx&num=2'); //url should include num
+  expect(mock.history.get[0].url).toBe('https://www.googleapis.com/customsearch/v1?q=term&key=key&cx=cx&fields=items(title,snippet,link)&num=2'); //url should include num and fields filter
 });
 
 test('getGoogleURL builds proper url', () => {
   const { getGoogleURL } = require('../lib/qserp');
   const url = getGoogleURL('hello world');
-  expect(url).toBe('https://www.googleapis.com/customsearch/v1?q=hello%20world&key=key&cx=cx');
+  expect(url).toBe('https://www.googleapis.com/customsearch/v1?q=hello%20world&key=key&cx=cx&fields=items(title,snippet,link)');
   const urlNum = getGoogleURL('hello', 5); //pass num argument
-  expect(urlNum).toBe('https://www.googleapis.com/customsearch/v1?q=hello&key=key&cx=cx&num=5'); //should include num param
+  expect(urlNum).toBe('https://www.googleapis.com/customsearch/v1?q=hello&key=key&cx=cx&fields=items(title,snippet,link)&num=5'); //should include num param and fields filter
 });
 
 test('handleAxiosError logs with qerrors and returns true', () => {
