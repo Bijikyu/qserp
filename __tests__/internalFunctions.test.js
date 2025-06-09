@@ -39,18 +39,21 @@ test('rateLimitedRequest rejects on axios failure and schedules call', async () 
   expect(scheduleMock).toHaveBeenCalled(); //ensure schedule invoked despite rejection
 });
 
-test('fetchSearchItems returns items and schedules call', async () => { //new helper test
+test('fetchSearchItems returns items and uses num argument', async () => { //ensure param passed
   mock.onGet(/term/).reply(200, { items: [{ link: 'x' }] }); //mock success using adapter
   const { fetchSearchItems } = require('../lib/qserp'); //load helper
-  const items = await fetchSearchItems('term'); //invoke helper
+  const items = await fetchSearchItems('term', 2); //invoke helper with num
   expect(items).toEqual([{ link: 'x' }]); //check items array
   expect(scheduleMock).toHaveBeenCalled(); //ensure schedule used
+  expect(mock.history.get[0].url).toBe('https://www.googleapis.com/customsearch/v1?q=term&key=key&cx=cx&num=2'); //url should include num
 });
 
 test('getGoogleURL builds proper url', () => {
   const { getGoogleURL } = require('../lib/qserp');
   const url = getGoogleURL('hello world');
   expect(url).toBe('https://www.googleapis.com/customsearch/v1?q=hello%20world&key=key&cx=cx');
+  const urlNum = getGoogleURL('hello', 5); //pass num argument
+  expect(urlNum).toBe('https://www.googleapis.com/customsearch/v1?q=hello&key=key&cx=cx&num=5'); //should include num param
 });
 
 test('handleAxiosError logs with qerrors and returns true', () => {

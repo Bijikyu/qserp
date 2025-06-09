@@ -2,12 +2,13 @@ const { initSearchTest, resetMocks } = require('./utils/testSetup'); //use new h
 
 const { mock, scheduleMock, qerrorsMock } = initSearchTest(); //initialize env and mocks
 
-const { googleSearch, getTopSearchResults, fetchSearchItems } = require('../lib/qserp'); //load functions under test from library
+const { googleSearch, getTopSearchResults, fetchSearchItems, clearCache } = require('../lib/qserp'); //load functions under test from library
 const { OPENAI_WARN_MSG } = require('../lib/constants'); //import warning message constant
 
 describe('qserp module', () => { //group qserp tests
   beforeEach(() => { //reset mocks before each test
     resetMocks(mock, scheduleMock, qerrorsMock); //use helper to clear mocks
+    clearCache(); //reset module cache between tests
   });
 
   test('googleSearch returns parsed results', async () => { //verify googleSearch formatting
@@ -39,6 +40,12 @@ describe('qserp module', () => { //group qserp tests
     const urls = await getTopSearchResults(['Java', 'Python']); //get urls from mocked data
     expect(urls).toEqual(['http://j', 'http://p']); //expect urls array
     expect(scheduleMock).toHaveBeenCalledTimes(2); //ensure rate limiter called twice
+  });
+
+  test('getTopSearchResults requests single item', async () => { //ensure num param used
+    mock.onGet(/Solo/).reply(200, { items: [{ link: 'http://s' }] }); //mock single term
+    await getTopSearchResults(['Solo']); //call with one term
+    expect(mock.history.get[0].url).toBe('https://www.googleapis.com/customsearch/v1?q=Solo&key=key&cx=cx&num=1'); //url should request one item
   });
 
   test('handles empty or invalid input', async () => { //verify validation paths
@@ -92,5 +99,31 @@ describe('qserp module', () => { //group qserp tests
     expect(warnSpy).toHaveBeenCalledWith(OPENAI_WARN_MSG); //warning should reference constant
     warnSpy.mockRestore(); //restore console.warn spy
     process.env.OPENAI_TOKEN = tokenSave; //restore original token
+  });
+
+  test('fetchSearchItems uses cache for repeated query', async () => { //verify cache hit
+    mock.onGet(/Cache/).reply(200, { items: [{ link: 'a' }] }); //mock initial response
+    const first = await fetchSearchItems('Cache'); //first call populates cache
+    scheduleMock.mockClear(); //reset schedule count for second call
+    mock.onGet(/Cache/).reply(200, { items: [{ link: 'b' }] }); //different data if fetched again
+    const second = await fetchSearchItems('Cache'); //should use cache
+    expect(first).toEqual([{ link: 'a' }]); //initial data returned
+    expect(second).toEqual([{ link: 'a' }]); //cache should return same data
+    expect(scheduleMock).not.toHaveBeenCalled(); //no new request scheduled
+  });
+
+  test('cache entry expires after ttl', async () => { //verify cache ttl logic
+    let time = Date.now(); //record start time
+    jest.spyOn(Date, 'now').mockImplementation(() => time); //mock Date.now
+    mock.onGet(/Expire/).reply(200, { items: [{ link: 'x' }] }); //mock first fetch
+    const first = await fetchSearchItems('Expire'); //populate cache
+    scheduleMock.mockClear(); //clear schedule count
+    time += 300001; //advance time beyond ttl
+    mock.onGet(/Expire/).reply(200, { items: [{ link: 'y' }] }); //new data after ttl
+    const second = await fetchSearchItems('Expire'); //should fetch again
+    expect(first).toEqual([{ link: 'x' }]); //first response
+    expect(second).toEqual([{ link: 'y' }]); //after expiry new data
+    expect(scheduleMock).toHaveBeenCalled(); //new request scheduled
+    Date.now.mockRestore(); //restore Date.now
   });
 });
