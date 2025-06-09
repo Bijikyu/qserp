@@ -20,4 +20,16 @@ describe('safeRun', () => { //group safeRun tests
     expect(fn).toHaveBeenCalled(); //function called
     expect(qerrors).toHaveBeenCalledWith(expect.any(Error), 'badFn error', { b: 2 }); //qerrors invoked
   });
+
+  test('does not log when DEBUG false', () => { //verify debug gating
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); //spy on console.log
+    delete process.env.DEBUG; //ensure debug flag unset
+    jest.resetModules(); //reload modules to pick up env change
+    const { safeRun } = require('../lib/utils'); //re-import after reset
+    const fn = jest.fn(() => 1); //simple function
+    const before = logSpy.mock.calls.length; //record initial log count
+    safeRun('noLog', fn, 0); //call expecting no logs
+    expect(logSpy.mock.calls.length).toBe(before); //no additional logs when debug off
+    logSpy.mockRestore(); //restore console.log
+  });
 });
