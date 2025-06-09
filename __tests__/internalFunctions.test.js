@@ -20,6 +20,18 @@ test('rateLimitedRequest calls limiter and sets headers', async () => {
   expect(config['User-Agent']).toMatch(/Mozilla/);
 });
 
+test('rateLimitedRequest uses custom axios instance', async () => { //verify instance path
+  mock.onGet('http://inst').reply(200, {}); //mock via instance
+  const { rateLimitedRequest, axiosInstance } = require('../lib/qserp');
+  const globalSpy = jest.spyOn(require('axios'), 'get'); //spy default axios
+  const instSpy = jest.spyOn(axiosInstance, 'get'); //spy instance
+  await rateLimitedRequest('http://inst'); //trigger request
+  expect(instSpy).toHaveBeenCalled(); //instance should handle call
+  expect(globalSpy).not.toHaveBeenCalled(); //default axios unused
+  globalSpy.mockRestore(); //cleanup spies
+  instSpy.mockRestore();
+});
+
 test('rateLimitedRequest rejects on axios failure and schedules call', async () => {
   mock.onGet('http://bad').networkError(); //simulate network error
   const { rateLimitedRequest } = require('../lib/qserp');
