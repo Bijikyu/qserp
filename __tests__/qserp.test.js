@@ -45,7 +45,7 @@ describe('qserp module', () => { //group qserp tests
   test('getTopSearchResults requests single item', async () => { //ensure num param used
     mock.onGet(/Solo/).reply(200, { items: [{ link: 'http://s' }] }); //mock single term
     await getTopSearchResults(['Solo']); //call with one term
-    expect(mock.history.get[0].url).toBe('https://www.googleapis.com/customsearch/v1?q=Solo&key=key&cx=cx&num=1'); //url should request one item
+    expect(mock.history.get[0].url).toBe('https://www.googleapis.com/customsearch/v1?q=Solo&key=key&cx=cx&fields=items(title,snippet,link)&num=1'); //url should request one item with fields filter
   });
 
   test('handles empty or invalid input', async () => { //verify validation paths
