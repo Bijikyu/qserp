@@ -48,10 +48,10 @@ function createQerrorsMock() {
   return qerrorsMock; //export qerrors mock
 }
 
-function createAxiosMock() {
+function createAxiosMock(instance) {
   logStart('createAxiosMock', 'none'); //initial log via util
   const MockAdapter = require('axios-mock-adapter'); //import mock adapter
-  const axios = require('axios'); //import axios instance
+  const axios = instance || require('axios'); //use provided instance or default
   const mock = new MockAdapter(axios); //create adapter instance
   logReturn('createAxiosMock', 'adapter'); //final log via util
   return mock; //export axios mock
@@ -72,7 +72,8 @@ function initSearchTest() { //helper to init env and mocks
   setTestEnv(); //prepare environment variables
   const scheduleMock = createScheduleMock(); //create schedule mock
   const qerrorsMock = createQerrorsMock(); //create qerrors mock
-  const mock = createAxiosMock(); //create axios mock
+  const qserp = require('../../lib/qserp'); //load module for axios instance
+  const mock = createAxiosMock(qserp.axiosInstance); //create adapter for instance
   logReturn('initSearchTest', 'mocks'); //final log via util
   return { mock, scheduleMock, qerrorsMock }; //return configured mocks
 }
