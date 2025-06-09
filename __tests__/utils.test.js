@@ -20,4 +20,18 @@ describe('safeRun', () => { //group safeRun tests
     expect(fn).toHaveBeenCalled(); //function called
     expect(qerrors).toHaveBeenCalledWith(expect.any(Error), 'badFn error', { b: 2 }); //qerrors invoked
   });
+
+  test('loads qerrors only on first error', () => { //new lazy loading check
+    jest.isolateModules(() => { //isolate module for clean cache
+      const qMock = jest.fn(); //create jest mock for qerrors
+      const loaderMock = jest.fn(() => qMock); //mock loader to return qerrors
+      jest.doMock('../lib/qerrorsLoader', () => loaderMock); //mock loader path
+      const { safeRun: sr } = require('../lib/utils'); //import after mocks
+      sr('ok', () => 1, 0); //successful run shouldn't invoke qerrors
+      expect(loaderMock).not.toHaveBeenCalled(); //loader unused
+      sr('bad', () => { throw new Error('fail'); }, 0); //trigger error
+      expect(loaderMock).toHaveBeenCalledTimes(1); //loader called on error
+      expect(qMock).toHaveBeenCalledTimes(1); //qerrors called once
+    });
+  });
 });
