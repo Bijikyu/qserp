@@ -49,4 +49,14 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     expect(warnSpy).not.toHaveBeenCalled(); //warn not called //(check)
     expect(qerrors).toHaveBeenCalledTimes(3); //qerrors invoked three times //(check)
   });
+
+  test('does not log when DEBUG false', () => { //verify debug gating
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); //spy on console.log
+    delete process.env.DEBUG; //ensure debug flag unset
+    const { getMissingEnvVars } = require('../lib/envUtils'); //import after env set
+    const before = logSpy.mock.calls.length; //record initial log count
+    getMissingEnvVars([]); //call function expecting no logs
+    expect(logSpy.mock.calls.length).toBe(before); //no additional logs when debug off
+    logSpy.mockRestore(); //restore console.log
+  });
 });
