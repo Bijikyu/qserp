@@ -6,13 +6,14 @@ A robust Node.js module for performing Google Custom Searches using the Google C
 ## Features
 
 - **Rate Limited Requests**: Built-in rate limiting prevents API quota exhaustion
-- **Intelligent Caching**: 5-minute TTL cache reduces redundant API calls and improves performance
+- **Intelligent Caching**: Advanced caching with normalized keys and memory management
+- **Memory Management**: Configurable cache limits with automatic cleanup to prevent memory leaks
+- **Security Enhanced**: Input validation, environment bounds checking, and cache key normalization
 - **Comprehensive Error Handling**: Structured error logging with qerrors integration
 - **Offline Testing**: Mock responses when `CODEX=true` for development without API calls
 - **Parallel Processing**: Support for multiple concurrent searches with optimal performance
-- **Input Validation**: Robust validation of search queries and parameters
+- **Performance Optimized**: Connection pooling, compression, and two-tier cache cleanup
 - **Detailed Logging**: Optional detailed execution logging for debugging
-- **Compressed Responses**: Google supports gzip/deflate/br and the module requests them
 
 Google's API automatically compresses responses when `Accept-Encoding` includes `gzip`, `deflate`, or `br`. The library sets this header on all requests so payloads are smaller and parsing stays transparent.
 
@@ -36,6 +37,7 @@ These variables enhance functionality but are not required:
 - `OPENAI_TOKEN` – Used by the `qerrors` dependency for enhanced error analysis and logging
 - `CODEX` – When set to any case-insensitive `true` value, enables offline mode with mocked responses
 - `LOG_LEVEL` – Controls `warn` and `error` output (`info` by default)
+- `QSERP_MAX_CACHE_SIZE` – Maximum cache entries (default: 1000, range: 10-50000) for memory management
 
 ## Usage
 
@@ -190,42 +192,77 @@ This enables development and testing in environments without internet access or 
 
 ## Caching System
 
-The module implements intelligent caching to optimize performance and reduce API quota usage:
+The module implements intelligent caching with advanced memory management to optimize performance and reduce API quota usage:
 
 ### Cache Behavior
 - **TTL (Time To Live)**: 5 minutes (300,000ms) for all cached responses
-- **Cache Keys**: Separate cache entries for different query/result count combinations
-- **Automatic Expiry**: Expired entries are automatically removed when accessed
-- **Memory Efficient**: Uses native Map with timestamp-based expiry for optimal performance
+- **Cache Keys**: Normalized keys (case-insensitive, trimmed) improve hit ratios
+- **Memory Management**: Configurable size limits with intelligent cleanup
+- **Two-Tier Cleanup**: Expired entries removed first, then oldest entries if needed
+- **Automatic Expiry**: Proactive cleanup at 80% capacity prevents memory exhaustion
 
 ### Cache Benefits
-- **Reduced API Calls**: Identical queries within 5 minutes return cached results
+- **Reduced API Calls**: Similar queries (case variations, whitespace) share cached results
 - **Improved Performance**: Cached responses return instantly without network delay
+- **Memory Efficiency**: Bounded cache prevents memory leaks in long-running applications
 - **Quota Conservation**: Fewer API calls help stay within Google's daily limits
 - **Test Compatibility**: Cache respects mocked time in test environments
+
+### Memory Management
+Configure cache behavior with the `QSERP_MAX_CACHE_SIZE` environment variable:
+- **Default**: 1000 entries (~10MB typical usage)
+- **Range**: 10-50000 entries (automatically constrained for security)
+- **Cleanup**: Automatic at 80% capacity, removing expired entries first
 
 ### Cache Examples
 
 ```javascript
 const { fetchSearchItems } = require('qserp');
 
-// First call makes API request and caches result
-await fetchSearchItems('JavaScript');
+// These queries will share the same cache entry due to normalization
+await fetchSearchItems('JavaScript');      // API call, cached
+await fetchSearchItems('javascript');      // Cache hit (normalized)
+await fetchSearchItems('  JavaScript  ');  // Cache hit (trimmed)
+await fetchSearchItems('JAVASCRIPT');      // Cache hit (case-insensitive)
 
-// Second call within 5 minutes returns cached result
-await fetchSearchItems('JavaScript'); // No API call made
+// Different queries create separate cache entries
+await fetchSearchItems('Node.js');         // New API call, cached separately
 
-// After 5 minutes, cache expires and new API call is made
-setTimeout(async () => {
-  await fetchSearchItems('JavaScript'); // Fresh API call
-}, 300001);
+// Memory management example
+process.env.QSERP_MAX_CACHE_SIZE = '100';  // Limit to 100 entries
+// When 80 entries are cached, automatic cleanup begins
+// Expired entries removed first, then oldest if needed
 ```
+
+## Security Features
+
+The module implements multiple security layers to protect against common vulnerabilities:
+
+### Input Security
+- **Query Validation**: Type checking ensures only valid string inputs
+- **URL Encoding**: Automatic encoding prevents injection attacks
+- **Parameter Sanitization**: Safe handling of special characters and Unicode
+
+### Credential Protection
+- **Environment Isolation**: API keys never exposed in logs or error messages
+- **Automatic Sanitization**: Credentials replaced with `[redacted]` in all output
+- **No Hardcoding**: All sensitive data loaded from environment variables
+
+### Memory Security
+- **Bounded Cache**: Configurable limits prevent memory exhaustion attacks
+- **Automatic Cleanup**: Proactive cleanup prevents resource exhaustion
+- **Environment Validation**: Configuration values validated and constrained
+
+### Rate Limiting Security
+- **Quota Protection**: Conservative limits prevent API abuse
+- **Burst Prevention**: Minimum request spacing prevents rapid-fire attacks
+- **Concurrent Controls**: Maximum parallel requests prevent resource exhaustion
 
 ## Dependencies
 
 - **axios**: HTTP client for API requests with connection pooling
 - **bottleneck**: Rate limiting and request scheduling
-- **lru-cache**: Cache implementation for performance optimization
+- **lru-cache**: Cache implementation for performance optimization (referenced but uses custom implementation)
 - **qerrors**: Enhanced error logging and analysis
 - **qtests**: Testing utilities for development
 
