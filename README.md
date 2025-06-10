@@ -6,6 +6,7 @@ A robust Node.js module for performing Google Custom Searches using the Google C
 ## Features
 
 - **Rate Limited Requests**: Built-in rate limiting prevents API quota exhaustion
+- **Intelligent Caching**: 5-minute TTL cache reduces redundant API calls and improves performance
 - **Comprehensive Error Handling**: Structured error logging with qerrors integration
 - **Offline Testing**: Mock responses when `CODEX=true` for development without API calls
 - **Parallel Processing**: Support for multiple concurrent searches with optimal performance
