@@ -6,7 +6,7 @@ This codebase implements a production-ready Google Custom Search API wrapper des
 
 Key design rationales not evident from code inspection:
 
-- **Cache Implementation Strategy**: The project deliberately uses a custom Map-based cache with manual TTL handling instead of relying solely on LRU-cache's built-in TTL. This design choice enables proper test compatibility with mocked time functions, ensuring cache expiry behavior can be reliably tested in CI/CD environments.
+- **Cache Implementation Strategy**: The project utilizes the existing lru-cache dependency for automatic memory management and TTL handling. This design choice eliminates manual cache maintenance overhead while providing superior memory efficiency through automatic eviction policies. The LRU-cache configuration balances performance with memory constraints in production environments.
 
 - **Rate Limiting Philosophy**: The Bottleneck configuration (60 requests/minute, 200ms minimum interval) is intentionally conservative relative to Google's actual limits. This buffer prevents quota exhaustion in production environments where multiple service instances might share the same API key.
 
@@ -18,13 +18,17 @@ Key design rationales not evident from code inspection:
 
 - **Connection Pooling Rationale**: Custom axios instance with keepAlive agents and socket limits (20 max, 10 free) optimizes for sustained API usage patterns typical in production search applications, reducing connection overhead.
 
+- **Code Consolidation Philosophy**: The project implements centralized utilities (debugUtils.js, errorUtils.js, envValidator.js) to eliminate code duplication across modules. This DRY approach reduces maintenance overhead while ensuring consistent behavior patterns throughout the codebase.
+
+- **Dependency Optimization Strategy**: The codebase maximizes utilization of existing dependencies rather than implementing custom solutions. The recent migration from custom Map-based caching to LRU-cache exemplifies this principle, reducing code complexity while improving performance.
+
 ## FUNCTIONALITY
 
 ### AI Agent Guidelines
 
 When working with this codebase, AI agents should:
 
-- **Preserve Cache Behavior**: Always maintain the custom cache implementation's timestamp-based expiry logic. The manual TTL approach is essential for test reliability and should not be replaced with library-based solutions without extensive test validation.
+- **Preserve Cache Behavior**: Always maintain the LRU-cache implementation's automatic memory management and TTL handling. The library-based approach provides superior memory efficiency and should not be replaced with manual implementations without comprehensive performance analysis.
 
 - **Maintain Rate Limiting Configuration**: The current Bottleneck settings represent production-tested values. Changes to rate limiting parameters require careful consideration of Google API quotas and real-world usage patterns.
 
@@ -35,8 +39,8 @@ When working with this codebase, AI agents should:
 ### Testing Boundaries
 
 - Tests must never require actual API credentials or network access
-- Mock implementations should preserve the behavioral contracts of real services
-- Cache behavior testing requires manual time mocking - do not rely on library-based time simulation
+- Mock implementations should preserve the behavioral contracts of real services  
+- Cache behavior testing should work with LRU-cache's built-in TTL mechanisms and may require alternative approaches for time-based scenarios
 
 ### Agent Behavioral Expectations
 
@@ -87,7 +91,7 @@ When working with this codebase, AI agents should:
 
 ### Workflow Exceptions
 
-- **Cache Implementation**: Changes to cache behavior require explicit test coverage for both mocked and real-time scenarios
+- **Cache Implementation**: Changes to LRU-cache configuration require explicit test coverage and performance validation to ensure memory efficiency is maintained
 - **Error Handling**: Modifications to qerrors integration must preserve both development and production logging capabilities
 - **API Response Format**: Google Custom Search API response structure changes require corresponding updates to item extraction and caching logic
 
