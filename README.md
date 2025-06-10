@@ -188,11 +188,46 @@ googleSearch('test').then(results => {
 
 This enables development and testing in environments without internet access or API credentials.
 
+## Caching System
+
+The module implements intelligent caching to optimize performance and reduce API quota usage:
+
+### Cache Behavior
+- **TTL (Time To Live)**: 5 minutes (300,000ms) for all cached responses
+- **Cache Keys**: Separate cache entries for different query/result count combinations
+- **Automatic Expiry**: Expired entries are automatically removed when accessed
+- **Memory Efficient**: Uses native Map with timestamp-based expiry for optimal performance
+
+### Cache Benefits
+- **Reduced API Calls**: Identical queries within 5 minutes return cached results
+- **Improved Performance**: Cached responses return instantly without network delay
+- **Quota Conservation**: Fewer API calls help stay within Google's daily limits
+- **Test Compatibility**: Cache respects mocked time in test environments
+
+### Cache Examples
+
+```javascript
+const { fetchSearchItems } = require('qserp');
+
+// First call makes API request and caches result
+await fetchSearchItems('JavaScript');
+
+// Second call within 5 minutes returns cached result
+await fetchSearchItems('JavaScript'); // No API call made
+
+// After 5 minutes, cache expires and new API call is made
+setTimeout(async () => {
+  await fetchSearchItems('JavaScript'); // Fresh API call
+}, 300001);
+```
+
 ## Dependencies
 
-- **axios**: HTTP client for API requests
+- **axios**: HTTP client for API requests with connection pooling
 - **bottleneck**: Rate limiting and request scheduling
+- **lru-cache**: Cache implementation for performance optimization
 - **qerrors**: Enhanced error logging and analysis
+- **qtests**: Testing utilities for development
 
 ## Contributing
 
