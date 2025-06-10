@@ -33,7 +33,7 @@ describe('debugUtils', () => {
 
     describe('debugEntry', () => {
         it('should log function entry when DEBUG is enabled', () => {
-            mockGetDebugFlag.mockReturnValue(true);
+            process.env.DEBUG = 'true';
             
             // Re-require to get updated DEBUG value
             const { debugEntry } = require('../lib/debugUtils');
@@ -44,7 +44,7 @@ describe('debugUtils', () => {
         });
 
         it('should not log when DEBUG is disabled', () => {
-            mockGetDebugFlag.mockReturnValue(false);
+            delete process.env.DEBUG;
             
             // Re-require to get updated DEBUG value
             const { debugEntry } = require('../lib/debugUtils');
