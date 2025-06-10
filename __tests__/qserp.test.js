@@ -126,4 +126,15 @@ describe('qserp module', () => { //group qserp tests
     expect(scheduleMock).toHaveBeenCalled(); //new request scheduled
     Date.now.mockRestore(); //restore Date.now
   });
+
+  test('fetchSearchItems caches per num value', async () => { //ensure num forms part of cache key
+    mock.onGet(/NumKey/).reply(200, { items: [{ link: '1' }] }); //mock first request
+    const first = await fetchSearchItems('NumKey', 1); //populate cache with num=1
+    scheduleMock.mockClear(); //reset schedule count
+    mock.onGet(/NumKey/).reply(200, { items: [{ link: '2' }] }); //mock second call with different num
+    const second = await fetchSearchItems('NumKey', 2); //should fetch again due to different key
+    expect(first).toEqual([{ link: '1' }]); //ensure first results
+    expect(second).toEqual([{ link: '2' }]); //expect second results not cached
+    expect(scheduleMock).toHaveBeenCalled(); //new request should occur
+  });
 });
