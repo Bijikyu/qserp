@@ -105,10 +105,10 @@ describe('envValidator', () => {
             
             const result = parseIntWithBounds('TEST_VAR', 50, 0, 100);
             
-            // parseInt('0') returns 0, but 0 || defaultValue returns defaultValue
-            // This is expected behavior - the module treats 0 as falsy and uses default
-            expect(result).toBe(50);
-            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 50);
+            // BUG FIX: Zero values should now be handled correctly with isNaN check
+            // Previously 0 || defaultValue returned defaultValue, now 0 is preserved
+            expect(result).toBe(0);
+            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 0);
         });
 
         it('should handle boundary values exactly at limits', () => {
