@@ -6,13 +6,13 @@ A robust Node.js module for performing Google Custom Searches using the Google C
 ## Features
 
 - **Rate Limited Requests**: Built-in rate limiting prevents API quota exhaustion
-- **Intelligent Caching**: Advanced caching with normalized keys and memory management
-- **Memory Management**: Configurable cache limits with automatic cleanup to prevent memory leaks
+- **Intelligent Caching**: LRU caching with normalized keys and automatic memory management
+- **Memory Management**: Configurable LRU eviction with automatic cleanup to prevent memory leaks
 - **Security Enhanced**: Input validation, environment bounds checking, and cache key normalization
 - **Comprehensive Error Handling**: Structured error logging with qerrors integration
 - **Offline Testing**: Mock responses when `CODEX=true` for development without API calls
 - **Parallel Processing**: Support for multiple concurrent searches with optimal performance
-- **Performance Optimized**: Connection pooling, compression, and two-tier cache cleanup
+- **Performance Optimized**: Connection pooling, compression, and LRU cache optimization
 - **Detailed Logging**: Optional detailed execution logging for debugging
 
 Google's API automatically compresses responses when `Accept-Encoding` includes `gzip`, `deflate`, or `br`. The library sets this header on all requests so payloads are smaller and parsing stays transparent.
@@ -192,27 +192,27 @@ This enables development and testing in environments without internet access or 
 
 ## Caching System
 
-The module implements intelligent caching with advanced memory management to optimize performance and reduce API quota usage:
+The module implements intelligent LRU caching with automatic memory management to optimize performance and reduce API quota usage:
 
 ### Cache Behavior
 - **TTL (Time To Live)**: 5 minutes (300,000ms) for all cached responses
 - **Cache Keys**: Normalized keys (case-insensitive, trimmed) improve hit ratios
-- **Memory Management**: Configurable size limits with intelligent cleanup
-- **Two-Tier Cleanup**: Expired entries removed first, then oldest entries if needed
-- **Automatic Expiry**: Proactive cleanup at 80% capacity prevents memory exhaustion
+- **Memory Management**: Automatic LRU eviction with configurable size limits
+- **Built-in Cleanup**: LRU-cache handles expiry and memory management automatically
+- **True LRU Behavior**: Recently accessed items refresh their age for optimal retention
 
 ### Cache Benefits
 - **Reduced API Calls**: Similar queries (case variations, whitespace) share cached results
 - **Improved Performance**: Cached responses return instantly without network delay
-- **Memory Efficiency**: Bounded cache prevents memory leaks in long-running applications
+- **Memory Efficiency**: LRU eviction prevents memory leaks in long-running applications
 - **Quota Conservation**: Fewer API calls help stay within Google's daily limits
-- **Test Compatibility**: Cache respects mocked time in test environments
+- **Automatic Management**: No manual cleanup required, handles TTL and size limits internally
 
 ### Memory Management
 Configure cache behavior with the `QSERP_MAX_CACHE_SIZE` environment variable:
 - **Default**: 1000 entries (~10MB typical usage)
 - **Range**: 10-50000 entries (automatically constrained for security)
-- **Cleanup**: Automatic at 80% capacity, removing expired entries first
+- **Eviction**: Automatic LRU eviction when size limit reached
 
 ### Cache Examples
 
@@ -230,8 +230,7 @@ await fetchSearchItems('Node.js');         // New API call, cached separately
 
 // Memory management example
 process.env.QSERP_MAX_CACHE_SIZE = '100';  // Limit to 100 entries
-// When 80 entries are cached, automatic cleanup begins
-// Expired entries removed first, then oldest if needed
+// LRU-cache automatically evicts least recently used entries when limit reached
 ```
 
 ## Security Features
@@ -262,7 +261,7 @@ The module implements multiple security layers to protect against common vulnera
 
 - **axios**: HTTP client for API requests with connection pooling
 - **bottleneck**: Rate limiting and request scheduling
-- **lru-cache**: Cache implementation for performance optimization (referenced but uses custom implementation)
+- **lru-cache**: Cache implementation with automatic memory management and TTL handling
 - **qerrors**: Enhanced error logging and analysis
 - **qtests**: Testing utilities for development
 
