@@ -39,7 +39,7 @@ describe('debugUtils functionality', () => {
         });
 
         it('should not throw errors when called', () => {
-            const { debugEntry, debugExit, debugLog, createTracer } = require('../lib/debugUtils');
+            const { debugEntry, debugExit, debugLog, createTracer, logStart, logReturn } = require('../lib/debugUtils');
             
             expect(() => {
                 debugEntry('test', 'params');
@@ -48,6 +48,10 @@ describe('debugUtils functionality', () => {
                 const tracer = createTracer('func');
                 tracer.entry('params');
                 tracer.exit('result');
+                
+                // Test consolidated logUtils functions
+                logStart('testFunc', 'details');
+                logReturn('testFunc', 'output');
             }).not.toThrow();
         });
     });
@@ -119,6 +123,20 @@ describe('debugUtils functionality', () => {
             expect(() => {
                 debugEntry(functionName, params);
                 debugExit(functionName, result);
+            }).not.toThrow();
+        });
+
+        it('should provide backward compatibility with logUtils module', () => {
+            // Test consolidated logUtils functionality
+            const { logStart, logReturn } = require('../lib/debugUtils');
+            
+            expect(() => {
+                logStart('testFunction', 'input data');
+                logReturn('testFunction', 'output data');
+                
+                // Test with object parameters like enhanced version
+                logStart('complexFunction', { key: 'value', count: 42 });
+                logReturn('complexFunction', { success: true, items: [1, 2, 3] });
             }).not.toThrow();
         });
     });

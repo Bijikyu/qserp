@@ -1,6 +1,7 @@
 const { mockConsole } = require('./utils/consoleSpies'); //import helper for spies
 
-const { logStart, logReturn } = require('../lib/logUtils'); //functions under test
+// CONSOLIDATION: logUtils functionality moved to debugUtils for DRY compliance
+const { logStart, logReturn } = require('../lib/debugUtils'); //functions under test
 
 describe('log utils', () => { //group log utility tests
   test('logStart outputs expected message', () => { //verify logStart format
