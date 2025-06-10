@@ -31,6 +31,7 @@ These variables enhance functionality but are not required:
 
 - `OPENAI_TOKEN` – Used by the `qerrors` dependency for enhanced error analysis and logging
 - `CODEX` – When set to any case-insensitive `true` value, enables offline mode with mocked responses
+- `LOG_LEVEL` – Controls `warn` and `error` output (`info` by default)
 
 ## Usage
 
