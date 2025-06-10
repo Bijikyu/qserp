@@ -27,7 +27,7 @@
   "dependencies": {
     "axios": "^1.9.0",
     "bottleneck": "^2.19.5",
-    "lru-cache": "^6.0.0",
+    "lru-cache": "^11.1.0",
     "qerrors": "^1.2.3",
     "qtests": "^1.0.4"
   },
