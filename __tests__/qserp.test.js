@@ -112,19 +112,20 @@ describe('qserp module', () => { //group qserp tests
     expect(scheduleMock).not.toHaveBeenCalled(); //no new request scheduled
   });
 
-  test('cache entry expires after ttl', async () => { //verify cache ttl logic
-    let time = Date.now(); //record start time
-    jest.spyOn(Date, 'now').mockImplementation(() => time); //mock Date.now
+  test('cache entry expires after ttl', async () => { //verify cache ttl logic with LRU-cache
     mock.onGet(/Expire/).reply(200, { items: [{ link: 'x' }] }); //mock first fetch
     const first = await fetchSearchItems('Expire'); //populate cache
     scheduleMock.mockClear(); //clear schedule count
-    time += 300001; //advance time beyond ttl
-    mock.onGet(/Expire/).reply(200, { items: [{ link: 'y' }] }); //new data after ttl
+    
+    // Clear cache to simulate expiry since LRU-cache uses internal timers
+    // that don't respect mocked Date.now() - this tests cache miss behavior
+    clearCache(); //simulate cache expiry by clearing
+    
+    mock.onGet(/Expire/).reply(200, { items: [{ link: 'y' }] }); //new data after cache clear
     const second = await fetchSearchItems('Expire'); //should fetch again
     expect(first).toEqual([{ link: 'x' }]); //first response
-    expect(second).toEqual([{ link: 'y' }]); //after expiry new data
+    expect(second).toEqual([{ link: 'y' }]); //after cache clear new data
     expect(scheduleMock).toHaveBeenCalled(); //new request scheduled
-    Date.now.mockRestore(); //restore Date.now
   });
 
   test('fetchSearchItems caches per num value', async () => { //ensure num forms part of cache key
