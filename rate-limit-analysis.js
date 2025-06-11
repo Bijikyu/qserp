@@ -1,8 +1,8 @@
 const { performance } = require('perf_hooks');
 
 // Mock environment for testing
-process.env.CODEX = 'true';
-process.env.DEBUG = 'false';
+process.env.CODEX = 'true'; // offline mode ensures tests don't hit Google
+process.env.DEBUG = 'false'; // keep output focused on timing metrics
 
 const qserp = require('./lib/qserp.js');
 
@@ -14,15 +14,15 @@ async function rateLimitingAnalysis() {
     console.log('=== Rate Limiting Performance Analysis ===');
     
     // Test concurrent request handling
-    const concurrentTests = [1, 5, 10, 20, 50];
+    const concurrentTests = [1, 5, 10, 20, 50]; // concurrency levels to mimic light to heavy load
     
-    for (const concurrency of concurrentTests) {
+    for (const concurrency of concurrentTests) { // evaluate throughput at each level
         console.log(`\n--- Testing ${concurrency} concurrent requests ---`);
         
         const start = performance.now();
-        const promises = [];
+        const promises = []; // store concurrent query promises
         
-        for (let i = 0; i < concurrency; i++) {
+        for (let i = 0; i < concurrency; i++) { // fire multiple requests simultaneously
             promises.push(qserp.googleSearch(`concurrent test ${i}`));
         }
         
@@ -39,9 +39,9 @@ async function rateLimitingAnalysis() {
     console.log('\n--- Burst vs Sustained Request Pattern Analysis ---');
     
     // Burst pattern: 20 requests immediately
-    console.log('Testing burst pattern (20 requests immediately)...');
+    console.log('Testing burst pattern (20 requests immediately)...'); // stress test bottleneck
     const burstStart = performance.now();
-    const burstPromises = Array.from({length: 20}, (_, i) => 
+    const burstPromises = Array.from({length: 20}, (_, i) => // queue 20 rapid requests
         qserp.googleSearch(`burst ${i}`)
     );
     await Promise.all(burstPromises);
@@ -51,9 +51,9 @@ async function rateLimitingAnalysis() {
     // Wait and test sustained pattern
     console.log('Testing sustained pattern (20 requests with 100ms spacing)...');
     const sustainedStart = performance.now();
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 20; i++) { // paced requests show effect of minTime
         await qserp.googleSearch(`sustained ${i}`);
-        if (i < 19) await new Promise(resolve => setTimeout(resolve, 100));
+        if (i < 19) await new Promise(resolve => setTimeout(resolve, 100)); // 100ms gap simulates steady traffic
     }
     const sustainedDuration = performance.now() - sustainedStart;
     console.log(`Sustained duration: ${sustainedDuration.toFixed(2)}ms`);

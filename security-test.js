@@ -1,6 +1,6 @@
 // Mock environment for security testing
-process.env.CODEX = 'true';
-process.env.DEBUG = 'false';
+process.env.CODEX = 'true'; // run with mock network responses
+process.env.DEBUG = 'false'; // minimize output during penetration test
 
 const qserp = require('./lib/qserp.js');
 
@@ -33,7 +33,7 @@ async function securityPenetrationTest() {
     
     let vulnerabilities = 0;
     
-    for (const input of maliciousInputs) {
+    for (const input of maliciousInputs) { // ensure validation rejects malicious input
         try {
             const result = await qserp.googleSearch(input);
             console.log(`⚠️  Input "${JSON.stringify(input)}" was accepted`);
@@ -56,7 +56,7 @@ async function securityPenetrationTest() {
         'emoji: 🔍 search'
     ];
     
-    for (const query of urlInjectionTests) {
+    for (const query of urlInjectionTests) { // verify URL building safely encodes input
         try {
             const url = qserp.getGoogleURL(query);
             const hasInjection = url.includes('malicious=') || url.includes('inject=');
@@ -105,7 +105,7 @@ async function securityPenetrationTest() {
     const initialMemory = process.memoryUsage().heapUsed;
     
     // Attempt to fill cache beyond limits
-    for (let i = 0; i < 2000; i++) {
+    for (let i = 0; i < 2000; i++) { // try to exceed cache limits
         await qserp.fetchSearchItems(`memory-test-${i}`);
     }
     
@@ -150,7 +150,7 @@ async function securityPenetrationTest() {
     const rapidRequests = 100;
     const startTime = Date.now();
     
-    const promises = Array.from({length: rapidRequests}, (_, i) => 
+    const promises = Array.from({length: rapidRequests}, (_, i) => // saturate API with rapid calls
         qserp.googleSearch(`rapid-${i}`)
     );
     

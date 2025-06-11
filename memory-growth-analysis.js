@@ -1,6 +1,6 @@
 // Mock environment for testing
-process.env.CODEX = 'true';
-process.env.DEBUG = 'false';
+process.env.CODEX = 'true'; // use mocked results for deterministic memory metrics
+process.env.DEBUG = 'false'; // disable verbose logging for clarity
 
 const qserp = require('./lib/qserp.js');
 
@@ -29,27 +29,27 @@ async function memoryGrowthAnalysis() {
     console.log('Baseline memory:', baseline);
     
     // Simulate sustained cache usage
-    const phases = [100, 500, 1000, 2000, 5000];
+    const phases = [100, 500, 1000, 2000, 5000]; // progressively larger cache sizes for growth comparison
     
-    for (const phase of phases) {
+    for (const phase of phases) { // measure memory cost per cache size
         console.log(`\n--- Testing ${phase} cache entries ---`);
         
         // Clear cache before each phase
         qserp.clearCache();
         
         // Fill cache with unique queries
-        for (let i = 0; i < phase; i++) {
+        for (let i = 0; i < phase; i++) { // populate cache with unique values
             await qserp.fetchSearchItems(`query-${i}-${Date.now()}`);
         }
         
         const current = measureMemory();
-        const growth = current.heapUsed - baseline.heapUsed;
+        const growth = current.heapUsed - baseline.heapUsed; // delta from baseline shows added heap
         
         console.log(`Memory used: ${current.heapUsed}MB (+${growth}MB)`);
         console.log(`Memory per entry: ${(growth / phase * 1024).toFixed(2)}KB`);
         
         // Force garbage collection if available
-        if (global.gc) {
+        if (global.gc) { // optional GC to observe reclaim effectiveness
             global.gc();
             const afterGC = measureMemory();
             console.log(`After GC: ${afterGC.heapUsed}MB`);

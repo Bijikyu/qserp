@@ -1,6 +1,6 @@
 // Test environment setup
-process.env.CODEX = 'true';
-process.env.DEBUG = 'false';
+process.env.CODEX = 'true'; // rely on mocked requests for repeatability
+process.env.DEBUG = 'false'; // suppress verbose logs during analysis
 
 const qserp = require('./lib/qserp.js');
 
@@ -15,7 +15,7 @@ async function advancedSecurityTesting() {
     // Test 1: Cache Poisoning Attacks
     console.log('\n--- Cache Poisoning Attack Vectors ---');
     
-    const cacheTests = [
+    const cacheTests = [ // various formatting of same query to probe cache keys
         'normal query',
         'NORMAL QUERY',              // Case sensitivity
         'normal query ',             // Trailing space
@@ -30,7 +30,7 @@ async function advancedSecurityTesting() {
     let cacheVulnerabilities = 0;
     
     // Fill cache with variations
-    for (const query of cacheTests) {
+    for (const query of cacheTests) { // populate cache with each variant
         try {
             await qserp.googleSearch(query);
         } catch (error) {
@@ -39,8 +39,8 @@ async function advancedSecurityTesting() {
     }
     
     // Test if different variations produce different cache entries
-    for (let i = 0; i < cacheTests.length - 1; i++) {
-        for (let j = i + 1; j < cacheTests.length; j++) {
+    for (let i = 0; i < cacheTests.length - 1; i++) { // compare normalized variants
+        for (let j = i + 1; j < cacheTests.length; j++) { // cross-check each pair
             if (cacheTests[i].trim().toLowerCase() === cacheTests[j].trim().toLowerCase()) {
                 // These should ideally use the same cache entry
                 // But our current implementation treats them as different
@@ -52,10 +52,10 @@ async function advancedSecurityTesting() {
     // Test 2: Memory Timing Attacks
     console.log('\n--- Memory Timing Attack Analysis ---');
     
-    const timingTests = [];
+    const timingTests = []; // record miss vs hit timing per query
     
     // Test cache hit vs miss timing
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 10; i++) { // 10 iterations provide sample size for averages
         const query = `timing-test-${i}`;
         
         // First request (cache miss)
@@ -87,7 +87,7 @@ async function advancedSecurityTesting() {
     const originalEnv = { ...process.env };
     
     // Test malicious environment values
-    const maliciousEnvTests = [
+    const maliciousEnvTests = [ // intentionally bad env values to confirm validation
         { key: 'QSERP_MAX_CACHE_SIZE', value: '-1' },
         { key: 'QSERP_MAX_CACHE_SIZE', value: 'Infinity' },
         { key: 'QSERP_MAX_CACHE_SIZE', value: 'NaN' },
@@ -96,7 +96,7 @@ async function advancedSecurityTesting() {
         { key: 'LOG_LEVEL', value: 'error\nmalicious_command' }
     ];
     
-    for (const test of maliciousEnvTests) {
+    for (const test of maliciousEnvTests) { // temporarily apply malicious settings
         process.env[test.key] = test.value;
         
         try {
@@ -122,17 +122,17 @@ async function advancedSecurityTesting() {
     // Test 4: Prototype Pollution Checks
     console.log('\n--- Prototype Pollution Protection ---');
     
-    const originalObjectPrototype = Object.prototype.toString;
+    const originalObjectPrototype = Object.prototype.toString; // preserve original method
     
     try {
         // Attempt prototype pollution through query processing
-        const pollutionTests = [
+        const pollutionTests = [ // attempts to modify object prototype
             '{"__proto__": {"polluted": true}}',
             'constructor.prototype.polluted=true',
             '__proto__.polluted=true'
         ];
         
-        for (const test of pollutionTests) {
+        for (const test of pollutionTests) { // run each malicious payload
             await qserp.googleSearch(test);
         }
         
@@ -159,7 +159,7 @@ async function advancedSecurityTesting() {
     };
     
     // Rapid cache operations
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 100; i++) { // repeated clear/fill cycles stress resource cleanup
         await qserp.fetchSearchItems(`resource-test-${i}`);
         qserp.clearCache();
     }
@@ -185,7 +185,7 @@ async function advancedSecurityTesting() {
     // Test 6: Error Handling Edge Cases
     console.log('\n--- Error Handling Security ---');
     
-    const errorTests = [
+    const errorTests = [ // unusual inputs for error handler
         () => qserp.handleAxiosError(null, 'null error'),
         () => qserp.handleAxiosError(undefined, 'undefined error'),
         () => qserp.handleAxiosError({}, 'empty error'),
@@ -196,7 +196,7 @@ async function advancedSecurityTesting() {
     
     let errorHandlingIssues = 0;
     
-    for (const test of errorTests) {
+    for (const test of errorTests) { // each test should not throw unexpectedly
         try {
             const result = test();
             if (result === false) {
