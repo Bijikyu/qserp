@@ -1,7 +1,6 @@
 // Test with real bottleneck behavior (no CODEX mode)
-process.env.DEBUG = 'false';
-// Remove CODEX to test actual rate limiting
-delete process.env.CODEX;
+process.env.DEBUG = 'false'; // limit console noise during test
+delete process.env.CODEX; // enable real Bottleneck behavior instead of mocks
 
 const qserp = require('./lib/qserp.js');
 
@@ -27,9 +26,9 @@ async function testRealRateLimiting() {
     console.log('Testing 20 requests with real rate limiting...');
     
     const startTime = Date.now();
-    const promises = [];
+    const promises = []; // track all outgoing requests for this run
     
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 20; i++) { // high volume burst to trigger limiter
         promises.push(qserp.googleSearch(`rate-test-${i}`));
     }
     
@@ -44,8 +43,8 @@ async function testRealRateLimiting() {
     console.log('Testing burst vs sustained patterns...');
     
     const burstStart = Date.now();
-    const burstPromises = [];
-    for (let i = 0; i < 10; i++) {
+    const burstPromises = []; // capture second burst for comparison
+    for (let i = 0; i < 10; i++) { // send 10 requests without delay
         burstPromises.push(qserp.googleSearch(`burst-${i}`));
     }
     await Promise.all(burstPromises);

@@ -1,8 +1,8 @@
 const { performance } = require('perf_hooks');
 
 // Mock environment for testing
-process.env.CODEX = 'true';
-process.env.DEBUG = 'false';
+process.env.CODEX = 'true'; // run in offline mode for predictable timing
+process.env.DEBUG = 'false'; // suppress debug noise during metrics
 
 const qserp = require('./lib/qserp.js');
 
@@ -30,8 +30,8 @@ async function cachePerformanceTest() {
     console.log('Initial memory:', measureMemory());
     
     // Generate test queries
-    const queries = [];
-    for (let i = 0; i < 100; i++) {
+    const queries = []; // container for synthetic queries
+    for (let i = 0; i < 100; i++) { // 100 entries ensure measurable cache size
         queries.push(`test query ${i}`);
     }
     
@@ -39,7 +39,7 @@ async function cachePerformanceTest() {
     
     // Fill cache with entries
     console.log('Filling cache with 100 entries...');
-    for (const query of queries) {
+    for (const query of queries) { // populate cache to test retrieval speed
         await qserp.fetchSearchItems(query);
     }
     
@@ -50,7 +50,7 @@ async function cachePerformanceTest() {
     // Test cache hits
     console.log('Testing cache hit performance...');
     const hitStart = performance.now();
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 10; i++) { // hit cached queries to measure best case
         await qserp.fetchSearchItems(queries[i]);
     }
     const hitTime = performance.now() - hitStart;
@@ -60,7 +60,7 @@ async function cachePerformanceTest() {
     // Test cache misses
     console.log('Testing cache miss performance...');
     const missStart = performance.now();
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) { // miss cache with new queries for comparison
         await qserp.fetchSearchItems(`new query ${i}`);
     }
     const missTime = performance.now() - missStart;
