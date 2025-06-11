@@ -56,6 +56,17 @@ test('getGoogleURL builds proper url', () => {
   expect(urlNum).toBe('https://www.googleapis.com/customsearch/v1?q=hello&key=key&cx=cx&fields=items(title,snippet,link)&num=5'); //should include num param and fields filter
 });
 
+test.each([
+  [0, 1],
+  [11, 10],
+  [-3, 1],
+  [2.7, 3]
+])('getGoogleURL clamps num %p to %p', (val, expected) => {
+  const { getGoogleURL } = require('../lib/qserp');
+  const url = getGoogleURL('clamp', val);
+  expect(url).toBe(`https://www.googleapis.com/customsearch/v1?q=clamp&key=key&cx=cx&fields=items(title,snippet,link)&num=${expected}`);
+});
+
 test('handleAxiosError logs with qerrors and returns true', () => {
   const { handleAxiosError } = require('../lib/qserp');
   const err = new Error('fail');

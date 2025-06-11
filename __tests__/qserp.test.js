@@ -138,4 +138,13 @@ describe('qserp module', () => { //group qserp tests
     expect(second).toEqual([{ link: '2' }]); //expect second results not cached
     expect(scheduleMock).toHaveBeenCalled(); //new request should occur
   });
+
+  test('fetchSearchItems clamps out-of-range num', async () => { //new clamp test
+    mock.onGet(/Clamp/).reply(200, { items: [] }); //mock response
+    await fetchSearchItems('Clamp', 99); //use high invalid num
+    expect(mock.history.get[0].url).toBe('https://www.googleapis.com/customsearch/v1?q=Clamp&key=key&cx=cx&fields=items(title,snippet,link)&num=10'); //url should clamp num to 10
+    mock.onGet(/Clamp/).reply(200, { items: [] }); //mock again
+    await fetchSearchItems('Clamp', -5); //use low invalid num
+    expect(mock.history.get[1].url).toBe('https://www.googleapis.com/customsearch/v1?q=Clamp&key=key&cx=cx&fields=items(title,snippet,link)&num=1'); //url should clamp num to 1
+  });
 });
