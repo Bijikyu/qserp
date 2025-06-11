@@ -2,7 +2,7 @@ const { initSearchTest, resetMocks } = require('./utils/testSetup'); //use new h
 
 const { mock, scheduleMock, qerrorsMock } = initSearchTest(); //initialize env and mocks
 
-const { googleSearch, getTopSearchResults, fetchSearchItems, clearCache } = require('../lib/qserp'); //load functions under test from library
+const { googleSearch, getTopSearchResults, fetchSearchItems, clearCache, getGoogleURL } = require('../lib/qserp'); //load functions under test from library
 const { OPENAI_WARN_MSG } = require('../lib/constants'); //import warning message constant
 
 describe('qserp module', () => { //group qserp tests
@@ -137,6 +137,17 @@ describe('qserp module', () => { //group qserp tests
     expect(first).toEqual([{ link: '1' }]); //ensure first results
     expect(second).toEqual([{ link: '2' }]); //expect second results not cached
     expect(scheduleMock).toHaveBeenCalled(); //new request should occur
+  });
+
+  test.each([1, 5, 10])('getGoogleURL includes valid num %i', valid => { //verify clamped url for valid num
+    const url = getGoogleURL('Val', valid); //build url with provided num
+    expect(url).toBe(`https://www.googleapis.com/customsearch/v1?q=Val&key=key&cx=cx&fields=items(title,snippet,link)&num=${valid}`); //should match num
+  });
+
+  test.each([0, -1, 11])('getGoogleURL clamps out of range %i', bad => { //invalid values clamp to range
+    const url = getGoogleURL('Bad', bad); //build url with invalid num
+    const clamped = bad < 1 ? 1 : 10; //expected clamp result
+    expect(url).toBe(`https://www.googleapis.com/customsearch/v1?q=Bad&key=key&cx=cx&fields=items(title,snippet,link)&num=${clamped}`); //should clamp
   });
 
   test('disables caching when env var is zero', async () => { //new zero cache test
