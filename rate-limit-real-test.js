@@ -1,5 +1,3 @@
-const { performance } = require('perf_hooks');
-
 // Test with real bottleneck behavior (no CODEX mode)
 process.env.DEBUG = 'false';
 // Remove CODEX to test actual rate limiting

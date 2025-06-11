@@ -1,5 +1,3 @@
-const { performance } = require('perf_hooks');
-
 // Mock environment for security testing
 process.env.CODEX = 'true';
 process.env.DEBUG = 'false';
