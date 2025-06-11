@@ -6,6 +6,11 @@ process.env.DEBUG = 'false';
 
 const qserp = require('./lib/qserp.js');
 
+/**
+ * advancedSecurityTesting - runs extensive vulnerability checks against the
+ * search module to ensure resistance to malicious input and configuration
+ * RATIONALE: exposes potential cache or environment exploits in isolation
+ */
 async function advancedSecurityTesting() {
     console.log('=== Advanced Security Vulnerability Testing ===');
     

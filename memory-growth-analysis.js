@@ -6,6 +6,10 @@ process.env.DEBUG = 'false';
 
 const qserp = require('./lib/qserp.js');
 
+/**
+ * measureMemory - reports process memory usage to evaluate cache pressure
+ * RATIONALE: baseline and post-cache metrics help identify leaks
+ */
 function measureMemory() {
     const used = process.memoryUsage();
     return {
@@ -16,6 +20,10 @@ function measureMemory() {
     };
 }
 
+/**
+ * memoryGrowthAnalysis - fills cache in stages to observe heap growth and
+ * garbage collection effectiveness under heavy use
+ */
 async function memoryGrowthAnalysis() {
     console.log('=== Memory Growth Analysis ===');
     

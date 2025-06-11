@@ -7,6 +7,10 @@ process.env.DEBUG = 'false';
 const qserp = require('./lib/qserp.js');
 
 // Performance measurement utilities
+/**
+ * measureMemory - snapshots process memory for performance tests
+ * RATIONALE: quantifies impact of cache operations on system resources
+ */
 function measureMemory() {
     const used = process.memoryUsage();
     return {
@@ -17,6 +21,10 @@ function measureMemory() {
     };
 }
 
+/**
+ * cachePerformanceTest - benchmarks cache fill, hit and miss timings to
+ * demonstrate speed benefits of caching compared to direct API calls
+ */
 async function cachePerformanceTest() {
     console.log('=== Cache Performance Analysis ===');
     console.log('Initial memory:', measureMemory());

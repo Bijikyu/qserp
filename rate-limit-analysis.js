@@ -6,6 +6,10 @@ process.env.DEBUG = 'false';
 
 const qserp = require('./lib/qserp.js');
 
+/**
+ * rateLimitingAnalysis - measures throughput under different concurrency levels
+ * RATIONALE: ensures Bottleneck settings handle bursts without exceeding quotas
+ */
 async function rateLimitingAnalysis() {
     console.log('=== Rate Limiting Performance Analysis ===');
     

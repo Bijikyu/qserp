@@ -7,6 +7,10 @@ delete process.env.CODEX;
 
 const qserp = require('./lib/qserp.js');
 
+/**
+ * testRealRateLimiting - validates actual Bottleneck throttling with a mocked
+ * Google API to confirm configuration prevents request bursts
+ */
 async function testRealRateLimiting() {
     console.log('=== Real Rate Limiting Test ===');
     
