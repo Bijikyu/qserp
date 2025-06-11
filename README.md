@@ -127,7 +127,7 @@ Fetches raw Google Custom Search API items for a query. Optional `num` limits th
 
 **Parameters:**
 - `query` (string): The search query (must be non-empty)
-- `num` (number, optional): Maximum number of items to return
+- `num` (number, optional): Maximum number of items to return (range 1-10; values outside this range are clamped)
 
 **Returns:**
 - `Promise<Array>`: Raw items array from Google API or empty array on error
