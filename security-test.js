@@ -6,6 +6,10 @@ process.env.DEBUG = 'false';
 
 const qserp = require('./lib/qserp.js');
 
+/**
+ * securityPenetrationTest - simulates malicious user behavior to verify
+ * input validation, URL construction and rate limiting protections
+ */
 async function securityPenetrationTest() {
     console.log('=== Security Penetration Testing ===');
     

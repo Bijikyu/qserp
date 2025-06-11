@@ -7,6 +7,10 @@ process.env.QSERP_MAX_CACHE_SIZE = '50'; // Small size for testing
 
 const qserp = require('./lib/qserp.js');
 
+/**
+ * measureMemory - captures current Node.js memory usage in MB
+ * RATIONALE: used to monitor cache impact during cleanup tests
+ */
 function measureMemory() {
     const used = process.memoryUsage();
     return {
@@ -17,6 +21,10 @@ function measureMemory() {
     };
 }
 
+/**
+ * testCacheCleanup - validates LRU behavior by forcing cache overflow and
+ * TTL expiration to verify cleanup logic protects memory
+ */
 async function testCacheCleanup() {
     console.log('=== Cache Cleanup Performance Test ===');
     
