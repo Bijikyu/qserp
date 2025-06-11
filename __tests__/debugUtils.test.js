@@ -1,9 +1,12 @@
 /**
  * debugUtils.test.js - Comprehensive unit tests for centralized debug utilities
- * 
+ *
  * Tests the consolidated debug logging functions that replace scattered debug
  * patterns across lib/qserp.js, lib/envUtils.js, lib/utils.js, and other modules.
  */
+
+jest.mock('../lib/getDebugFlag'); //mock debug flag helper for controlled state
+const mockGetDebugFlag = require('../lib/getDebugFlag'); //access mock for return setup
 
 describe('debugUtils', () => {
     let consoleSpy;

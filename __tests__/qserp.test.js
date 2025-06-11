@@ -138,4 +138,24 @@ describe('qserp module', () => { //group qserp tests
     expect(second).toEqual([{ link: '2' }]); //expect second results not cached
     expect(scheduleMock).toHaveBeenCalled(); //new request should occur
   });
+
+  test('disables caching when env var is zero', async () => { //new zero cache test
+    const savedSize = process.env.QSERP_MAX_CACHE_SIZE; //preserve existing value
+    process.env.QSERP_MAX_CACHE_SIZE = '0'; //set env var to disable caching
+    jest.resetModules(); //reload modules with new env setting
+    const { createAxiosMock, createScheduleMock, createQerrorsMock } = require('./utils/testSetup'); //reacquire helpers
+    const mockLocal = createAxiosMock(); //fresh axios mock
+    const localSchedule = createScheduleMock(); //new schedule spy
+    createQerrorsMock(); //new qerrors spy
+    const { fetchSearchItems: fetchLocal } = require('../lib/qserp'); //reload module under test
+    mockLocal.onGet(/Zero/).reply(200, { items: [{ link: 'a' }] }); //first response
+    const first = await fetchLocal('Zero'); //perform first request
+    localSchedule.mockClear(); //clear to detect second request
+    mockLocal.onGet(/Zero/).reply(200, { items: [{ link: 'b' }] }); //second response differs
+    const second = await fetchLocal('Zero'); //should not use cache
+    expect(first).toEqual([{ link: 'a' }]); //verify first result
+    expect(second).toEqual([{ link: 'b' }]); //verify second result fetched
+    expect(localSchedule).toHaveBeenCalled(); //schedule called again since no cache
+    process.env.QSERP_MAX_CACHE_SIZE = savedSize; //restore environment
+  });
 });
