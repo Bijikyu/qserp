@@ -233,6 +233,12 @@ process.env.QSERP_MAX_CACHE_SIZE = '100';  // Limit to 100 entries
 // LRU-cache automatically evicts least recently used entries when limit reached
 ```
 
+### Manual Cache Cleanup
+
+While LRU-cache evicts expired entries automatically, the library exposes
+`performCacheCleanup()` for diagnostic tests. Calling this function triggers
+`cache.purgeStale()` to remove any expired items.
+
 ## Security Features
 
 The module implements multiple security layers to protect against common vulnerabilities:

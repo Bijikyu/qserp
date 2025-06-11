@@ -38,11 +38,11 @@ async function testCacheCleanup() {
     
     console.log('Memory after overfilling cache:', measureMemory());
     
-    // Manually trigger cleanup to test the function
-    console.log('Testing manual cache cleanup...');
-    const cleanupResult = qserp.performCacheCleanup();
-    console.log(`Cleanup removed ${cleanupResult} entries`);
-    
+    // Manual cleanup no longer required; LRU-cache purges stale entries automatically
+    console.log('Testing built-in cleanup...');
+    // fetchSearchItems call will allow LRU-cache to purge as needed
+    await qserp.fetchSearchItems('cleanup-check');
+
     // Test automatic cleanup during normal operation
     console.log('Testing automatic cleanup trigger...');
     const beforeAuto = measureMemory();
@@ -63,8 +63,8 @@ async function testCacheCleanup() {
     // Mock time to simulate cache expiry
     Date.now = () => originalDateNow() + (6 * 60 * 1000); // 6 minutes later
     
-    const expiredCleanup = qserp.performCacheCleanup();
-    console.log(`TTL cleanup removed ${expiredCleanup} expired entries`);
+    // LRU-cache will clean up expired entries when accessed
+    await qserp.fetchSearchItems('expiry-check');
     
     // Restore original Date.now
     Date.now = originalDateNow;
