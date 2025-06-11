@@ -1,5 +1,3 @@
-const crypto = require('crypto');
-
 // Test environment setup
 process.env.CODEX = 'true';
 process.env.DEBUG = 'false';
