@@ -64,13 +64,15 @@ test('handleAxiosError logs with qerrors and returns true', () => {
   expect(qerrorsMock).toHaveBeenCalled();
 });
 
-test('handleAxiosError logs response object and returns true', () => { //added new test for console.error
+test('handleAxiosError logs sanitized response object and returns true', () => { //updated test to verify sanitization
   const { handleAxiosError } = require('../lib/qserp'); //require function under test
-  const err = { response: { status: 500 } }; //mock error with response
+  const err = { response: { status: 500, config: { url: 'http://x?key=key' } } }; //mock error with key in url
   const spy = mockConsole('error'); //spy on console.error via helper
   const res = handleAxiosError(err, 'ctx'); //call function with response error
   expect(res).toBe(true); //should return true
-  expect(spy).toHaveBeenCalledWith(err.response); //console.error called with response
+  const logged = spy.mock.calls[0][0]; //capture logged object for inspection
+  expect(JSON.stringify(logged)).not.toContain('key=key'); //verify key removed from log
+  expect(logged.config.url).toBe('http://x?key=[redacted]'); //url should be sanitized
   spy.mockRestore(); //restore console.error
 });
 
