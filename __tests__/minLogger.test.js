@@ -32,4 +32,24 @@ describe('minLogger', () => {
     expect(spy).toHaveBeenCalledWith('bad'); //should log
     spy.mockRestore(); //cleanup
   });
+
+  test('logWarn serializes object messages', () => { //object warn logging
+    process.env.LOG_LEVEL = 'warn'; //set level
+    const spy = mockConsole('warn'); //spy on console.warn
+    const { logWarn } = require('../lib/minLogger'); //import function
+    const obj = { a: 1 }; //sample object
+    logWarn(obj); //call logger with object
+    expect(spy).toHaveBeenCalledWith(JSON.stringify(obj)); //should log JSON
+    spy.mockRestore(); //cleanup
+  });
+
+  test('logError serializes object messages', () => { //object error logging
+    process.env.LOG_LEVEL = 'error'; //set level
+    const spy = mockConsole('error'); //spy on console.error
+    const { logError } = require('../lib/minLogger'); //import function
+    const obj = { b: 2 }; //sample object
+    logError(obj); //call logger with object
+    expect(spy).toHaveBeenCalledWith(JSON.stringify(obj)); //should log JSON
+    spy.mockRestore(); //cleanup
+  });
 });

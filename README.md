@@ -36,7 +36,7 @@ These variables enhance functionality but are not required:
 
 - `OPENAI_TOKEN` – Used by the `qerrors` dependency for enhanced error analysis and logging
 - `CODEX` – When set to any case-insensitive `true` value, enables offline mode with mocked responses
-- `LOG_LEVEL` – Controls `warn` and `error` output (`info` by default)
+- `LOG_LEVEL` – Controls `warn` and `error` output (`info` by default). Non-string messages are serialized to JSON
 - `QSERP_MAX_CACHE_SIZE` – Maximum cache entries (default: 1000, range: 10-50000) for memory management
 
 ## Usage
