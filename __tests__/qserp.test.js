@@ -169,4 +169,14 @@ describe('qserp module', () => { //group qserp tests
     expect(localSchedule).toHaveBeenCalled(); //schedule called again since no cache
     process.env.QSERP_MAX_CACHE_SIZE = savedSize; //restore environment
   });
+
+  test('cache helpers are no-ops when caching disabled', () => { //verify noop helpers
+    const savedSize = process.env.QSERP_MAX_CACHE_SIZE; //preserve env value
+    process.env.QSERP_MAX_CACHE_SIZE = '0'; //disable caching
+    jest.resetModules(); //reload module with noop cache
+    const { clearCache: clearLocal, performCacheCleanup } = require('../lib/qserp'); //require fresh module
+    expect(clearLocal()).toBe(true); //clearCache should succeed
+    expect(performCacheCleanup()).toBe(0); //no stale entries removed
+    process.env.QSERP_MAX_CACHE_SIZE = savedSize; //restore env value
+  });
 });

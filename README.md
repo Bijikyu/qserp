@@ -237,7 +237,9 @@ process.env.QSERP_MAX_CACHE_SIZE = '100';  // Limit to 100 entries
 
 While LRU-cache evicts expired entries automatically, the library exposes
 `performCacheCleanup()` for diagnostic tests. Calling this function triggers
-`cache.purgeStale()` to remove any expired items.
+`cache.purgeStale()` to remove any expired items. When caching is disabled with
+`QSERP_MAX_CACHE_SIZE=0`, both `clearCache()` and `performCacheCleanup()` are
+safe no-ops that return without modifying state.
 
 ## Security Features
 
