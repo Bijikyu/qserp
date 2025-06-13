@@ -76,6 +76,17 @@ test('handleAxiosError logs sanitized response object and returns true', () => {
   spy.mockRestore(); //restore console.error
 });
 
+test('handleAxiosError masks api key in network error logs', () => {
+  const { handleAxiosError } = require('../lib/qserp'); //load function under test
+  const err = { request: {}, message: 'bad key=key', config: { url: 'http://x?key=key' } }; //mock network error with key
+  const spy = mockConsole('error'); //spy on console.error
+  const res = handleAxiosError(err, 'ctx'); //call handler
+  expect(res).toBe(true); //should succeed
+  const logged = spy.mock.calls[0][0]; //grab logged string
+  expect(logged).not.toContain('key=key'); //ensure key removed
+  spy.mockRestore(); //cleanup spy
+});
+
 test('handleAxiosError returns false when qerrors throws', () => { //verify fallback on qerrors failure
   const { handleAxiosError } = require('../lib/qserp'); //load function under test
   const err = new Error('bad'); //mock basic error
