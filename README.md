@@ -198,7 +198,7 @@ The module implements intelligent LRU caching with automatic memory management t
 - **TTL (Time To Live)**: 5 minutes (300,000ms) for all cached responses
 - **Cache Keys**: Normalized keys (case-insensitive, trimmed) improve hit ratios
 - **Memory Management**: Automatic LRU eviction with configurable size limits
-- **Built-in Cleanup**: LRU-cache handles expiry and memory management automatically
+ - **Built-in Cleanup**: `ttlAutopurge: true` removes expired entries automatically
 - **True LRU Behavior**: Recently accessed items refresh their age for optimal retention
 
 ### Cache Benefits
@@ -206,7 +206,7 @@ The module implements intelligent LRU caching with automatic memory management t
 - **Improved Performance**: Cached responses return instantly without network delay
 - **Memory Efficiency**: LRU eviction prevents memory leaks in long-running applications
 - **Quota Conservation**: Fewer API calls help stay within Google's daily limits
-- **Automatic Management**: No manual cleanup required, handles TTL and size limits internally
+ - **Automatic Management**: Automatic TTL purging means no manual cleanup is required
 
 ### Memory Management
 Configure cache behavior with the `QSERP_MAX_CACHE_SIZE` environment variable:
@@ -230,14 +230,14 @@ await fetchSearchItems('Node.js');         // New API call, cached separately
 
 // Memory management example
 process.env.QSERP_MAX_CACHE_SIZE = '100';  // Limit to 100 entries
-// LRU-cache automatically evicts least recently used entries when limit reached
+// LRU-cache automatically evicts least recently used entries and purges TTL expirations
 ```
 
 ### Manual Cache Cleanup
 
-While LRU-cache evicts expired entries automatically, the library exposes
+While expired entries are purged automatically, the library exposes
 `performCacheCleanup()` for diagnostic tests. Calling this function triggers
-`cache.purgeStale()` to remove any expired items.
+`cache.purgeStale()` to force immediate removal if needed.
 
 ## Security Features
 
