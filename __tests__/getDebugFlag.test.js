@@ -59,29 +59,29 @@ describe('getDebugFlag', () => {
         });
     });
 
-    describe('partial string matching', () => {
-        it('should return true when "true" appears in longer string', () => {
+    describe('non-matching strings', () => {
+        it('should return false when "true" appears in longer string', () => {
             process.env.DEBUG = 'debug=true,verbose';
-            
+
             const result = getDebugFlag();
-            
-            expect(result).toBe(true);
+
+            expect(result).toBe(false);
         });
 
-        it('should return true when "true" appears with prefix', () => {
+        it('should return false when "true" appears with prefix', () => {
             process.env.DEBUG = 'enable-true';
-            
+
             const result = getDebugFlag();
-            
-            expect(result).toBe(true);
+
+            expect(result).toBe(false);
         });
 
-        it('should return true when "true" appears with suffix', () => {
+        it('should return false when "true" appears with suffix', () => {
             process.env.DEBUG = 'true-mode';
-            
+
             const result = getDebugFlag();
-            
-            expect(result).toBe(true);
+
+            expect(result).toBe(false);
         });
     });
 
@@ -131,9 +131,17 @@ describe('getDebugFlag', () => {
 
         it('should return false for random strings', () => {
             process.env.DEBUG = 'random-value';
-            
+
             const result = getDebugFlag();
-            
+
+            expect(result).toBe(false);
+        });
+
+        it('should return false for "not true"', () => {
+            process.env.DEBUG = 'not true';
+
+            const result = getDebugFlag();
+
             expect(result).toBe(false);
         });
     });
@@ -152,79 +160,13 @@ describe('getDebugFlag', () => {
         it('should handle very long DEBUG values', () => {
             const longValue = 'x'.repeat(10000) + 'true' + 'y'.repeat(10000);
             process.env.DEBUG = longValue;
-            
+
             const result = getDebugFlag();
-            
-            expect(result).toBe(true);
+
+            expect(result).toBe(false);
         });
     });
 
-    describe('regex behavior', () => {
-        it('should match "true" anywhere in the string', () => {
-            const testCases = [
-                'true',
-                'prefix-true',
-                'true-suffix',
-                'prefix-true-suffix',
-                'debug=true,verbose=false'
-            ];
-            
-            testCases.forEach(testCase => {
-                process.env.DEBUG = testCase;
-                expect(getDebugFlag()).toBe(true);
-            });
-        });
-
-        it('should not match similar words that do not contain "true"', () => {
-            const testCases = [
-                'tru',
-                'ture',
-                'false',
-                'maybe'
-            ];
-            
-            testCases.forEach(testCase => {
-                process.env.DEBUG = testCase;
-                expect(getDebugFlag()).toBe(false);
-            });
-        });
-
-        it('should match words containing "true" substring', () => {
-            const testCases = [
-                'true-mode',
-                'enable-true',
-                'debug=true,verbose'
-            ];
-            
-            testCases.forEach(testCase => {
-                process.env.DEBUG = testCase;
-                expect(getDebugFlag()).toBe(true);
-            });
-        });
-
-        it('should not match words that do not contain exact "true" substring', () => {
-            const testCases = [
-                'truth', // has 'trut' and 'th' but not 'true'
-                'untrue', // has 'true' at end - this should actually match
-                'truest', // has 'true' at start - this should actually match  
-                'truly', // has 'trul' and 'y' but not 'true'
-                'tru',
-                'ture'
-            ];
-            
-            // Test each case individually to see actual behavior
-            const results = testCases.map(testCase => {
-                process.env.DEBUG = testCase;
-                return { testCase, result: getDebugFlag() };
-            });
-            
-            // Only assert for cases we know don't contain 'true' substring
-            const nonMatching = results.filter(r => ['truly', 'tru', 'ture'].includes(r.testCase));
-            nonMatching.forEach(({ testCase, result }) => {
-                expect(result).toBe(false);
-            });
-        });
-    });
 
     describe('logging behavior', () => {
         it('should log entry with current DEBUG value', () => {
@@ -282,18 +224,18 @@ describe('getDebugFlag', () => {
         it('should handle very long strings with true', () => {
             const longString = 'a'.repeat(1000) + 'true' + 'b'.repeat(1000);
             process.env.DEBUG = longString;
-            
+
             const result = getDebugFlag();
-            
-            expect(result).toBe(true);
+
+            expect(result).toBe(false);
         });
 
         it('should handle special characters', () => {
             process.env.DEBUG = '!@#$%^&*()true[]{}|;:,.<>?';
-            
+
             const result = getDebugFlag();
-            
-            expect(result).toBe(true);
+
+            expect(result).toBe(false);
         });
     });
 
@@ -310,10 +252,10 @@ describe('getDebugFlag', () => {
         it('should handle large environment values', () => {
             const largeValue = 'true' + 'x'.repeat(10000);
             process.env.DEBUG = largeValue;
-            
+
             const result = getDebugFlag();
-            
-            expect(result).toBe(true);
+
+            expect(result).toBe(false);
         });
     });
 });
