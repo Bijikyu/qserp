@@ -72,7 +72,7 @@ test('handleAxiosError logs sanitized response object and returns true', () => {
   expect(res).toBe(true); //should return true
   const logged = spy.mock.calls[0][0]; //capture logged object for inspection
   expect(JSON.stringify(logged)).not.toContain('key=key'); //verify key removed from log
-  expect(logged.config.url).toBe('http://x?[redacted]=key'); //url should be sanitized
+  expect(logged.config.url).toBe('http://x?[redacted]=[redacted]'); //url should be fully sanitized
   spy.mockRestore(); //restore console.error
 });
 
@@ -118,4 +118,10 @@ test('validateSearchQuery accepts non-empty strings', () => { //(verify valid in
 test.each(['', '   ', 1, {}, []])('validateSearchQuery throws for %p', val => { //(verify invalid inputs)
   const { validateSearchQuery } = require('../lib/qserp'); //import helper
   expect(() => validateSearchQuery(val)).toThrow('Query must be a non-empty string'); //expect error thrown
+});
+
+test('sanitizeApiKey replaces all matches', () => { //ensure global replacement
+  const { sanitizeApiKey } = require('../lib/qserp'); //import function under test
+  const res = sanitizeApiKey('start key middle key end'); //call with repeated key
+  expect(res).toBe('start [redacted] middle [redacted] end'); //expect both replaced
 });
