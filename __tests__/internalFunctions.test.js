@@ -72,19 +72,19 @@ test('getGoogleURL encodes key and cx values', () => {
   expect(url).toBe('https://www.googleapis.com/customsearch/v1?q=encode&key=k%2B%2Fval&cx=cx%2F%2B&fields=items(title,snippet,link)'); //encoded key and cx
 });
 
-test('handleAxiosError logs with qerrors and returns true', () => {
+test('handleAxiosError logs with qerrors and returns true', async () => {
   const { handleAxiosError } = require('../lib/qserp');
   const err = new Error('fail');
-  const res = handleAxiosError(err, 'ctx');
+  const res = await handleAxiosError(err, 'ctx');
   expect(res).toBe(true);
   expect(qerrorsMock).toHaveBeenCalled();
 });
 
-test('handleAxiosError logs sanitized response object and returns true', () => { //updated test to verify sanitization
+test('handleAxiosError logs sanitized response object and returns true', async () => { //updated test to verify sanitization
   const { handleAxiosError } = require('../lib/qserp'); //require function under test
   const err = { response: { status: 500, config: { url: 'http://x?key=key' } } }; //mock error with key in url
   const spy = mockConsole('error'); //spy on console.error via helper
-  const res = handleAxiosError(err, 'ctx'); //call function with response error
+  const res = await handleAxiosError(err, 'ctx'); //call function with response error
   expect(res).toBe(true); //should return true
   const logged = spy.mock.calls[0][0]; //capture logged object for inspection
   expect(JSON.stringify(logged)).not.toContain('key=key'); //verify key removed from log
@@ -92,35 +92,35 @@ test('handleAxiosError logs sanitized response object and returns true', () => {
   spy.mockRestore(); //restore console.error
 });
 
-test('handleAxiosError masks api key in network error logs', () => {
+test('handleAxiosError masks api key in network error logs', async () => {
   const { handleAxiosError } = require('../lib/qserp'); //load function under test
   const err = { request: {}, message: 'bad key=key', config: { url: 'http://x?key=key' } }; //mock network error with key
   const spy = mockConsole('error'); //spy on console.error
-  const res = handleAxiosError(err, 'ctx'); //call handler
+  const res = await handleAxiosError(err, 'ctx'); //call handler
   expect(res).toBe(true); //should succeed
   const logged = spy.mock.calls[0][0]; //grab logged string
   expect(logged).not.toContain('key=key'); //ensure key removed
   spy.mockRestore(); //cleanup spy
 });
 
-test('handleAxiosError passes sanitized error to qerrors', () => { //verify qerrors arg
+test('handleAxiosError passes sanitized error to qerrors', async () => { //verify qerrors arg
   const { handleAxiosError } = require('../lib/qserp'); //load function
   const err = new Error('bad key=key'); //create error with key in message
   err.config = { url: 'http://x?key=key' }; //attach url containing key
-  handleAxiosError(err, 'ctx'); //invoke handler
+  await handleAxiosError(err, 'ctx'); //invoke handler
   const arg = qerrorsMock.mock.calls[0][0]; //extract error passed to qerrors
   expect(arg).not.toBe(err); //should be copied
   expect(arg.message).toBe('bad [redacted]=[redacted]'); //message sanitized
   expect(arg.config.url).toBe('http://x?[redacted]=[redacted]'); //url sanitized
 });
 
-test('handleAxiosError returns false when qerrors throws', () => { //verify fallback on qerrors failure
+test('handleAxiosError returns false when qerrors throws', async () => { //verify fallback on qerrors failure
   const { handleAxiosError } = require('../lib/qserp'); //load function under test
   const err = new Error('bad'); //mock basic error
   qerrorsMock.mockImplementationOnce(() => { throw new Error('qe'); }); //first call throws
   qerrorsMock.mockImplementation(() => {}); //subsequent calls succeed
   const spy = mockConsole('error'); //spy on console.error via helper
-  const res = handleAxiosError(err, 'ctx'); //invoke handler expecting false
+  const res = await handleAxiosError(err, 'ctx'); //invoke handler expecting false
   expect(res).toBe(false); //should return false due to catch block
   expect(spy).toHaveBeenCalled(); //console.error should log error message
   spy.mockRestore(); //restore console.error
@@ -165,9 +165,9 @@ test('sanitizeApiKey replaces all matches', () => { //ensure global replacement
   expect(res).toBe('start [redacted] middle [redacted] end'); //expect both replaced
 });
 
-test.each(['plain error', { foo: 'bar' }])('handleAxiosError handles %p input', val => {
+test.each(['plain error', { foo: 'bar' }])('handleAxiosError handles %p input', async val => {
   const { handleAxiosError } = require('../lib/qserp'); //load function under test
-  const res = handleAxiosError(val, 'ctx'); //invoke with arbitrary input
+  const res = await handleAxiosError(val, 'ctx'); //invoke with arbitrary input
   expect(res).toBe(true); //should succeed without throwing
   expect(qerrorsMock).toHaveBeenCalled(); //qerrors should still log
 });

@@ -198,7 +198,7 @@ async function advancedSecurityTesting() {
     
     for (const test of errorTests) { // each test should not throw unexpectedly
         try {
-            const result = test();
+            const result = await test(); //await async handler
             if (result === false) {
                 errorHandlingIssues++;
             }
