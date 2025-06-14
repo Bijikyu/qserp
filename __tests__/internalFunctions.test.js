@@ -20,6 +20,14 @@ test('rateLimitedRequest calls limiter and sets headers', async () => {
   expect(config['User-Agent']).toMatch(/Mozilla/);
 });
 
+test('rateLimitedRequest sets Referer header when env set', async () => {
+  mock.onGet('http://refer').reply(200, {}); //mock axios response
+  const { rateLimitedRequest } = require('../lib/qserp');
+  await rateLimitedRequest('http://refer');
+  const config = mock.history.get[0].headers; //inspect request headers
+  expect(config.Referer).toBe('http://example.com'); //header should match env var
+});
+
 test('rateLimitedRequest uses custom axios instance', async () => { //verify instance path
   mock.onGet('http://inst').reply(200, {}); //mock via instance
   const { rateLimitedRequest, axiosInstance } = require('../lib/qserp');

@@ -39,6 +39,7 @@ These variables enhance functionality but are not required:
 - `CODEX` – When set to any case-insensitive `true` value, enables offline mode with mocked responses
 - `LOG_LEVEL` – Controls `warn` and `error` output (`info` by default)
 - `QSERP_MAX_CACHE_SIZE` – Maximum cache entries (default: 1000, range: 10-50000) for memory management
+- `GOOGLE_REFERER` – Adds a Referer header to requests when set
 
 ## Usage
 

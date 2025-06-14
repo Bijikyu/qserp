@@ -46,6 +46,7 @@ function setTestEnv() {
   process.env.GOOGLE_CX = 'cx'; //set common cx id (simple test value)
   // Set optional environment variables to prevent warning messages in tests
   process.env.OPENAI_TOKEN = 'token'; //set common openai token (prevents warnings)
+  process.env.GOOGLE_REFERER = 'http://example.com'; //set referer for header tests
   logReturn('setTestEnv', true); //final log via util
   return true; //confirm env set
 }
