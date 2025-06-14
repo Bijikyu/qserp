@@ -133,7 +133,7 @@ async function securityPenetrationTest() {
     };
     
     try {
-        qserp.handleAxiosError(mockError, 'test context');
+        await qserp.handleAxiosError(mockError, 'test context'); //await async handler
         console.log('✅ Error handling completed without throwing');
     } catch (error) {
         if (error.message.includes('secret123')) {

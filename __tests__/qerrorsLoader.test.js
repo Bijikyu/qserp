@@ -38,30 +38,32 @@ describe('loadQerrors', () => { //group loader tests
 });
 
 describe('safeQerrors', () => { //new tests for sanitized logging
-  test('logStart omits error message', () => {
+  test('logStart omits error message', async () => {
+    let safeQerrors, spy, mockConsole;
     jest.isolateModules(() => { //isolate module for mocking
       const qerr = jest.fn(); //mock qerrors
       jest.doMock('qerrors', () => qerr); //provide mock implementation
-      const { safeQerrors } = require('../lib/qerrorsLoader'); //load function
-      const { mockConsole } = require('./utils/consoleSpies'); //console spy helper
-      const spy = mockConsole('log'); //spy on console.log
-      safeQerrors(new Error('secret'), 'ctx'); //invoke with error
-      expect(spy).toHaveBeenCalledWith('safeQerrors is running with ctx'); //should log generic context only
-      spy.mockRestore(); //cleanup spy
+      ({ safeQerrors } = require('../lib/qerrorsLoader')); //load function
+      ({ mockConsole } = require('./utils/consoleSpies')); //import helper
+      spy = mockConsole('log'); //spy on console.log
     });
+    await safeQerrors(new Error('secret'), 'ctx'); //invoke with error
+    expect(spy).toHaveBeenCalledWith('safeQerrors is running with ctx'); //should log generic context only
+    spy.mockRestore(); //cleanup spy
   });
 
-  test('fallback logs sanitized message', () => {
+  test('fallback logs sanitized message', async () => {
+    let safeQerrors, spy, mockConsole;
     jest.isolateModules(() => { //isolate module for mocking
       const qerr = jest.fn(() => { throw new Error('fail'); }); //mock throwing
       jest.doMock('qerrors', () => qerr); //mock module
-      const { safeQerrors } = require('../lib/qerrorsLoader'); //load function
-      const { mockConsole } = require('./utils/consoleSpies'); //console helper
-      const spy = mockConsole('error'); //spy on console.error
-      safeQerrors(new Error('bad\nline'), 'ctx'); //invoke with newline
-      const joined = spy.mock.calls.map(c => c.join(' ')).join(' '); //aggregate output
-      expect(joined).not.toMatch(/\n/); //newline should be removed
-      spy.mockRestore(); //cleanup
+      ({ safeQerrors } = require('../lib/qerrorsLoader')); //load function
+      ({ mockConsole } = require('./utils/consoleSpies')); //console helper
+      spy = mockConsole('error'); //spy on console.error
     });
+    await safeQerrors(new Error('bad\nline'), 'ctx'); //invoke with newline
+    const joined = spy.mock.calls.map(c => c.join(' ')).join(' '); //aggregate output
+    expect(joined).not.toMatch(/\n/); //newline should be removed
+    spy.mockRestore(); //cleanup
   });
 });
