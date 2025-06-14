@@ -141,13 +141,16 @@ test.each(['True', 'true', 'TRUE', true])('rateLimitedRequest returns mock when 
 test('fetchSearchItems bypasses url build in CODEX mode', async () => {
   process.env.CODEX = 'true'; //enable codex offline mode
   ({ mock, scheduleMock, qerrorsMock } = initSearchTest()); //reinit with codex flag
-  const { fetchSearchItems } = require('../lib/qserp'); //import after env set
-  const items = await fetchSearchItems('offline'); //call fetch expecting mock
+  const qserp = require('../lib/qserp'); //import after env set
+  const spy = jest.spyOn(qserp, 'rateLimitedRequest'); //spy on internal request function
+  const items = await qserp.fetchSearchItems('offline'); //call fetch expecting mock
   expect(items).toEqual([]); //mock response should be empty array
   expect(scheduleMock).not.toHaveBeenCalled(); //rate limiter should not schedule
   expect(mock.history.get.length).toBe(0); //axios should not build any url
+  expect(spy).not.toHaveBeenCalled(); //verify no call to rateLimitedRequest
+  spy.mockRestore(); //clean up spy
   delete process.env.CODEX; //cleanup codex flag
-}); //test verifies fetchSearchItems skips url creation when CODEX true
+}); //test verifies fetchSearchItems skips url creation and internal request when CODEX true
 
 test('validateSearchQuery accepts non-empty strings', () => { //(verify valid input)
   const { validateSearchQuery } = require('../lib/qserp'); //import helper
