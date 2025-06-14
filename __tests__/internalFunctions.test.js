@@ -145,3 +145,17 @@ test('sanitizeApiKey replaces all matches', () => { //ensure global replacement
   const res = sanitizeApiKey('start key middle key end'); //call with repeated key
   expect(res).toBe('start [redacted] middle [redacted] end'); //expect both replaced
 });
+
+test('sanitizeApiKey does not log raw key with DEBUG on', () => { //verify log sanitization
+  const spy = mockConsole('log'); //capture console.log output
+  jest.isolateModules(() => { //load module with custom env
+    process.env.DEBUG = 'true'; //enable debug output
+    process.env.GOOGLE_API_KEY = 'secret123'; //unique key for detection
+    process.env.GOOGLE_CX = 'cx'; //required env var
+    const { sanitizeApiKey } = require('../lib/qserp'); //load fresh module
+    sanitizeApiKey('use secret123 here'); //invoke with raw key
+  });
+  const logged = spy.mock.calls.map(c => c.join(' ')).join(' '); //combine log messages
+  expect(logged).not.toContain('secret123'); //ensure raw key never logged
+  spy.mockRestore(); //cleanup spy
+});
