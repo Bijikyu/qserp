@@ -168,6 +168,15 @@ test('sanitizeApiKey replaces all matches', () => { //ensure global replacement
   expect(res).toBe('start [redacted] middle [redacted] end'); //expect both replaced
 });
 
+test('sanitizeApiKey reacts to changed GOOGLE_API_KEY after load', () => { //verify runtime key change
+  const { sanitizeApiKey } = require('../lib/qserp'); //use already loaded module
+  process.env.GOOGLE_API_KEY = 'newkey'; //change key without reloading module
+  const raw = sanitizeApiKey('pre newkey post'); //sanitize raw key
+  const enc = sanitizeApiKey(`pre ${encodeURIComponent('newkey')} post`); //sanitize encoded key
+  expect(raw).toBe('pre [redacted] post'); //raw sanitized
+  expect(enc).toBe('pre [redacted] post'); //encoded sanitized
+});
+
 test.each(['plain error', { foo: 'bar' }])('handleAxiosError handles %p input', async val => {
   const { handleAxiosError } = require('../lib/qserp'); //load function under test
   const res = await handleAxiosError(val, 'ctx'); //invoke with arbitrary input
