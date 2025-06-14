@@ -145,3 +145,10 @@ test('sanitizeApiKey replaces all matches', () => { //ensure global replacement
   const res = sanitizeApiKey('start key middle key end'); //call with repeated key
   expect(res).toBe('start [redacted] middle [redacted] end'); //expect both replaced
 });
+
+test.each(['plain error', { foo: 'bar' }])('handleAxiosError handles %p input', val => {
+  const { handleAxiosError } = require('../lib/qserp'); //load function under test
+  const res = handleAxiosError(val, 'ctx'); //invoke with arbitrary input
+  expect(res).toBe(true); //should succeed without throwing
+  expect(qerrorsMock).toHaveBeenCalled(); //qerrors should still log
+});
