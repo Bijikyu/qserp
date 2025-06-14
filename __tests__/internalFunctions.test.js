@@ -59,7 +59,6 @@ test('getGoogleURL builds proper url', () => {
 test('getGoogleURL encodes key and cx values', () => {
   process.env.GOOGLE_API_KEY = 'k+/val'; //set api key with special chars
   process.env.GOOGLE_CX = 'cx/+'; //set cx with special chars
-  jest.resetModules(); //reload module with new env vars
   const { getGoogleURL } = require('../lib/qserp');
   const url = getGoogleURL('encode');
   expect(url).toBe('https://www.googleapis.com/customsearch/v1?q=encode&key=k%2B%2Fval&cx=cx%2F%2B&fields=items(title,snippet,link)'); //encoded key and cx
