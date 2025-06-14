@@ -124,7 +124,8 @@ test.each(['True', 'true', 'TRUE', true])('rateLimitedRequest returns mock when 
   ({ mock, scheduleMock, qerrorsMock } = initSearchTest()); //reinit with CODEX set
   const { rateLimitedRequest } = require('../lib/qserp'); //import after env setup
   const res = await rateLimitedRequest('http://codex'); //call function expecting mock
-  expect(res).toEqual({ data: { items: [] } }); //mocked empty items returned
+  const expected = { data: { items: [], searchInformation: { searchTime: 0, totalResults: '0' } } }; //expected mock structure
+  expect(res).toEqual(expected); //mocked object should match structure
   expect(scheduleMock).not.toHaveBeenCalled(); //limiter should be bypassed
   expect(mock.history.get.length).toBe(0); //axios should not receive any request
   delete process.env.CODEX; //clean up env variable for other tests
