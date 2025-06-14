@@ -30,6 +30,7 @@ Before using the module, set these required environment variables:
 
 - `GOOGLE_API_KEY` – Your Google API key. Obtain from the [Google Cloud Console](https://console.cloud.google.com/)
 - `GOOGLE_CX` – Your Custom Search Engine ID. Set up at [Google Programmable Search Engine](https://programmablesearchengine.google.com/)
+Both values are URL encoded internally so keys containing characters like `+` or `/` work without additional configuration.
 
 ### Optional Variables
 These variables enhance functionality but are not required:
