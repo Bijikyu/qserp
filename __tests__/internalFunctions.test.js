@@ -1,4 +1,4 @@
-const { initSearchTest, resetMocks } = require('./utils/testSetup'); //import helpers for env and mocks
+const { initSearchTest, resetMocks, saveEnv, restoreEnv } = require('./utils/testSetup'); //import helpers for env and mocks
 const { mockConsole } = require('./utils/consoleSpies'); //added console spy helper
 
 let mock; //axios mock reference
@@ -124,4 +124,14 @@ test('sanitizeApiKey replaces all matches', () => { //ensure global replacement
   const { sanitizeApiKey } = require('../lib/qserp'); //import function under test
   const res = sanitizeApiKey('start key middle key end'); //call with repeated key
   expect(res).toBe('start [redacted] middle [redacted] end'); //expect both replaced
+});
+
+test('sanitizeApiKey replaces encoded matches', () => { //verify url-encoded key removal
+  const env = saveEnv(); //store current env
+  process.env.GOOGLE_API_KEY = 'k y'; //set key with space for encoding
+  jest.resetModules(); //reload module for new regex
+  const { sanitizeApiKey } = require('../lib/qserp'); //load with updated key
+  const res = sanitizeApiKey('first k%20y second'); //string contains encoded key
+  expect(res).toBe('first [redacted] second'); //should redact encoded key
+  restoreEnv(env); //restore env for other tests
 });
