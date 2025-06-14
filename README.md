@@ -189,6 +189,14 @@ googleSearch('test').then(results => {
 });
 ```
 
+In offline mode `rateLimitedRequest` resolves to:
+
+```javascript
+{ data: { items: [], searchInformation: { searchTime: 0, totalResults: '0' } } }
+```
+
+Only these fields are returned.
+
 This enables development and testing in environments without internet access or API credentials.
 
 ## Caching System
