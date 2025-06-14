@@ -81,7 +81,7 @@ test('handleAxiosError logs sanitized response object and returns true', () => {
   expect(res).toBe(true); //should return true
   const logged = spy.mock.calls[0][0]; //capture logged object for inspection
   expect(JSON.stringify(logged)).not.toContain('key=key'); //verify key removed from log
-  expect(logged.config.url).toBe('http://x?[redacted]=[redacted]'); //url should be fully sanitized
+  expect(logged.config.url).toBe('http://x?[redacted]'); //url should be fully sanitized
   spy.mockRestore(); //restore console.error
 });
 
@@ -103,8 +103,8 @@ test('handleAxiosError passes sanitized error to qerrors', () => { //verify qerr
   handleAxiosError(err, 'ctx'); //invoke handler
   const arg = qerrorsMock.mock.calls[0][0]; //extract error passed to qerrors
   expect(arg).not.toBe(err); //should be copied
-  expect(arg.message).toBe('bad [redacted]=[redacted]'); //message sanitized
-  expect(arg.config.url).toBe('http://x?[redacted]=[redacted]'); //url sanitized
+  expect(arg.message).toBe('bad [redacted]'); //message sanitized
+  expect(arg.config.url).toBe('http://x?[redacted]'); //url sanitized
 });
 
 test('handleAxiosError returns false when qerrors throws', () => { //verify fallback on qerrors failure
@@ -144,4 +144,20 @@ test('sanitizeApiKey replaces all matches', () => { //ensure global replacement
   const { sanitizeApiKey } = require('../lib/qserp'); //import function under test
   const res = sanitizeApiKey('start key middle key end'); //call with repeated key
   expect(res).toBe('start [redacted] middle [redacted] end'); //expect both replaced
+});
+
+test('sanitizeApiKey handles uppercase encoded key', () => { //verify encoded variant
+  process.env.GOOGLE_API_KEY = 'k y'; //use key requiring encoding
+  jest.resetModules(); //reload module with new key
+  const { sanitizeApiKey } = require('../lib/qserp'); //import sanitized function
+  const encoded = encodeURIComponent('k y').toUpperCase(); //uppercase hex form
+  const res = sanitizeApiKey(`value=${encoded}`); //pass string containing encoded key
+  expect(res).toBe('value=[redacted]'); //key replaced with redaction
+});
+
+test.each(['http://x?key=key', 'key%3Dkey'])('sanitizeApiKey masks query fragments %s', val => { //cover param patterns
+  const { sanitizeApiKey } = require('../lib/qserp'); //import function under test
+  const res = sanitizeApiKey(val); //sanitize provided string
+  expect(res).toContain('[redacted]'); //result should hide key
+  expect(res).not.toContain('key=key'); //ensure raw key fragment removed
 });
