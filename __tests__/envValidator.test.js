@@ -111,6 +111,15 @@ describe('envValidator', () => {
             expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 0);
         });
 
+        it('should parse values with leading zeros as decimal', () => {
+            process.env.TEST_VAR = '08';
+
+            const result = parseIntWithBounds('TEST_VAR', 50, 0, 100);
+
+            expect(result).toBe(8); //explicit base 10 prevents octal interpretation
+            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 8);
+        });
+
         it('should handle boundary values exactly at limits', () => {
             process.env.TEST_VAR = '10';
             
