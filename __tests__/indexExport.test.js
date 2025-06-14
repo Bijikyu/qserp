@@ -1,3 +1,4 @@
+jest.mock('qerrors', () => jest.fn()); //prevent real qerrors side effects
 process.env.GOOGLE_API_KEY = 'key'; //set required api key for module load
 process.env.GOOGLE_CX = 'cx'; //set required cx id for module load
 const indexExports = require('../index'); //(import index module to test re-export)
