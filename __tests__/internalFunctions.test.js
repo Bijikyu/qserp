@@ -145,3 +145,9 @@ test('sanitizeApiKey replaces all matches', () => { //ensure global replacement
   const res = sanitizeApiKey('start key middle key end'); //call with repeated key
   expect(res).toBe('start [redacted] middle [redacted] end'); //expect both replaced
 });
+
+test.each(['Key', 'KEY'])('sanitizeApiKey handles casing for %s', variant => {
+  const { sanitizeApiKey } = require('../lib/qserp'); //import sanitize for variant check
+  const res = sanitizeApiKey(`pre ${variant} post`); //insert variant in string
+  expect(res).toBe('pre [redacted] post'); //verify sanitized regardless of case
+});
