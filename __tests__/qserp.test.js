@@ -159,6 +159,11 @@ describe('qserp module', () => { //group qserp tests
     expect(url).toBe(`https://www.googleapis.com/customsearch/v1?q=Val&key=key&cx=cx&fields=items(title,snippet,link)&num=${valid}`); //should match num
   });
 
+  test('getGoogleURL accepts numeric string', () => { //verify string parsing and clamping
+    const url = getGoogleURL('Val', '5'); //num provided as string
+    expect(url).toBe('https://www.googleapis.com/customsearch/v1?q=Val&key=key&cx=cx&fields=items(title,snippet,link)&num=5'); //string should parse to num 5
+  });
+
   test.each([0, -1, 11])('getGoogleURL clamps out of range %i', bad => { //invalid values clamp to range
     const url = getGoogleURL('Bad', bad); //build url with invalid num
     const clamped = bad < 1 ? 1 : 10; //expected clamp result
