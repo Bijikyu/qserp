@@ -3,19 +3,23 @@ const { saveEnv, restoreEnv } = require('./utils/testSetup'); //import env helpe
 const { mockConsole } = require('./utils/consoleSpies'); //added console spy helper
 
 describe('envUtils', () => { //wrap all env util tests //(use describe as requested)
-  let warnSpy; //declare warn spy //(track console warning)
+  let warnSpy; //declare warn spy //(track minLogger warn)
+  let errorSpy; //declare error spy //(track minLogger error)
 
   let savedEnv; //holder for env snapshot //(for restoration)
   beforeEach(() => { //prepare each test //(reset env and mocks)
     savedEnv = saveEnv(); //capture current env //(using util)
-    warnSpy = mockConsole('warn'); //mock console.warn via helper
     jest.resetModules(); //reload modules so env vars re-evaluated //(ensures clean require)
     qerrors = require('qerrors'); //re-acquire mock after module reset
+    const minLogger = require('../lib/minLogger'); //import logger after reset
+    warnSpy = jest.spyOn(minLogger, 'logWarn').mockImplementation(() => {}); //spy warn
+    errorSpy = jest.spyOn(minLogger, 'logError').mockImplementation(() => {}); //spy error
   });
 
   afterEach(() => { //cleanup after each test //(restore settings)
     restoreEnv(savedEnv); //reset environment after test //(using util)
-    warnSpy.mockRestore(); //restore console.warn //(remove spy)
+    warnSpy.mockRestore(); //restore logWarn spy //(remove spy)
+    errorSpy.mockRestore(); //restore logError spy //(remove spy)
     jest.clearAllMocks(); //clear any mock usage //(reset mock counts)
   });
 
@@ -27,6 +31,7 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     expect(throwIfMissingEnvVars(['A', 'B'])).toEqual([]); //should return empty //(assert)
     expect(warnIfMissingEnvVars(['A', 'B'], 'warn')).toBe(true); //should not warn //(assert)
     expect(warnSpy).not.toHaveBeenCalled(); //warn not called //(check)
+    expect(errorSpy).not.toHaveBeenCalled(); //error not called //(check)
     expect(qerrors).not.toHaveBeenCalled(); //qerrors not called //(check)
   });
 
@@ -38,6 +43,7 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     expect(() => throwIfMissingEnvVars(['A', 'B'])).toThrow('Missing required'); //should throw on missing vars //(assert)
     expect(warnIfMissingEnvVars(['A', 'B'], 'warn')).toBe(false); //should warn //(assert)
     expect(warnSpy).toHaveBeenCalledWith('warn'); //warn called with message //(check)
+    expect(errorSpy).toHaveBeenCalledWith('Missing required environment variables: B'); //error logged //(check)
     expect(qerrors).toHaveBeenCalledTimes(1); //qerrors invoked once //(check)
   });
 
@@ -47,6 +53,7 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     expect(throwIfMissingEnvVars(undefined)).toEqual([]); //throws handled //(assert)
     expect(warnIfMissingEnvVars(undefined, 'warn')).toBe(true); //should not warn //(assert)
     expect(warnSpy).not.toHaveBeenCalled(); //warn not called //(check)
+    expect(errorSpy).not.toHaveBeenCalled(); //error not called //(check)
     expect(qerrors).toHaveBeenCalledTimes(3); //qerrors invoked three times //(check)
   });
 
