@@ -207,8 +207,8 @@ describe('qserp module', () => { //group qserp tests
     logSpy.mockClear(); //ignore module init logs
     const res = sanitizeApiKey('pre key post'); //call function with api key
     expect(res).toBe('pre [redacted] post'); //result sanitized
-    expect(logSpy).toHaveBeenCalledWith('sanitizeApiKey is running with pre [redacted] post'); //start log sanitized
-    expect(logSpy).toHaveBeenCalledWith('sanitizeApiKey is returning pre [redacted] post'); //return log sanitized
+    expect(logSpy).toHaveBeenNthCalledWith(1, 'sanitizeApiKey is running with pre [redacted] post'); //first log sanitized input
+    expect(logSpy).toHaveBeenNthCalledWith(2, 'sanitizeApiKey is returning pre [redacted] post'); //second log sanitized output
     logSpy.mockRestore(); //cleanup spy
     if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore env
   });
