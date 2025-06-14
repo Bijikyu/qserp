@@ -179,4 +179,38 @@ describe('qserp module', () => { //group qserp tests
     expect(performCacheCleanup()).toBe(0); //no stale entries removed
     process.env.QSERP_MAX_CACHE_SIZE = savedSize; //restore env value
   });
+
+  test('sanitizeApiKey logs when DEBUG true', () => { //verify conditional logging
+    const savedDebug = process.env.DEBUG; //preserve env var
+    process.env.DEBUG = 'true'; //enable debug output
+    jest.resetModules(); //reload module for debug flag
+    const logSpy = require('./utils/consoleSpies').mockConsole('log'); //spy on log
+    const { setTestEnv } = require('./utils/testSetup'); //env helper
+    setTestEnv(); //ensure api key present
+    logSpy.mockClear(); //ignore setup logs
+    const { sanitizeApiKey } = require('../lib/qserp'); //require fresh module
+    logSpy.mockClear(); //ignore module init logs
+    const res = sanitizeApiKey('pre key post'); //call function with api key
+    expect(res).toBe('pre [redacted] post'); //result sanitized
+    expect(logSpy).toHaveBeenCalledWith('sanitizeApiKey is running with pre [redacted] post'); //start log sanitized
+    expect(logSpy).toHaveBeenCalledWith('sanitizeApiKey is returning pre [redacted] post'); //return log sanitized
+    logSpy.mockRestore(); //cleanup spy
+    if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore env
+  });
+
+  test('sanitizeApiKey silent when DEBUG false', () => { //verify no logging when debug off
+    const savedDebug = process.env.DEBUG; //preserve env var
+    process.env.DEBUG = 'false'; //disable debug output
+    jest.resetModules(); //reload module for debug flag
+    const logSpy = require('./utils/consoleSpies').mockConsole('log'); //spy on log
+    const { setTestEnv } = require('./utils/testSetup'); //env helper
+    setTestEnv(); //ensure api key present
+    logSpy.mockClear(); //ignore setup logs
+    const { sanitizeApiKey } = require('../lib/qserp'); //require module with debug off
+    logSpy.mockClear(); //ignore module init logs
+    sanitizeApiKey('key'); //call function expecting no log
+    expect(logSpy).not.toHaveBeenCalled(); //no logs should occur
+    logSpy.mockRestore(); //cleanup spy
+    if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore env
+  });
 });
