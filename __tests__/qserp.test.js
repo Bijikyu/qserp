@@ -56,6 +56,13 @@ describe('qserp module', () => { //group qserp tests
     expect(emptyUrls).toEqual([]); //expect empty array result
   });
 
+  test('rejects overly long query strings', async () => { //new max length validation test
+    const long = 'a'.repeat(2050); //construct query exceeding limit
+    await expect(googleSearch(long)).rejects.toThrow(); //should throw via helper
+    await expect(fetchSearchItems(long)).rejects.toThrow(); //helper should also throw
+    await expect(getTopSearchResults([long])).rejects.toThrow(); //multi search should reject
+  });
+
   test('logs errors via helper on request failure', async () => { //verify error logging path
     mock.onGet(/customsearch/).reply(500); //mock failed request
     const res = await googleSearch('err'); //search expecting failure
