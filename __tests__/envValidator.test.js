@@ -8,9 +8,9 @@
 const { parseIntWithBounds, parseBooleanVar, parseStringVar, validateEnvVar } = require('../lib/envValidator');
 
 // Mock dependencies to isolate envValidator functionality
-jest.mock('../lib/debugLogger');
+jest.mock('../lib/debugUtils');
 
-const { debugStart, debugReturn } = require('../lib/debugLogger');
+const { debugEntry, debugExit } = require('../lib/debugUtils');
 
 describe('envValidator', () => {
     let originalEnv;
@@ -33,8 +33,8 @@ describe('envValidator', () => {
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
             
             expect(result).toBe(50);
-            expect(debugStart).toHaveBeenCalledWith('parseIntWithBounds', 'TEST_VAR, default: 50, range: 10-100');
-            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 50);
+            expect(debugEntry).toHaveBeenCalledWith('parseIntWithBounds', 'TEST_VAR, default: 50, range: 10-100');
+            expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 50);
         });
 
         it('should parse valid environment variable within bounds', () => {
@@ -43,7 +43,7 @@ describe('envValidator', () => {
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
             
             expect(result).toBe(75);
-            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 75);
+            expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 75);
         });
 
         it('should enforce minimum bounds when value is too low', () => {
@@ -52,7 +52,7 @@ describe('envValidator', () => {
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
             
             expect(result).toBe(10);
-            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 10);
+            expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 10);
         });
 
         it('should enforce maximum bounds when value is too high', () => {
@@ -61,7 +61,7 @@ describe('envValidator', () => {
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
             
             expect(result).toBe(100);
-            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 100);
+            expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 100);
         });
 
         it('should handle non-numeric environment variables by using default', () => {
@@ -70,7 +70,7 @@ describe('envValidator', () => {
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
             
             expect(result).toBe(50);
-            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 50);
+            expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 50);
         });
 
         it('should handle empty string environment variables by using default', () => {
@@ -79,7 +79,7 @@ describe('envValidator', () => {
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
             
             expect(result).toBe(50);
-            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 50);
+            expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 50);
         });
 
         it('should handle floating point numbers by truncating to integer', () => {
@@ -88,7 +88,7 @@ describe('envValidator', () => {
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
             
             expect(result).toBe(75);
-            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 75);
+            expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 75);
         });
 
         it('should handle negative values correctly with negative bounds', () => {
@@ -97,7 +97,7 @@ describe('envValidator', () => {
             const result = parseIntWithBounds('TEST_VAR', -10, -50, 0);
             
             expect(result).toBe(-25);
-            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', -25);
+            expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', -25);
         });
 
         it('should handle zero values correctly', () => {
@@ -108,7 +108,7 @@ describe('envValidator', () => {
             // BUG FIX: Zero values should now be handled correctly with isNaN check
             // Previously 0 || defaultValue returned defaultValue, now 0 is preserved
             expect(result).toBe(0);
-            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 0);
+            expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 0);
         });
 
         it('should parse values with leading zeros as decimal', () => {
@@ -117,7 +117,7 @@ describe('envValidator', () => {
             const result = parseIntWithBounds('TEST_VAR', 50, 0, 100);
 
             expect(result).toBe(8); //explicit base 10 prevents octal interpretation
-            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 8);
+            expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 8);
         });
 
         it('should handle boundary values exactly at limits', () => {
@@ -126,7 +126,7 @@ describe('envValidator', () => {
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
             
             expect(result).toBe(10);
-            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 10);
+            expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 10);
         });
 
         it('should handle upper boundary values exactly at limits', () => {
@@ -135,7 +135,7 @@ describe('envValidator', () => {
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
             
             expect(result).toBe(100);
-            expect(debugReturn).toHaveBeenCalledWith('parseIntWithBounds', 100);
+            expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 100);
         });
     });
 

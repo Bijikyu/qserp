@@ -8,9 +8,9 @@
 const { parseStringVar, validateEnvVar } = require('../lib/envValidator');
 
 // Mock dependencies to isolate functionality
-jest.mock('../lib/debugLogger');
+jest.mock('../lib/debugUtils');
 
-const { debugStart, debugReturn } = require('../lib/debugLogger');
+const { debugEntry, debugExit } = require('../lib/debugUtils');
 
 describe('parseStringVar', () => {
     let originalEnv;
@@ -31,8 +31,8 @@ describe('parseStringVar', () => {
             const result = parseStringVar('TEST_STRING', 'default');
             
             expect(result).toBe('hello world');
-            expect(debugStart).toHaveBeenCalledWith('parseStringVar', 'TEST_STRING, default: default, maxLength: 0');
-            expect(debugReturn).toHaveBeenCalledWith('parseStringVar', 'length: 11');
+            expect(debugEntry).toHaveBeenCalledWith('parseStringVar', 'TEST_STRING, default: default, maxLength: 0');
+            expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'length: 11');
         });
 
         it('should return default value when environment variable is not set', () => {
@@ -41,7 +41,7 @@ describe('parseStringVar', () => {
             const result = parseStringVar('TEST_STRING', 'default');
             
             expect(result).toBe('default');
-            expect(debugReturn).toHaveBeenCalledWith('parseStringVar', 'length: 7');
+            expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'length: 7');
         });
 
         it('should trim whitespace from values', () => {
@@ -50,7 +50,7 @@ describe('parseStringVar', () => {
             const result = parseStringVar('TEST_STRING', 'default');
             
             expect(result).toBe('trimmed');
-            expect(debugReturn).toHaveBeenCalledWith('parseStringVar', 'length: 7');
+            expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'length: 7');
         });
 
         it('should handle empty string values', () => {
@@ -60,7 +60,7 @@ describe('parseStringVar', () => {
             
             // parseStringVar uses || operator, so empty string falls back to default
             expect(result).toBe('default');
-            expect(debugReturn).toHaveBeenCalledWith('parseStringVar', 'length: 7');
+            expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'length: 7');
         });
     });
 
@@ -71,7 +71,7 @@ describe('parseStringVar', () => {
             const result = parseStringVar('TEST_STRING', 'default', 10);
             
             expect(result).toBe('this is a ');
-            expect(debugReturn).toHaveBeenCalledWith('parseStringVar', 'truncated to 10 chars');
+            expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'truncated to 10 chars');
         });
 
         it('should not truncate values within maxLength', () => {
@@ -80,7 +80,7 @@ describe('parseStringVar', () => {
             const result = parseStringVar('TEST_STRING', 'default', 10);
             
             expect(result).toBe('short');
-            expect(debugReturn).toHaveBeenCalledWith('parseStringVar', 'length: 5');
+            expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'length: 5');
         });
 
         it('should handle maxLength of 0 as no limit', () => {
@@ -89,7 +89,7 @@ describe('parseStringVar', () => {
             const result = parseStringVar('TEST_STRING', 'default', 0);
             
             expect(result).toBe('very long string that should not be truncated');
-            expect(debugReturn).toHaveBeenCalledWith('parseStringVar', 'length: 45');
+            expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'length: 45');
         });
 
         it('should handle exact maxLength values', () => {
@@ -98,7 +98,7 @@ describe('parseStringVar', () => {
             const result = parseStringVar('TEST_STRING', 'default', 10);
             
             expect(result).toBe('exactly10c');
-            expect(debugReturn).toHaveBeenCalledWith('parseStringVar', 'length: 10');
+            expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'length: 10');
         });
     });
 
@@ -110,7 +110,7 @@ describe('parseStringVar', () => {
             const result = parseStringVar('TEST_STRING', 'default', 1000);
             
             expect(result).toBe('x'.repeat(1000));
-            expect(debugReturn).toHaveBeenCalledWith('parseStringVar', 'truncated to 1000 chars');
+            expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'truncated to 1000 chars');
         });
 
         it('should handle special characters correctly', () => {
@@ -150,8 +150,8 @@ describe('validateEnvVar', () => {
             const result = validateEnvVar('REQUIRED_VAR', true);
             
             expect(result).toBe(true);
-            expect(debugStart).toHaveBeenCalledWith('validateEnvVar', 'REQUIRED_VAR, required: true');
-            expect(debugReturn).toHaveBeenCalledWith('validateEnvVar', 'valid');
+            expect(debugEntry).toHaveBeenCalledWith('validateEnvVar', 'REQUIRED_VAR, required: true');
+            expect(debugExit).toHaveBeenCalledWith('validateEnvVar', 'valid');
         });
 
         it('should throw error when required variable is missing', () => {
@@ -161,7 +161,7 @@ describe('validateEnvVar', () => {
                 validateEnvVar('REQUIRED_VAR', true);
             }).toThrow('Required environment variable REQUIRED_VAR is missing or empty');
             
-            expect(debugReturn).toHaveBeenCalledWith('validateEnvVar', 'missing required variable');
+            expect(debugExit).toHaveBeenCalledWith('validateEnvVar', 'missing required variable');
         });
 
         it('should throw error when required variable is empty', () => {
@@ -188,7 +188,7 @@ describe('validateEnvVar', () => {
             const result = validateEnvVar('OPTIONAL_VAR', false);
             
             expect(result).toBe(true);
-            expect(debugReturn).toHaveBeenCalledWith('validateEnvVar', 'valid');
+            expect(debugExit).toHaveBeenCalledWith('validateEnvVar', 'valid');
         });
 
         it('should return false when optional variable is missing', () => {
@@ -197,7 +197,7 @@ describe('validateEnvVar', () => {
             const result = validateEnvVar('OPTIONAL_VAR', false);
             
             expect(result).toBe(false);
-            expect(debugReturn).toHaveBeenCalledWith('validateEnvVar', 'optional missing');
+            expect(debugExit).toHaveBeenCalledWith('validateEnvVar', 'optional missing');
         });
 
         it('should return false when optional variable is empty', () => {
@@ -206,7 +206,7 @@ describe('validateEnvVar', () => {
             const result = validateEnvVar('OPTIONAL_VAR', false);
             
             expect(result).toBe(false);
-            expect(debugReturn).toHaveBeenCalledWith('validateEnvVar', 'optional missing');
+            expect(debugExit).toHaveBeenCalledWith('validateEnvVar', 'optional missing');
         });
     });
 
