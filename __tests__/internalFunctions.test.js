@@ -119,6 +119,15 @@ test('handleAxiosError returns false when qerrors throws', () => { //verify fall
   spy.mockRestore(); //restore console.error
 }); //end test ensuring failure path
 
+test.each([null, undefined, {}])('handleAxiosError handles %p gracefully', val => { //verify invalid structures
+  const { handleAxiosError } = require('../lib/qserp'); //load function for test
+  const spy = mockConsole('error'); //intercept error output
+  const res = handleAxiosError(val, 'ctx'); //invoke handler with invalid input
+  expect(res).toBe(false); //should return false for bad structure
+  expect(qerrorsMock).toHaveBeenCalled(); //qerrors invoked for logging
+  spy.mockRestore(); //cleanup spy
+});
+
 test.each(['True', 'true', 'TRUE', true])('rateLimitedRequest returns mock when CODEX=%s', async val => {
   process.env.CODEX = val; //set CODEX variant to trigger mock response
   ({ mock, scheduleMock, qerrorsMock } = initSearchTest()); //reinit with CODEX set
