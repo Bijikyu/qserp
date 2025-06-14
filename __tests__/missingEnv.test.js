@@ -28,7 +28,7 @@ describe('throwIfMissingEnvVars', () => { //describe missing env block
   });
 
   test('module does not throw when CODEX true', () => { //verify codex bypasses env check
-    process.env.CODEX = 'true'; //enable codex mode
+    process.env.CODEX = ' true '; //enable codex mode with whitespace
     jest.resetModules(); //reload module with codex flag
     const { createAxiosMock } = require('./utils/testSetup'); //recreate axios mock
     createAxiosMock(); //initialize axios adapter for module

@@ -119,7 +119,7 @@ test('handleAxiosError returns false when qerrors throws', () => { //verify fall
   spy.mockRestore(); //restore console.error
 }); //end test ensuring failure path
 
-test.each(['True', 'true', 'TRUE', true])('rateLimitedRequest returns mock when CODEX=%s', async val => {
+test.each(['True', 'true', 'TRUE', true, ' true '])('rateLimitedRequest returns mock when CODEX=%s', async val => {
   process.env.CODEX = val; //set CODEX variant to trigger mock response
   ({ mock, scheduleMock, qerrorsMock } = initSearchTest()); //reinit with CODEX set
   const { rateLimitedRequest } = require('../lib/qserp'); //import after env setup
