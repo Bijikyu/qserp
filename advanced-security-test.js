@@ -101,7 +101,7 @@ async function advancedSecurityTesting() {
         
         try {
             // Test if malicious env values cause issues
-            const parsedValue = parseInt(process.env.QSERP_MAX_CACHE_SIZE) || 1000;
+            const parsedValue = parseInt(process.env.QSERP_MAX_CACHE_SIZE, 10) || 1000; //use base 10 to match production parsing
             if (parsedValue < 0 || parsedValue > 100000 || isNaN(parsedValue)) {
                 console.log(`Environment validation needed for ${test.key}=${test.value}`);
             } else {
