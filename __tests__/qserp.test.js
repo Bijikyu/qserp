@@ -45,7 +45,7 @@ describe('qserp module', () => { //group qserp tests
   test('getTopSearchResults requests single item', async () => { //ensure num param used
     mock.onGet(/Solo/).reply(200, { items: [{ link: 'http://s' }] }); //mock single term
     await getTopSearchResults(['Solo']); //call with one term
-    expect(mock.history.get[0].url).toBe('https://www.googleapis.com/customsearch/v1?q=Solo&key=key&cx=cx&fields=items(title,snippet,link)&num=1'); //url should request one item with fields filter
+    expect(mock.history.get[0].url).toBe('https://customsearch.googleapis.com/customsearch/v1?q=Solo&key=key&cx=cx&fields=items(title,snippet,link)&num=1'); //url should request one item with fields filter
   });
 
   test('handles empty or invalid input', async () => { //verify validation paths
@@ -163,18 +163,18 @@ describe('qserp module', () => { //group qserp tests
 
   test.each([1, 5, 10])('getGoogleURL includes valid num %i', valid => { //verify clamped url for valid num
     const url = getGoogleURL('Val', valid); //build url with provided num
-    expect(url).toBe(`https://www.googleapis.com/customsearch/v1?q=Val&key=key&cx=cx&fields=items(title,snippet,link)&num=${valid}`); //should match num
+    expect(url).toBe(`https://customsearch.googleapis.com/customsearch/v1?q=Val&key=key&cx=cx&fields=items(title,snippet,link)&num=${valid}`); //should match num
   });
 
   test('getGoogleURL accepts numeric string', () => { //verify string parsing and clamping
     const url = getGoogleURL('Val', '5'); //num provided as string
-    expect(url).toBe('https://www.googleapis.com/customsearch/v1?q=Val&key=key&cx=cx&fields=items(title,snippet,link)&num=5'); //string should parse to num 5
+    expect(url).toBe('https://customsearch.googleapis.com/customsearch/v1?q=Val&key=key&cx=cx&fields=items(title,snippet,link)&num=5'); //string should parse to num 5
   });
 
   test.each([0, -1, 11])('getGoogleURL clamps out of range %i', bad => { //invalid values clamp to range
     const url = getGoogleURL('Bad', bad); //build url with invalid num
     const clamped = bad < 1 ? 1 : 10; //expected clamp result
-    expect(url).toBe(`https://www.googleapis.com/customsearch/v1?q=Bad&key=key&cx=cx&fields=items(title,snippet,link)&num=${clamped}`); //should clamp
+    expect(url).toBe(`https://customsearch.googleapis.com/customsearch/v1?q=Bad&key=key&cx=cx&fields=items(title,snippet,link)&num=${clamped}`); //should clamp
   });
 
   test('disables caching when env var is zero', async () => { //new zero cache test
