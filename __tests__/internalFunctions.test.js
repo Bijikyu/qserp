@@ -56,6 +56,15 @@ test('getGoogleURL builds proper url', () => {
   expect(urlNum).toBe('https://www.googleapis.com/customsearch/v1?q=hello&key=key&cx=cx&fields=items(title,snippet,link)&num=5'); //should include num param and fields filter
 });
 
+test('getGoogleURL returns placeholder when CODEX true', () => {
+  process.env.CODEX = 'true'; //enable offline mode
+  ({ mock, scheduleMock, qerrorsMock } = initSearchTest()); //reinit with codex flag
+  const { getGoogleURL } = require('../lib/qserp'); //import after codex enabled
+  const url = getGoogleURL('x'); //call function expecting placeholder
+  expect(url).toBe('offline://mock-search'); //should match placeholder value
+  delete process.env.CODEX; //cleanup codex flag
+});
+
 test('handleAxiosError logs with qerrors and returns true', () => {
   const { handleAxiosError } = require('../lib/qserp');
   const err = new Error('fail');

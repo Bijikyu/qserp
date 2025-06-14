@@ -176,6 +176,7 @@ When the environment variable `CODEX` is set to any case-insensitive `true` valu
 - **Mock responses** are returned from all search functions
 - **Environment validation** is bypassed for API credentials
 - **Full functionality** is preserved for testing and development
+- **getGoogleURL** returns a placeholder URL `offline://mock-search` in this mode
 
 Example:
 
