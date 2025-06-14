@@ -240,4 +240,23 @@ describe('qserp module', () => { //group qserp tests
     logSpy.mockRestore(); //cleanup spy
     if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore env
   });
+
+  test('sanitizeApiKey regenerates regex after key change', () => { //ensure runtime key update sanitized
+    const savedDebug = process.env.DEBUG; //preserve debug setting
+    process.env.DEBUG = 'true'; //force logging
+    jest.resetModules(); //reload module for fresh state
+    const logSpy = require('./utils/consoleSpies').mockConsole('log'); //spy on log
+    const { setTestEnv } = require('./utils/testSetup'); //setup env
+    setTestEnv(); //initial key 'key'
+    logSpy.mockClear(); //clear init logs
+    const { sanitizeApiKey } = require('../lib/qserp'); //load module with initial key
+    logSpy.mockClear(); //ignore module logs
+    process.env.GOOGLE_API_KEY = 'new'; //change key at runtime
+    const result = sanitizeApiKey('pre new post'); //call using new key
+    expect(result).toBe('pre [redacted] post'); //expect sanitized
+    expect(logSpy).toHaveBeenNthCalledWith(1, 'sanitizeApiKey is running with pre [redacted] post'); //input sanitized
+    expect(logSpy).toHaveBeenNthCalledWith(2, 'sanitizeApiKey is returning pre [redacted] post'); //output sanitized
+    logSpy.mockRestore(); //cleanup
+    if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore debug
+  });
 });
