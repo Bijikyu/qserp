@@ -139,6 +139,21 @@ describe('qserp module', () => { //group qserp tests
     expect(scheduleMock).toHaveBeenCalled(); //new request should occur
   });
 
+  test.each([
+    [0, 1],
+    [-1, 1],
+    [11, 10]
+  ])('invalid num %i shares cache with %i', async (bad, clamp) => { //new cache clamp test
+    mock.onGet(/Clamp/).reply(200, { items: [{ link: 'x' }] }); //mock first response
+    const first = await fetchSearchItems('Clamp', bad); //populate cache with invalid num
+    scheduleMock.mockClear(); //clear schedule to detect second call
+    mock.onGet(/Clamp/).reply(200, { items: [{ link: 'y' }] }); //new data if request occurs
+    const second = await fetchSearchItems('Clamp', clamp); //should hit cache due to clamping
+    expect(first).toEqual([{ link: 'x' }]); //initial result
+    expect(second).toEqual([{ link: 'x' }]); //should match cached data
+    expect(scheduleMock).not.toHaveBeenCalled(); //no new request expected
+  });
+
   test.each([1, 5, 10])('getGoogleURL includes valid num %i', valid => { //verify clamped url for valid num
     const url = getGoogleURL('Val', valid); //build url with provided num
     expect(url).toBe(`https://www.googleapis.com/customsearch/v1?q=Val&key=key&cx=cx&fields=items(title,snippet,link)&num=${valid}`); //should match num
