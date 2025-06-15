@@ -158,6 +158,22 @@ describe('errorUtils', () => { // errorUtils
             expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', expect.any(Error));
             expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', error);
         });
+
+        it('should return false when qerrors throws', () => { // ensure failure return value
+            const { reportError } = require('../lib/errorUtils');
+
+            mockQerrors.mockImplementation(() => { //force qerrors failure
+                throw new Error('Reporting failed');
+            });
+
+            const error = new Error('Original error');
+
+            const result = reportError(error, 'Test message');
+
+            expect(result).toBe(false);
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', expect.any(Error));
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', error);
+        });
     });
 
     describe('convenience reporting functions', () => { // convenience reporting functions
@@ -203,6 +219,34 @@ describe('errorUtils', () => { // errorUtils
                     required: true
                 })
             );
+        });
+
+        it('should return false when reportApiError fails', () => { // propagate false on failure
+            const { reportApiError } = require('../lib/errorUtils');
+
+            mockQerrors.mockImplementation(() => { throw new Error('Reporting failed'); });
+
+            const error = new Error('Network failure');
+
+            const result = reportApiError(error, 'Fetch data', { url: 'http://example.com' });
+
+            expect(result).toBe(false);
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', expect.any(Error));
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', error);
+        });
+
+        it('should return false when reportConfigError fails', () => { // propagate false on config failure
+            const { reportConfigError } = require('../lib/errorUtils');
+
+            mockQerrors.mockImplementation(() => { throw new Error('Reporting failed'); });
+
+            const error = new Error('Bad config');
+
+            const result = reportConfigError(error, 'Env check', { variable: 'TEST' });
+
+            expect(result).toBe(false);
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', expect.any(Error));
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', error);
         });
 
         it('should report validation error with proper context', () => { // should report validation error with proper context
