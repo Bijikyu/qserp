@@ -62,4 +62,6 @@ async function memoryGrowthAnalysis() {
     console.log('\n=== Memory Analysis Complete ===');
 }
 
-memoryGrowthAnalysis().catch(console.error); // start analysis when file executed
+if (require.main === module) { memoryGrowthAnalysis().catch(console.error); } //auto-run only when executed directly
+
+module.exports = { memoryGrowthAnalysis }; //export for test execution
