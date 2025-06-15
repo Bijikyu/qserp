@@ -1,3 +1,4 @@
+// Summary: qerrorsLoader.test.js validates module behavior and edge cases
 describe('loadQerrors', () => { //group loader tests
   test('returns default exported function', () => { //test default export shape
     jest.isolateModules(() => { //isolate module for mocking
@@ -38,7 +39,7 @@ describe('loadQerrors', () => { //group loader tests
 });
 
 describe('safeQerrors', () => { //new tests for sanitized logging
-  test('logStart omits error message', async () => {
+  test('logStart omits error message', async () => { // logStart omits error message
     let safeQerrors, spy, mockConsole;
     jest.isolateModules(() => { //isolate module for mocking
       const qerr = jest.fn(); //mock qerrors
@@ -52,7 +53,7 @@ describe('safeQerrors', () => { //new tests for sanitized logging
     spy.mockRestore(); //cleanup spy
   });
 
-  test('fallback logs sanitized message', async () => {
+  test('fallback logs sanitized message', async () => { // fallback logs sanitized message
     let safeQerrors, spy, mockConsole;
     jest.isolateModules(() => { //isolate module for mocking
       const qerr = jest.fn(() => { throw new Error('fail'); }); //mock throwing

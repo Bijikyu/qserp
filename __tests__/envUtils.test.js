@@ -1,3 +1,4 @@
+// Summary: envUtils.test.js validates module behavior and edge cases
 let qerrors; //holds mock loaded after reset (setup in testSetup)
 const { saveEnv, restoreEnv } = require('./utils/testSetup'); //import env helpers //(new utilities)
 const { mockConsole } = require('./utils/consoleSpies'); //added console spy helper

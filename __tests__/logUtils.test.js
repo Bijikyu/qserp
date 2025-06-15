@@ -1,3 +1,4 @@
+// Summary: logUtils.test.js validates module behavior and edge cases
 const { mockConsole } = require('./utils/consoleSpies'); //import helper for spies
 
 // CONSOLIDATION: logUtils functionality moved to debugUtils for DRY compliance

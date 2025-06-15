@@ -1,3 +1,4 @@
+// Summary: cacheSizeParsing.test.js validates module behavior and edge cases
 const { saveEnv, restoreEnv, setTestEnv } = require('./utils/testSetup');
 
 let savedEnv;
@@ -12,7 +13,7 @@ afterEach(() => {
   jest.resetModules();
 });
 
-test('parses QSERP_MAX_CACHE_SIZE with leading zero as decimal', () => {
+test('parses QSERP_MAX_CACHE_SIZE with leading zero as decimal', () => { // parses QSERP_MAX_CACHE_SIZE with leading zero as decimal
   setTestEnv();
   process.env.QSERP_MAX_CACHE_SIZE = '08';
 
