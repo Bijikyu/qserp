@@ -83,13 +83,11 @@ function saveEnv() { //(capture current process.env)
  * process.env object which has special behavior.
  */
 function restoreEnv(savedEnv) { //(restore saved environment)
-  logStart('restoreEnv', 'env restore'); //initial log via util //(mask env data)
-  // Clear all current environment variables to prevent leftover test values
-  // delete operator is required since process.env has special property behavior
-  Object.keys(process.env).forEach(k => delete process.env[k]); //clear current env //(avoid reassignment)
-  // Restore saved environment variables to original state
-  // Object.assign copies all enumerable properties from saved state
-  Object.assign(process.env, savedEnv); //copy saved vars back //(restore vars)
+  logStart('restoreEnv', 'env restore'); //initial log via util
+  // delete all env vars to start clean
+  Object.keys(process.env).forEach(k => delete process.env[k]); //clear env
+  // copy saved vars back to process.env
+  Object.assign(process.env, savedEnv); //restore vars
   logReturn('restoreEnv', true); //final log via util
   return true; //confirm restore
 }
@@ -111,13 +109,11 @@ function restoreEnv(savedEnv) { //(restore saved environment)
  */
 function createScheduleMock() {
   logStart('createScheduleMock', 'none'); //initial log via util
-  // Create Jest spy that immediately executes provided function in resolved promise
-  // This mimics Bottleneck behavior without actual rate limiting delays
-  scheduleMock = jest.fn(fn => Promise.resolve(fn())); //reset schedule spy for new test
+  // jest spy executes fn immediately to bypass delay
+  scheduleMock = jest.fn(fn => Promise.resolve(fn())); //schedule spy
   const Bottleneck = require('bottleneck'); //require mocked Bottleneck
-  // Configure mocked constructor to return object with our schedule spy
-  // This ensures rate-limited code receives expected interface
-  Bottleneck.mockImplementation(() => ({ schedule: scheduleMock })); //inject schedule spy into mock
+  // return object with schedule spy
+  Bottleneck.mockImplementation(() => ({ schedule: scheduleMock })); //inject spy
   logReturn('createScheduleMock', 'mock'); //final log via util
   return scheduleMock; //export schedule mock
 }
@@ -144,6 +140,15 @@ function createQerrorsMock() {
   return qerrorsMock; //export qerrors mock
 }
 
+/**
+ * Creates an axios mock adapter for HTTP isolation
+ *
+ * NETWORK STRATEGY: intercepts requests so tests never hit real APIs,
+ * keeping results deterministic and quota free.
+ *
+ * @param {Object} instance - axios instance to attach to
+ * @returns {Object} axios-mock-adapter instance
+ */
 function createAxiosMock(instance) {
   logStart('createAxiosMock', 'none'); //initial log via util
   const MockAdapter = require('axios-mock-adapter'); //import mock adapter
@@ -153,7 +158,18 @@ function createAxiosMock(instance) {
   return mock; //export axios mock
 }
 
-function resetMocks(mock, scheduleMock, qerrorsMock) { //helper to clear mocks
+/**
+ * Resets all mock call history for a clean slate
+ *
+ * STATE RESET: clearing mocks ensures tests remain independent and
+ * prevents cross-test leakage of previous calls.
+ *
+ * @param {Object} mock - axios-mock-adapter instance
+ * @param {jest.Mock} scheduleMock - Bottleneck schedule spy
+ * @param {jest.Mock} qerrorsMock - qerrors spy
+ * @returns {boolean} confirmation
+ */
+function resetMocks(mock, scheduleMock, qerrorsMock) {
   logStart('resetMocks', 'mocks'); //initial log via util
   mock.reset(); //clear axios mock history
   scheduleMock.mockClear(); //clear Bottleneck schedule calls
@@ -162,7 +178,15 @@ function resetMocks(mock, scheduleMock, qerrorsMock) { //helper to clear mocks
   return true; //confirm reset
 }
 
-function initSearchTest() { //helper to init env and mocks
+/**
+ * Initializes environment and mocks for search tests
+ *
+ * COMBINED SETUP: prepares env vars and mock instances in one call
+ * so individual tests can focus on assertions rather than boilerplate.
+ *
+ * @returns {Object} configured mocks for use in tests
+ */
+function initSearchTest() {
   logStart('initSearchTest', 'none'); //initial log via util
   jest.resetModules(); //ensure fresh modules for each test suite
   setTestEnv(); //prepare environment variables

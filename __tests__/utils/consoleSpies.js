@@ -32,13 +32,11 @@ const { logStart, logReturn } = require('../../lib/logUtils'); //import logging 
  * it reusable across different types of console output testing scenarios.
  */
 function mockConsole(method) {
-  logStart('mockConsole', method); //log start & method
-  // Create Jest spy on console method with silent implementation
-  // jest.spyOn preserves original method for restoration after test
-  // mockImplementation(() => {}) prevents any console output during tests
-  const spy = jest.spyOn(console, method).mockImplementation(() => {}); //create spy with blank impl
-  logReturn('mockConsole', 'spy'); //log returning spy
-  return spy; //return jest spy
+  logStart('mockConsole', method); //log start
+  // jest spy intercepts console without output
+  const spy = jest.spyOn(console, method).mockImplementation(() => {}); //blank spy
+  logReturn('mockConsole', 'spy'); //log return
+  return spy; //return spy
 }
 
 module.exports = { mockConsole }; //export helper
