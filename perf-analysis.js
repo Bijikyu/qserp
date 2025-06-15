@@ -89,4 +89,6 @@ async function cachePerformanceTest() {
     console.log('=== Performance Analysis Complete ===');
 }
 
-cachePerformanceTest().catch(console.error); // run when executed directly
+if (require.main === module) { cachePerformanceTest().catch(console.error); } //only auto-run when invoked directly
+
+module.exports = { cachePerformanceTest }; //export for test invocation

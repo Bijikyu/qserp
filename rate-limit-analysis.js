@@ -67,4 +67,6 @@ async function rateLimitingAnalysis() {
     console.log('\n=== Rate Limiting Analysis Complete ===');
 }
 
-rateLimitingAnalysis().catch(console.error); // execute when script run
+if (require.main === module) { rateLimitingAnalysis().catch(console.error); } //run automatically only when executed directly
+
+module.exports = { rateLimitingAnalysis }; //export for testing
