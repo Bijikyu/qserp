@@ -1,8 +1,10 @@
+// Advanced security test suite for qserp
+// Exercises edge cases to uncover hard-to-find vulnerabilities
 // Test environment setup
 process.env.CODEX = 'true'; // rely on mocked requests for repeatability
 process.env.DEBUG = 'false'; // suppress verbose logs during analysis
 
-const qserp = require('./lib/qserp.js');
+const qserp = require('./lib/qserp.js'); // module under scrutiny
 
 /**
  * advancedSecurityTesting - runs extensive vulnerability checks against the
@@ -27,7 +29,7 @@ async function advancedSecurityTesting() {
         'normal\u2028query',        // Unicode line separator
     ];
     
-    let cacheVulnerabilities = 0;
+    let cacheVulnerabilities = 0; // track cache inconsistencies
     
     // Fill cache with variations
     for (const query of cacheTests) { // populate cache with each variant
@@ -73,7 +75,7 @@ async function advancedSecurityTesting() {
         timingTests.push({ query, missTime, hitTime, ratio: missTime / hitTime });
     }
     
-    const avgRatio = timingTests.reduce((sum, test) => sum + test.ratio, 0) / timingTests.length;
+    const avgRatio = timingTests.reduce((sum, test) => sum + test.ratio, 0) / timingTests.length; // avg miss/hit ratio
     
     if (avgRatio > 10) {
         console.log(`Potential timing attack vector: ${avgRatio.toFixed(1)}x difference between cache hit/miss`);
@@ -96,7 +98,7 @@ async function advancedSecurityTesting() {
         { key: 'LOG_LEVEL', value: 'error\nmalicious_command' }
     ];
     
-    for (const test of maliciousEnvTests) { // temporarily apply malicious settings
+    for (const test of maliciousEnvTests) { // iterate over invalid env values
         process.env[test.key] = test.value;
         
         try {
@@ -194,7 +196,7 @@ async function advancedSecurityTesting() {
         () => qserp.handleAxiosError(new Error('circular'), { circular: {} })
     ];
     
-    let errorHandlingIssues = 0;
+    let errorHandlingIssues = 0; // count handler failures
     
     for (const test of errorTests) { // each test should not throw unexpectedly
         try {
@@ -213,4 +215,4 @@ async function advancedSecurityTesting() {
     console.log('\n=== Advanced Security Assessment Complete ===');
 }
 
-advancedSecurityTesting().catch(console.error);
+advancedSecurityTesting().catch(console.error); // launch when executed

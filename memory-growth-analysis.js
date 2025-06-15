@@ -1,3 +1,6 @@
+// Memory growth analysis to validate qserp cache health
+// Uses qserp module to fill cache and track Node.js memory usage
+
 // Mock environment for testing
 process.env.CODEX = 'true'; // use mocked results for deterministic memory metrics
 process.env.DEBUG = 'false'; // disable verbose logging for clarity
@@ -25,20 +28,20 @@ function measureMemory() {
 async function memoryGrowthAnalysis() {
     console.log('=== Memory Growth Analysis ===');
     
-    const baseline = measureMemory();
+    const baseline = measureMemory(); // snapshot before stressing cache
     console.log('Baseline memory:', baseline);
     
     // Simulate sustained cache usage
-    const phases = [100, 500, 1000, 2000, 5000]; // progressively larger cache sizes for growth comparison
+    const phases = [100, 500, 1000, 2000, 5000]; // escalating counts highlight memory trends
     
     for (const phase of phases) { // measure memory cost per cache size
         console.log(`\n--- Testing ${phase} cache entries ---`);
         
         // Clear cache before each phase
-        qserp.clearCache();
+        qserp.clearCache(); // ensures each phase starts fresh
         
         // Fill cache with unique queries
-        for (let i = 0; i < phase; i++) { // populate cache with unique values
+        for (let i = 0; i < phase; i++) { // repeated fetch simulates load
             await qserp.fetchSearchItems(`query-${i}-${Date.now()}`);
         }
         
@@ -59,4 +62,4 @@ async function memoryGrowthAnalysis() {
     console.log('\n=== Memory Analysis Complete ===');
 }
 
-memoryGrowthAnalysis().catch(console.error);
+memoryGrowthAnalysis().catch(console.error); // start analysis when file executed
