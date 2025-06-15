@@ -130,3 +130,6 @@ dist
 
 # Replit debugger
 .breakpoints
+
+# Ignore installed dependencies
+node_modules/
