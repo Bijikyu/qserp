@@ -1,9 +1,11 @@
+// Cache optimization test for qserp
+// Exercises LRU behavior and cleanup routines
 // Mock environment for testing
 process.env.CODEX = 'true';
 process.env.DEBUG = 'false';
 process.env.QSERP_MAX_CACHE_SIZE = '50'; // Small size for testing
 
-const qserp = require('./lib/qserp.js');
+const qserp = require('./lib/qserp.js'); // module under test
 
 /**
  * measureMemory - captures current Node.js memory usage in MB
@@ -27,12 +29,12 @@ async function testCacheCleanup() {
     console.log('=== Cache Cleanup Performance Test ===');
     
     // Clear cache first
-    qserp.clearCache();
+    qserp.clearCache(); // reset before measuring
     console.log('Initial cache cleared');
     
     // Fill cache beyond threshold (50 entries + 10 more = 60 total)
     console.log('Filling cache with 60 entries (limit: 50)...');
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 60; i++) { // exceed cache limit to trigger eviction
         await qserp.fetchSearchItems(`test-query-${i}`);
     }
     
@@ -48,7 +50,7 @@ async function testCacheCleanup() {
     const beforeAuto = measureMemory();
     
     // Add more entries to trigger automatic cleanup
-    for (let i = 60; i < 70; i++) {
+    for (let i = 60; i < 70; i++) { // new entries force auto cleanup
         await qserp.fetchSearchItems(`auto-cleanup-${i}`);
     }
     
@@ -58,7 +60,7 @@ async function testCacheCleanup() {
     
     // Test TTL-based cleanup by simulating time passage
     console.log('Testing TTL-based cleanup...');
-    const originalDateNow = Date.now;
+    const originalDateNow = Date.now; // preserve original time reference
     
     // Mock time to simulate cache expiry
     Date.now = () => originalDateNow() + (6 * 60 * 1000); // 6 minutes later
@@ -73,4 +75,4 @@ async function testCacheCleanup() {
     console.log('=== Cache Cleanup Test Complete ===');
 }
 
-testCacheCleanup().catch(console.error);
+testCacheCleanup().catch(console.error); // initiate test when script runs

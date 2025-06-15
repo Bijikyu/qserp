@@ -1,10 +1,13 @@
-const { performance } = require('perf_hooks');
+const { performance } = require('perf_hooks'); // high resolution timers
+
+// Performance analysis for qserp cache and API interactions
+// Demonstrates speed difference between cache hits and misses
 
 // Mock environment for testing
 process.env.CODEX = 'true'; // run in offline mode for predictable timing
 process.env.DEBUG = 'false'; // suppress debug noise during metrics
 
-const qserp = require('./lib/qserp.js');
+const qserp = require('./lib/qserp.js'); // main module under test
 
 // Performance measurement utilities
 /**
@@ -35,7 +38,7 @@ async function cachePerformanceTest() {
         queries.push(`test query ${i}`);
     }
     
-    const start = performance.now();
+    const start = performance.now(); // track cache fill duration
     
     // Fill cache with entries
     console.log('Filling cache with 100 entries...');
@@ -49,7 +52,7 @@ async function cachePerformanceTest() {
     
     // Test cache hits
     console.log('Testing cache hit performance...');
-    const hitStart = performance.now();
+    const hitStart = performance.now(); // start hit timing
     for (let i = 0; i < 10; i++) { // hit cached queries to measure best case
         await qserp.fetchSearchItems(queries[i]);
     }
@@ -59,7 +62,7 @@ async function cachePerformanceTest() {
     
     // Test cache misses
     console.log('Testing cache miss performance...');
-    const missStart = performance.now();
+    const missStart = performance.now(); // start miss timing
     for (let i = 0; i < 5; i++) { // miss cache with new queries for comparison
         await qserp.fetchSearchItems(`new query ${i}`);
     }
@@ -80,10 +83,10 @@ async function cachePerformanceTest() {
     console.log(`Estimated memory per entry: ${(memAfterFill.heapUsed/100).toFixed(2)}MB`);
     
     // Clear cache and measure
-    qserp.clearCache();
+    qserp.clearCache(); // ensure memory freed after test
     console.log('Memory after cache clear:', measureMemory());
     
     console.log('=== Performance Analysis Complete ===');
 }
 
-cachePerformanceTest().catch(console.error);
+cachePerformanceTest().catch(console.error); // run when executed directly
