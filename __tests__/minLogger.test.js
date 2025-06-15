@@ -1,7 +1,8 @@
+// Summary: minLogger.test.js validates module behavior and edge cases
 const { mockConsole } = require('./utils/consoleSpies'); //reuse console spy helper
 const { saveEnv, restoreEnv } = require('./utils/testSetup'); //env helpers
 
-describe('minLogger', () => {
+describe('minLogger', () => { // minLogger
   let savedEnv; //snapshot holder
   beforeEach(() => { savedEnv = saveEnv(); }); //store env
   afterEach(() => { restoreEnv(savedEnv); }); //restore env

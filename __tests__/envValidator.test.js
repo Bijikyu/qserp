@@ -1,3 +1,4 @@
+// Summary: envValidator.test.js validates module behavior and edge cases
 /**
  * envValidator.test.js - Comprehensive unit tests for environment variable validation
  * 
@@ -12,7 +13,7 @@ jest.mock('../lib/debugUtils');
 
 const { debugEntry, debugExit } = require('../lib/debugUtils');
 
-describe('envValidator', () => {
+describe('envValidator', () => { // envValidator
     let originalEnv;
 
     beforeEach(() => {
@@ -26,8 +27,8 @@ describe('envValidator', () => {
         process.env = originalEnv;
     });
 
-    describe('parseIntWithBounds', () => {
-        it('should return default value when environment variable is not set', () => {
+    describe('parseIntWithBounds', () => { // parseIntWithBounds
+        it('should return default value when environment variable is not set', () => { // should return default value when environment variable is not set
             delete process.env.TEST_VAR;
             
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
@@ -37,7 +38,7 @@ describe('envValidator', () => {
             expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 50);
         });
 
-        it('should parse valid environment variable within bounds', () => {
+        it('should parse valid environment variable within bounds', () => { // should parse valid environment variable within bounds
             process.env.TEST_VAR = '75';
             
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
@@ -46,7 +47,7 @@ describe('envValidator', () => {
             expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 75);
         });
 
-        it('should enforce minimum bounds when value is too low', () => {
+        it('should enforce minimum bounds when value is too low', () => { // should enforce minimum bounds when value is too low
             process.env.TEST_VAR = '5';
             
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
@@ -55,7 +56,7 @@ describe('envValidator', () => {
             expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 10);
         });
 
-        it('should enforce maximum bounds when value is too high', () => {
+        it('should enforce maximum bounds when value is too high', () => { // should enforce maximum bounds when value is too high
             process.env.TEST_VAR = '150';
             
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
@@ -64,7 +65,7 @@ describe('envValidator', () => {
             expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 100);
         });
 
-        it('should handle non-numeric environment variables by using default', () => {
+        it('should handle non-numeric environment variables by using default', () => { // should handle non-numeric environment variables by using default
             process.env.TEST_VAR = 'not-a-number';
             
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
@@ -73,7 +74,7 @@ describe('envValidator', () => {
             expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 50);
         });
 
-        it('should handle empty string environment variables by using default', () => {
+        it('should handle empty string environment variables by using default', () => { // should handle empty string environment variables by using default
             process.env.TEST_VAR = '';
             
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
@@ -82,7 +83,7 @@ describe('envValidator', () => {
             expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 50);
         });
 
-        it('should handle floating point numbers by truncating to integer', () => {
+        it('should handle floating point numbers by truncating to integer', () => { // should handle floating point numbers by truncating to integer
             process.env.TEST_VAR = '75.8';
             
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
@@ -91,7 +92,7 @@ describe('envValidator', () => {
             expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 75);
         });
 
-        it('should handle negative values correctly with negative bounds', () => {
+        it('should handle negative values correctly with negative bounds', () => { // should handle negative values correctly with negative bounds
             process.env.TEST_VAR = '-25';
             
             const result = parseIntWithBounds('TEST_VAR', -10, -50, 0);
@@ -100,7 +101,7 @@ describe('envValidator', () => {
             expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', -25);
         });
 
-        it('should handle zero values correctly', () => {
+        it('should handle zero values correctly', () => { // should handle zero values correctly
             process.env.TEST_VAR = '0';
             
             const result = parseIntWithBounds('TEST_VAR', 50, 0, 100);
@@ -111,7 +112,7 @@ describe('envValidator', () => {
             expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 0);
         });
 
-        it('should parse values with leading zeros as decimal', () => {
+        it('should parse values with leading zeros as decimal', () => { // should parse values with leading zeros as decimal
             process.env.TEST_VAR = '08';
 
             const result = parseIntWithBounds('TEST_VAR', 50, 0, 100);
@@ -120,7 +121,7 @@ describe('envValidator', () => {
             expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 8);
         });
 
-        it('should handle boundary values exactly at limits', () => {
+        it('should handle boundary values exactly at limits', () => { // should handle boundary values exactly at limits
             process.env.TEST_VAR = '10';
             
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
@@ -129,7 +130,7 @@ describe('envValidator', () => {
             expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 10);
         });
 
-        it('should handle upper boundary values exactly at limits', () => {
+        it('should handle upper boundary values exactly at limits', () => { // should handle upper boundary values exactly at limits
             process.env.TEST_VAR = '100';
             
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
@@ -139,8 +140,8 @@ describe('envValidator', () => {
         });
     });
 
-    describe('parseBooleanVar', () => {
-        it('should return default value when environment variable is not set', () => {
+    describe('parseBooleanVar', () => { // parseBooleanVar
+        it('should return default value when environment variable is not set', () => { // should return default value when environment variable is not set
             delete process.env.TEST_BOOL;
             
             const result = parseBooleanVar('TEST_BOOL', true);
@@ -148,7 +149,7 @@ describe('envValidator', () => {
             expect(result).toBe(true);
         });
 
-        it('should parse "true" as boolean true (case insensitive)', () => {
+        it('should parse "true" as boolean true (case insensitive)', () => { // should parse 
             process.env.TEST_BOOL = 'true';
             
             const result = parseBooleanVar('TEST_BOOL', false);
@@ -156,7 +157,7 @@ describe('envValidator', () => {
             expect(result).toBe(true);
         });
 
-        it('should parse "TRUE" as boolean true', () => {
+        it('should parse "TRUE" as boolean true', () => { // should parse 
             process.env.TEST_BOOL = 'TRUE';
             
             const result = parseBooleanVar('TEST_BOOL', false);
@@ -164,7 +165,7 @@ describe('envValidator', () => {
             expect(result).toBe(true);
         });
 
-        it('should parse "True" as boolean true', () => {
+        it('should parse "True" as boolean true', () => { // should parse 
             process.env.TEST_BOOL = 'True';
             
             const result = parseBooleanVar('TEST_BOOL', false);
@@ -172,7 +173,7 @@ describe('envValidator', () => {
             expect(result).toBe(true);
         });
 
-        it('should parse "false" as boolean false', () => {
+        it('should parse "false" as boolean false', () => { // should parse 
             process.env.TEST_BOOL = 'false';
             
             const result = parseBooleanVar('TEST_BOOL', true);
@@ -180,7 +181,7 @@ describe('envValidator', () => {
             expect(result).toBe(false);
         });
 
-        it('should parse "FALSE" as boolean false', () => {
+        it('should parse "FALSE" as boolean false', () => { // should parse 
             process.env.TEST_BOOL = 'FALSE';
             
             const result = parseBooleanVar('TEST_BOOL', true);
@@ -188,7 +189,7 @@ describe('envValidator', () => {
             expect(result).toBe(false);
         });
 
-        it('should return default for non-true values like "1"', () => {
+        it('should return default for non-true values like "1"', () => { // should return default for non-true values like 
             process.env.TEST_BOOL = '1';
             
             const result = parseBooleanVar('TEST_BOOL', false);
@@ -196,7 +197,7 @@ describe('envValidator', () => {
             expect(result).toBe(false);
         });
 
-        it('should return false for non-true values like "0"', () => {
+        it('should return false for non-true values like "0"', () => { // should return false for non-true values like 
             process.env.TEST_BOOL = '0';
             
             const result = parseBooleanVar('TEST_BOOL', true);
@@ -205,7 +206,7 @@ describe('envValidator', () => {
             expect(result).toBe(false);
         });
 
-        it('should return false for non-true values like "yes"', () => {
+        it('should return false for non-true values like "yes"', () => { // should return false for non-true values like 
             process.env.TEST_BOOL = 'yes';
             
             const result = parseBooleanVar('TEST_BOOL', false);
@@ -214,7 +215,7 @@ describe('envValidator', () => {
             expect(result).toBe(false);
         });
 
-        it('should return false for non-true values like "no"', () => {
+        it('should return false for non-true values like "no"', () => { // should return false for non-true values like 
             process.env.TEST_BOOL = 'no';
             
             const result = parseBooleanVar('TEST_BOOL', true);
@@ -223,7 +224,7 @@ describe('envValidator', () => {
             expect(result).toBe(false);
         });
 
-        it('should return false for unrecognized values', () => {
+        it('should return false for unrecognized values', () => { // should return false for unrecognized values
             process.env.TEST_BOOL = 'maybe';
             
             const result = parseBooleanVar('TEST_BOOL', true);
@@ -232,7 +233,7 @@ describe('envValidator', () => {
             expect(result).toBe(false);
         });
 
-        it('should handle empty string by returning default', () => {
+        it('should handle empty string by returning default', () => { // should handle empty string by returning default
             process.env.TEST_BOOL = '';
             
             const result = parseBooleanVar('TEST_BOOL', false);
@@ -240,7 +241,7 @@ describe('envValidator', () => {
             expect(result).toBe(false);
         });
 
-        it('should handle whitespace-only values by trimming and checking', () => {
+        it('should handle whitespace-only values by trimming and checking', () => { // should handle whitespace-only values by trimming and checking
             process.env.TEST_BOOL = '   true   ';
             
             const result = parseBooleanVar('TEST_BOOL', false);
@@ -249,8 +250,8 @@ describe('envValidator', () => {
         });
     });
 
-    describe('security and bounds checking', () => {
-        it('should prevent memory exhaustion from extremely large values', () => {
+    describe('security and bounds checking', () => { // security and bounds checking
+        it('should prevent memory exhaustion from extremely large values', () => { // should prevent memory exhaustion from extremely large values
             process.env.TEST_VAR = '999999999999999999999999999';
             
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
@@ -258,7 +259,7 @@ describe('envValidator', () => {
             expect(result).toBe(100); // Should be clamped to maximum
         });
 
-        it('should prevent negative overflow attacks', () => {
+        it('should prevent negative overflow attacks', () => { // should prevent negative overflow attacks
             process.env.TEST_VAR = '-999999999999999999999999999';
             
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
@@ -266,7 +267,7 @@ describe('envValidator', () => {
             expect(result).toBe(10); // Should be clamped to minimum
         });
 
-        it('should handle malicious input attempts gracefully', () => {
+        it('should handle malicious input attempts gracefully', () => { // should handle malicious input attempts gracefully
             const maliciousInputs = ['<script>', 'DROP TABLE', '../../../etc/passwd', 'null', 'undefined'];
             
             maliciousInputs.forEach(input => {
@@ -277,8 +278,8 @@ describe('envValidator', () => {
         });
     });
 
-    describe('integration scenarios', () => {
-        it('should handle typical cache size configuration', () => {
+    describe('integration scenarios', () => { // integration scenarios
+        it('should handle typical cache size configuration', () => { // should handle typical cache size configuration
             process.env.CACHE_SIZE = '200';
             
             const result = parseIntWithBounds('CACHE_SIZE', 100, 50, 1000);
@@ -286,7 +287,7 @@ describe('envValidator', () => {
             expect(result).toBe(200);
         });
 
-        it('should handle rate limit configuration', () => {
+        it('should handle rate limit configuration', () => { // should handle rate limit configuration
             process.env.RATE_LIMIT = '10';
             
             const result = parseIntWithBounds('RATE_LIMIT', 5, 1, 100);
@@ -294,7 +295,7 @@ describe('envValidator', () => {
             expect(result).toBe(10);
         });
 
-        it('should handle debug flag configuration', () => {
+        it('should handle debug flag configuration', () => { // should handle debug flag configuration
             process.env.DEBUG_ENABLED = 'true';
             
             const result = parseBooleanVar('DEBUG_ENABLED', false);

@@ -1,3 +1,4 @@
+// Summary: parseStringVar.test.js validates module behavior and edge cases
 /**
  * parseStringVar.test.js - Additional unit tests for string parsing functionality
  * 
@@ -12,7 +13,7 @@ jest.mock('../lib/debugUtils');
 
 const { debugEntry, debugExit } = require('../lib/debugUtils');
 
-describe('parseStringVar', () => {
+describe('parseStringVar', () => { // parseStringVar
     let originalEnv;
 
     beforeEach(() => {
@@ -24,8 +25,8 @@ describe('parseStringVar', () => {
         process.env = originalEnv;
     });
 
-    describe('basic string parsing', () => {
-        it('should return environment variable value when set', () => {
+    describe('basic string parsing', () => { // basic string parsing
+        it('should return environment variable value when set', () => { // should return environment variable value when set
             process.env.TEST_STRING = 'hello world';
             
             const result = parseStringVar('TEST_STRING', 'default');
@@ -35,7 +36,7 @@ describe('parseStringVar', () => {
             expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'length: 11');
         });
 
-        it('should return default value when environment variable is not set', () => {
+        it('should return default value when environment variable is not set', () => { // should return default value when environment variable is not set
             delete process.env.TEST_STRING;
             
             const result = parseStringVar('TEST_STRING', 'default');
@@ -44,7 +45,7 @@ describe('parseStringVar', () => {
             expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'length: 7');
         });
 
-        it('should trim whitespace from values', () => {
+        it('should trim whitespace from values', () => { // should trim whitespace from values
             process.env.TEST_STRING = '  trimmed  ';
             
             const result = parseStringVar('TEST_STRING', 'default');
@@ -53,7 +54,7 @@ describe('parseStringVar', () => {
             expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'length: 7');
         });
 
-        it('should handle empty string values', () => {
+        it('should handle empty string values', () => { // should handle empty string values
             process.env.TEST_STRING = '';
             
             const result = parseStringVar('TEST_STRING', 'default');
@@ -64,8 +65,8 @@ describe('parseStringVar', () => {
         });
     });
 
-    describe('length constraints', () => {
-        it('should truncate values exceeding maxLength', () => {
+    describe('length constraints', () => { // length constraints
+        it('should truncate values exceeding maxLength', () => { // should truncate values exceeding maxLength
             process.env.TEST_STRING = 'this is a very long string';
             
             const result = parseStringVar('TEST_STRING', 'default', 10);
@@ -74,7 +75,7 @@ describe('parseStringVar', () => {
             expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'truncated to 10 chars');
         });
 
-        it('should not truncate values within maxLength', () => {
+        it('should not truncate values within maxLength', () => { // should not truncate values within maxLength
             process.env.TEST_STRING = 'short';
             
             const result = parseStringVar('TEST_STRING', 'default', 10);
@@ -83,7 +84,7 @@ describe('parseStringVar', () => {
             expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'length: 5');
         });
 
-        it('should handle maxLength of 0 as no limit', () => {
+        it('should handle maxLength of 0 as no limit', () => { // should handle maxLength of 0 as no limit
             process.env.TEST_STRING = 'very long string that should not be truncated';
             
             const result = parseStringVar('TEST_STRING', 'default', 0);
@@ -92,7 +93,7 @@ describe('parseStringVar', () => {
             expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'length: 45');
         });
 
-        it('should handle exact maxLength values', () => {
+        it('should handle exact maxLength values', () => { // should handle exact maxLength values
             process.env.TEST_STRING = 'exactly10c';
             
             const result = parseStringVar('TEST_STRING', 'default', 10);
@@ -102,8 +103,8 @@ describe('parseStringVar', () => {
         });
     });
 
-    describe('security scenarios', () => {
-        it('should handle very large input strings safely', () => {
+    describe('security scenarios', () => { // security scenarios
+        it('should handle very large input strings safely', () => { // should handle very large input strings safely
             const largeString = 'x'.repeat(100000);
             process.env.TEST_STRING = largeString;
             
@@ -113,7 +114,7 @@ describe('parseStringVar', () => {
             expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'truncated to 1000 chars');
         });
 
-        it('should handle special characters correctly', () => {
+        it('should handle special characters correctly', () => { // should handle special characters correctly
             process.env.TEST_STRING = '!@#$%^&*()[]{}|;:,.<>?';
             
             const result = parseStringVar('TEST_STRING', 'default');
@@ -121,7 +122,7 @@ describe('parseStringVar', () => {
             expect(result).toBe('!@#$%^&*()[]{}|;:,.<>?');
         });
 
-        it('should handle unicode characters', () => {
+        it('should handle unicode characters', () => { // should handle unicode characters
             process.env.TEST_STRING = '测试中文字符';
             
             const result = parseStringVar('TEST_STRING', 'default');
@@ -131,7 +132,7 @@ describe('parseStringVar', () => {
     });
 });
 
-describe('validateEnvVar', () => {
+describe('validateEnvVar', () => { // validateEnvVar
     let originalEnv;
 
     beforeEach(() => {
@@ -143,8 +144,8 @@ describe('validateEnvVar', () => {
         process.env = originalEnv;
     });
 
-    describe('required variable validation', () => {
-        it('should return true when required variable exists with value', () => {
+    describe('required variable validation', () => { // required variable validation
+        it('should return true when required variable exists with value', () => { // should return true when required variable exists with value
             process.env.REQUIRED_VAR = 'some value';
             
             const result = validateEnvVar('REQUIRED_VAR', true);
@@ -154,7 +155,7 @@ describe('validateEnvVar', () => {
             expect(debugExit).toHaveBeenCalledWith('validateEnvVar', 'valid');
         });
 
-        it('should throw error when required variable is missing', () => {
+        it('should throw error when required variable is missing', () => { // should throw error when required variable is missing
             delete process.env.REQUIRED_VAR;
             
             expect(() => {
@@ -164,7 +165,7 @@ describe('validateEnvVar', () => {
             expect(debugExit).toHaveBeenCalledWith('validateEnvVar', 'missing required variable');
         });
 
-        it('should throw error when required variable is empty', () => {
+        it('should throw error when required variable is empty', () => { // should throw error when required variable is empty
             process.env.REQUIRED_VAR = '';
             
             expect(() => {
@@ -172,7 +173,7 @@ describe('validateEnvVar', () => {
             }).toThrow('Required environment variable REQUIRED_VAR is missing or empty');
         });
 
-        it('should throw error when required variable is whitespace only', () => {
+        it('should throw error when required variable is whitespace only', () => { // should throw error when required variable is whitespace only
             process.env.REQUIRED_VAR = '   ';
             
             expect(() => {
@@ -181,8 +182,8 @@ describe('validateEnvVar', () => {
         });
     });
 
-    describe('optional variable validation', () => {
-        it('should return true when optional variable exists with value', () => {
+    describe('optional variable validation', () => { // optional variable validation
+        it('should return true when optional variable exists with value', () => { // should return true when optional variable exists with value
             process.env.OPTIONAL_VAR = 'some value';
             
             const result = validateEnvVar('OPTIONAL_VAR', false);
@@ -191,7 +192,7 @@ describe('validateEnvVar', () => {
             expect(debugExit).toHaveBeenCalledWith('validateEnvVar', 'valid');
         });
 
-        it('should return false when optional variable is missing', () => {
+        it('should return false when optional variable is missing', () => { // should return false when optional variable is missing
             delete process.env.OPTIONAL_VAR;
             
             const result = validateEnvVar('OPTIONAL_VAR', false);
@@ -200,7 +201,7 @@ describe('validateEnvVar', () => {
             expect(debugExit).toHaveBeenCalledWith('validateEnvVar', 'optional missing');
         });
 
-        it('should return false when optional variable is empty', () => {
+        it('should return false when optional variable is empty', () => { // should return false when optional variable is empty
             process.env.OPTIONAL_VAR = '';
             
             const result = validateEnvVar('OPTIONAL_VAR', false);
@@ -210,8 +211,8 @@ describe('validateEnvVar', () => {
         });
     });
 
-    describe('default behavior', () => {
-        it('should default to required=true when not specified', () => {
+    describe('default behavior', () => { // default behavior
+        it('should default to required=true when not specified', () => { // should default to required=true when not specified
             delete process.env.DEFAULT_VAR;
             
             expect(() => {
