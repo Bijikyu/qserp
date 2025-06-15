@@ -1,3 +1,4 @@
+// Summary: qserp.test.js validates module behavior and edge cases
 const { initSearchTest, resetMocks } = require('./utils/testSetup'); //use new helpers
 
 const { mock, scheduleMock, qerrorsMock } = initSearchTest(); //initialize env and mocks

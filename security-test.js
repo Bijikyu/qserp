@@ -1,8 +1,10 @@
+// Security penetration test suite for qserp
+// Runs with mock network responses to avoid hitting real APIs
 // Mock environment for security testing
 process.env.CODEX = 'true'; // run with mock network responses
 process.env.DEBUG = 'false'; // minimize output during penetration test
 
-const qserp = require('./lib/qserp.js');
+const qserp = require('./lib/qserp.js'); // module being hardened
 
 /**
  * securityPenetrationTest - simulates malicious user behavior to verify
@@ -14,7 +16,7 @@ async function securityPenetrationTest() {
     // Test 1: Input Validation Attack Vectors
     console.log('\n--- Testing Input Validation ---');
     
-    const maliciousInputs = [
+    const maliciousInputs = [ // assorted malicious payloads
         '',                           // Empty string
         '   ',                        // Whitespace only
         null,                         // Null injection
@@ -31,7 +33,7 @@ async function securityPenetrationTest() {
         'query&key=hacked&cx=evil'     // Parameter pollution
     ];
     
-    let vulnerabilities = 0;
+    let vulnerabilities = 0; // count issues found
     
     for (const input of maliciousInputs) { // ensure validation rejects malicious input
         try {
@@ -46,7 +48,7 @@ async function securityPenetrationTest() {
     // Test 2: URL Construction Security
     console.log('\n--- Testing URL Construction Security ---');
     
-    const urlInjectionTests = [
+    const urlInjectionTests = [ // varied queries to test URL encoding
         'normal query',
         'query with spaces',
         'query&malicious=param',
@@ -147,8 +149,8 @@ async function securityPenetrationTest() {
     // Test 6: Rate Limiting Bypass Attempts
     console.log('\n--- Testing Rate Limiting Bypass ---');
     
-    const rapidRequests = 100;
-    const startTime = Date.now();
+    const rapidRequests = 100; // stress test limiter
+    const startTime = Date.now(); // measure throughput
     
     const promises = Array.from({length: rapidRequests}, (_, i) => // saturate API with rapid calls
         qserp.googleSearch(`rapid-${i}`)
@@ -182,4 +184,4 @@ async function securityPenetrationTest() {
     console.log('=== Security Testing Complete ===');
 }
 
-securityPenetrationTest().catch(console.error);
+securityPenetrationTest().catch(console.error); // execute suite

@@ -1,3 +1,4 @@
+// Summary: utils.test.js validates module behavior and edge cases
 const { createQerrorsMock } = require('./utils/testSetup'); //import qerrors mock helper
 
 const { safeRun } = require('../lib/utils'); //import function under test

@@ -1,3 +1,4 @@
+// Summary: debugUtils.test.js validates module behavior and edge cases
 /**
  * debugUtils.test.js - Comprehensive unit tests for centralized debug utilities
  *
@@ -8,7 +9,7 @@
 jest.mock('../lib/getDebugFlag'); //mock debug flag helper for controlled state
 let mockGetDebugFlag = require('../lib/getDebugFlag'); //access mock for return setup
 
-describe('debugUtils', () => {
+describe('debugUtils', () => { // debugUtils
     let consoleSpy;
     let originalEnv;
 
@@ -36,8 +37,8 @@ describe('debugUtils', () => {
         }
     });
 
-    describe('debugEntry', () => {
-        it('should log function entry when DEBUG is enabled', () => {
+    describe('debugEntry', () => { // debugEntry
+        it('should log function entry when DEBUG is enabled', () => { // should log function entry when DEBUG is enabled
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true); //force debug on
             const { debugEntry } = require('../lib/debugUtils'); //load with mock
             
@@ -46,7 +47,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).toHaveBeenCalledWith('testFunction is running with test params');
         });
 
-        it('should not log when DEBUG is disabled', () => {
+        it('should not log when DEBUG is disabled', () => { // should not log when DEBUG is disabled
             mockGetDebugFlag.getDebugFlag.mockReturnValue(false); //force debug off
             const { debugEntry } = require('../lib/debugUtils'); //load with mock
             
@@ -55,7 +56,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).not.toHaveBeenCalled();
         });
 
-        it('should handle object parameters by stringifying', () => {
+        it('should handle object parameters by stringifying', () => { // should handle object parameters by stringifying
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true); //configure mock flag
             const { debugEntry } = require('../lib/debugUtils');
             
@@ -65,7 +66,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).toHaveBeenCalledWith('testFunction is running with {"key":"value","num":42}');
         });
 
-        it('should handle circular references gracefully', () => {
+        it('should handle circular references gracefully', () => { // should handle circular references gracefully
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { debugEntry } = require('../lib/debugUtils');
             
@@ -77,7 +78,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).toHaveBeenCalledWith('testFunction is running with <unserializable params>');
         });
 
-        it('should handle undefined parameters', () => {
+        it('should handle undefined parameters', () => { // should handle undefined parameters
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { debugEntry } = require('../lib/debugUtils');
             
@@ -86,7 +87,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).toHaveBeenCalledWith('testFunction is running with ');
         });
 
-        it('should handle numeric parameters', () => {
+        it('should handle numeric parameters', () => { // should handle numeric parameters
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { debugEntry } = require('../lib/debugUtils');
             
@@ -96,8 +97,8 @@ describe('debugUtils', () => {
         });
     });
 
-    describe('debugExit', () => {
-        it('should log function exit when DEBUG is enabled', () => {
+    describe('debugExit', () => { // debugExit
+        it('should log function exit when DEBUG is enabled', () => { // should log function exit when DEBUG is enabled
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { debugExit } = require('../lib/debugUtils');
             
@@ -106,7 +107,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).toHaveBeenCalledWith('testFunction returning result value');
         });
 
-        it('should not log when DEBUG is disabled', () => {
+        it('should not log when DEBUG is disabled', () => { // should not log when DEBUG is disabled
             mockGetDebugFlag.getDebugFlag.mockReturnValue(false);
             const { debugExit } = require('../lib/debugUtils');
             
@@ -115,7 +116,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).not.toHaveBeenCalled();
         });
 
-        it('should handle object return values by stringifying', () => {
+        it('should handle object return values by stringifying', () => { // should handle object return values by stringifying
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { debugExit } = require('../lib/debugUtils');
             
@@ -125,7 +126,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).toHaveBeenCalledWith('testFunction returning {"success":true,"data":[1,2,3]}');
         });
 
-        it('should handle circular references in return values', () => {
+        it('should handle circular references in return values', () => { // should handle circular references in return values
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { debugExit } = require('../lib/debugUtils');
             
@@ -137,7 +138,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).toHaveBeenCalledWith('testFunction returning <unserializable value>');
         });
 
-        it('should handle boolean return values', () => {
+        it('should handle boolean return values', () => { // should handle boolean return values
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { debugExit } = require('../lib/debugUtils');
             
@@ -147,8 +148,8 @@ describe('debugUtils', () => {
         });
     });
 
-    describe('debugLog', () => {
-        it('should log debug messages when DEBUG is enabled', () => {
+    describe('debugLog', () => { // debugLog
+        it('should log debug messages when DEBUG is enabled', () => { // should log debug messages when DEBUG is enabled
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { debugLog } = require('../lib/debugUtils');
             
@@ -157,7 +158,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).toHaveBeenCalledWith('DEBUG: Processing data');
         });
 
-        it('should not log when DEBUG is disabled', () => {
+        it('should not log when DEBUG is disabled', () => { // should not log when DEBUG is disabled
             mockGetDebugFlag.getDebugFlag.mockReturnValue(false);
             const { debugLog } = require('../lib/debugUtils');
             
@@ -166,7 +167,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).not.toHaveBeenCalled();
         });
 
-        it('should include context when provided', () => {
+        it('should include context when provided', () => { // should include context when provided
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { debugLog } = require('../lib/debugUtils');
             
@@ -175,7 +176,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).toHaveBeenCalledWith('DEBUG: Cache operation - {"operation":"set","key":"test"}');
         });
 
-        it('should handle string context', () => {
+        it('should handle string context', () => { // should handle string context
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { debugLog } = require('../lib/debugUtils');
             
@@ -184,7 +185,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).toHaveBeenCalledWith('DEBUG: API call - GET /api/search');
         });
 
-        it('should handle circular context gracefully', () => {
+        it('should handle circular context gracefully', () => { // should handle circular context gracefully
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { debugLog } = require('../lib/debugUtils');
             
@@ -197,8 +198,8 @@ describe('debugUtils', () => {
         });
     });
 
-    describe('createTracer', () => {
-        it('should create tracer with entry and exit methods', () => {
+    describe('createTracer', () => { // createTracer
+        it('should create tracer with entry and exit methods', () => { // should create tracer with entry and exit methods
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { createTracer } = require('../lib/debugUtils');
             
@@ -212,7 +213,7 @@ describe('debugUtils', () => {
             expect(typeof tracer.log).toBe('function');
         });
 
-        it('should use function name in tracer logs', () => {
+        it('should use function name in tracer logs', () => { // should use function name in tracer logs
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { createTracer } = require('../lib/debugUtils');
             
@@ -224,7 +225,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).toHaveBeenCalledWith('myFunction returning output result');
         });
 
-        it('should support scoped debug logging', () => {
+        it('should support scoped debug logging', () => { // should support scoped debug logging
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { createTracer } = require('../lib/debugUtils');
             
@@ -234,7 +235,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).toHaveBeenCalledWith('DEBUG: complexFunction: intermediate step - {"step":1}');
         });
 
-        it('should not log when DEBUG is disabled', () => {
+        it('should not log when DEBUG is disabled', () => { // should not log when DEBUG is disabled
             mockGetDebugFlag.getDebugFlag.mockReturnValue(false);
             const { createTracer } = require('../lib/debugUtils');
             
@@ -247,8 +248,8 @@ describe('debugUtils', () => {
         });
     });
 
-    describe('DEBUG flag export', () => {
-        it('should export DEBUG flag value', () => {
+    describe('DEBUG flag export', () => { // DEBUG flag export
+        it('should export DEBUG flag value', () => { // should export DEBUG flag value
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { DEBUG } = require('../lib/debugUtils');
             
@@ -258,8 +259,8 @@ describe('debugUtils', () => {
         });
     });
 
-    describe('integration patterns', () => {
-        it('should replace existing logStart/logReturn patterns', () => {
+    describe('integration patterns', () => { // integration patterns
+        it('should replace existing logStart/logReturn patterns', () => { // should replace existing logStart/logReturn patterns
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { debugEntry, debugExit } = require('../lib/debugUtils');
             
@@ -273,7 +274,7 @@ describe('debugUtils', () => {
             expect(consoleSpy).toHaveBeenCalledWith('fetchSearchItems returning ["result1","result2"]');
         });
 
-        it('should work with complex parameter objects', () => {
+        it('should work with complex parameter objects', () => { // should work with complex parameter objects
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { debugEntry } = require('../lib/debugUtils');
             
@@ -291,8 +292,8 @@ describe('debugUtils', () => {
         });
     });
 
-    describe('error resilience', () => {
-        it('should not throw errors when console.log fails', () => {
+    describe('error resilience', () => { // error resilience
+        it('should not throw errors when console.log fails', () => { // should not throw errors when console.log fails
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true); //enable debug
             const { debugEntry } = require('../lib/debugUtils');
 
@@ -306,7 +307,7 @@ describe('debugUtils', () => {
             }).toThrow('Console unavailable'); //actual behavior throws
         });
 
-        it('should handle null and undefined gracefully', () => {
+        it('should handle null and undefined gracefully', () => { // should handle null and undefined gracefully
             mockGetDebugFlag.getDebugFlag.mockReturnValue(true);
             const { debugEntry, debugExit } = require('../lib/debugUtils');
             

@@ -1,3 +1,4 @@
+// Summary: constants.test.js validates module behavior and edge cases
 const { REQUIRED_VARS, OPTIONAL_VARS, OPENAI_WARN_MSG } = require('../lib/constants'); //import constants to test their values
 
 test('constants arrays have expected entries', () => { //verify exports

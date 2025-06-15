@@ -1,3 +1,4 @@
+// Summary: errorUtils.test.js validates module behavior and edge cases
 /**
  * errorUtils.test.js - Unit tests for centralized error context utilities
  * 
@@ -11,7 +12,7 @@ jest.mock('../lib/qerrorsLoader', () => {
     return () => mockQerrors;
 });
 
-describe('errorUtils', () => {
+describe('errorUtils', () => { // errorUtils
     let consoleErrorSpy;
 
     beforeEach(() => {
@@ -27,8 +28,8 @@ describe('errorUtils', () => {
         consoleErrorSpy.mockRestore();
     });
 
-    describe('context creation functions', () => {
-        it('should create API error context with required fields', () => {
+    describe('context creation functions', () => { // context creation functions
+        it('should create API error context with required fields', () => { // should create API error context with required fields
             const { createApiErrorContext } = require('../lib/errorUtils');
             
             const context = createApiErrorContext('Google API call failed', {
@@ -46,7 +47,7 @@ describe('errorUtils', () => {
             expect(typeof context.timestamp).toBe('string');
         });
 
-        it('should create config error context with required fields', () => {
+        it('should create config error context with required fields', () => { // should create config error context with required fields
             const { createConfigErrorContext } = require('../lib/errorUtils');
             
             const context = createConfigErrorContext('Environment validation failed', {
@@ -63,7 +64,7 @@ describe('errorUtils', () => {
             expect(context).toHaveProperty('timestamp');
         });
 
-        it('should create utility error context with required fields', () => {
+        it('should create utility error context with required fields', () => { // should create utility error context with required fields
             const { createUtilityErrorContext } = require('../lib/errorUtils');
             
             const context = createUtilityErrorContext('Safe execution failed', {
@@ -80,7 +81,7 @@ describe('errorUtils', () => {
             expect(context).toHaveProperty('timestamp');
         });
 
-        it('should create cache error context with required fields', () => {
+        it('should create cache error context with required fields', () => { // should create cache error context with required fields
             const { createCacheErrorContext } = require('../lib/errorUtils');
             
             const context = createCacheErrorContext('Cache cleanup failed', {
@@ -97,7 +98,7 @@ describe('errorUtils', () => {
             expect(context).toHaveProperty('timestamp');
         });
 
-        it('should create validation error context with required fields', () => {
+        it('should create validation error context with required fields', () => { // should create validation error context with required fields
             const { createValidationErrorContext } = require('../lib/errorUtils');
             
             const context = createValidationErrorContext('Query validation failed', {
@@ -115,8 +116,8 @@ describe('errorUtils', () => {
         });
     });
 
-    describe('error reporting functions', () => {
-        it('should report error with enriched context', () => {
+    describe('error reporting functions', () => { // error reporting functions
+        it('should report error with enriched context', () => { // should report error with enriched context
             const { reportError } = require('../lib/errorUtils');
             
             const error = new Error('Test error');
@@ -140,7 +141,7 @@ describe('errorUtils', () => {
             );
         });
 
-        it('should handle qerrors failure gracefully', () => {
+        it('should handle qerrors failure gracefully', () => { // should handle qerrors failure gracefully
             const { reportError } = require('../lib/errorUtils');
             
             // Make qerrors throw an error
@@ -159,8 +160,8 @@ describe('errorUtils', () => {
         });
     });
 
-    describe('convenience reporting functions', () => {
-        it('should report API error with proper context', () => {
+    describe('convenience reporting functions', () => { // convenience reporting functions
+        it('should report API error with proper context', () => { // should report API error with proper context
             const { reportApiError } = require('../lib/errorUtils');
             
             const error = new Error('Network timeout');
@@ -182,7 +183,7 @@ describe('errorUtils', () => {
             );
         });
 
-        it('should report config error with proper context', () => {
+        it('should report config error with proper context', () => { // should report config error with proper context
             const { reportConfigError } = require('../lib/errorUtils');
             
             const error = new Error('Missing environment variable');
@@ -204,7 +205,7 @@ describe('errorUtils', () => {
             );
         });
 
-        it('should report validation error with proper context', () => {
+        it('should report validation error with proper context', () => { // should report validation error with proper context
             const { reportValidationError } = require('../lib/errorUtils');
             
             const error = new Error('Invalid input');
@@ -229,8 +230,8 @@ describe('errorUtils', () => {
         });
     });
 
-    describe('context flexibility', () => {
-        it('should handle empty details gracefully', () => {
+    describe('context flexibility', () => { // context flexibility
+        it('should handle empty details gracefully', () => { // should handle empty details gracefully
             const { createApiErrorContext } = require('../lib/errorUtils');
             
             const context = createApiErrorContext('Operation failed');
@@ -242,7 +243,7 @@ describe('errorUtils', () => {
             expect(context).toHaveProperty('timestamp');
         });
 
-        it('should merge custom details properly', () => {
+        it('should merge custom details properly', () => { // should merge custom details properly
             const { createUtilityErrorContext } = require('../lib/errorUtils');
             
             const context = createUtilityErrorContext('Test operation', {
@@ -261,8 +262,8 @@ describe('errorUtils', () => {
         });
     });
 
-    describe('timestamp generation', () => {
-        it('should generate valid ISO timestamps', () => {
+    describe('timestamp generation', () => { // timestamp generation
+        it('should generate valid ISO timestamps', () => { // should generate valid ISO timestamps
             const { createApiErrorContext } = require('../lib/errorUtils');
             
             const context = createApiErrorContext('Test');
@@ -271,7 +272,7 @@ describe('errorUtils', () => {
             expect(new Date(context.timestamp)).toBeInstanceOf(Date);
         });
 
-        it('should generate unique timestamps for rapid calls', () => {
+        it('should generate unique timestamps for rapid calls', () => { // should generate unique timestamps for rapid calls
             const { createApiErrorContext } = require('../lib/errorUtils');
             
             const context1 = createApiErrorContext('Test 1');

@@ -1,8 +1,9 @@
-// Test with real bottleneck behavior (no CODEX mode)
+// Real rate limit test using Bottleneck configuration from qserp
+// Runs without CODEX mocks to inspect real throttling
 process.env.DEBUG = 'false'; // limit console noise during test
 delete process.env.CODEX; // enable real Bottleneck behavior instead of mocks
 
-const qserp = require('./lib/qserp.js');
+const qserp = require('./lib/qserp.js'); // module providing axios instance
 
 /**
  * testRealRateLimiting - validates actual Bottleneck throttling with a mocked
@@ -25,7 +26,7 @@ async function testRealRateLimiting() {
     
     console.log('Testing 20 requests with real rate limiting...');
     
-    const startTime = Date.now();
+    const startTime = Date.now(); // overall timing for 20 requests
     const promises = []; // track all outgoing requests for this run
     
     for (let i = 0; i < 20; i++) { // high volume burst to trigger limiter
@@ -42,7 +43,7 @@ async function testRealRateLimiting() {
     // Test burst behavior
     console.log('Testing burst vs sustained patterns...');
     
-    const burstStart = Date.now();
+    const burstStart = Date.now(); // timing for immediate burst
     const burstPromises = []; // capture second burst for comparison
     for (let i = 0; i < 10; i++) { // send 10 requests without delay
         burstPromises.push(qserp.googleSearch(`burst-${i}`));
@@ -67,4 +68,4 @@ async function testRealRateLimiting() {
     console.log('=== Rate Limiting Test Complete ===');
 }
 
-testRealRateLimiting().catch(console.error);
+testRealRateLimiting().catch(console.error); // run this test script

@@ -1,3 +1,4 @@
+// Summary: internalFunctions.test.js validates module behavior and edge cases
 const { initSearchTest, resetMocks } = require('./utils/testSetup'); //import helpers for env and mocks
 const { mockConsole } = require('./utils/consoleSpies'); //added console spy helper
 
@@ -10,7 +11,7 @@ beforeEach(() => {
   resetMocks(mock, scheduleMock, qerrorsMock); //clear histories
 });
 
-test('rateLimitedRequest calls limiter and sets headers', async () => {
+test('rateLimitedRequest calls limiter and sets headers', async () => { // rateLimitedRequest calls limiter and sets headers
   mock.onGet('http://test').reply(200, {}); //mock axios success
   const { rateLimitedRequest } = require('../lib/qserp');
   await rateLimitedRequest('http://test');
@@ -20,7 +21,7 @@ test('rateLimitedRequest calls limiter and sets headers', async () => {
   expect(config['User-Agent']).toMatch(/Mozilla/);
 });
 
-test('rateLimitedRequest sets Referer header when env set', async () => {
+test('rateLimitedRequest sets Referer header when env set', async () => { // rateLimitedRequest sets Referer header when env set
   mock.onGet('http://refer').reply(200, {}); //mock axios response
   const { rateLimitedRequest } = require('../lib/qserp');
   await rateLimitedRequest('http://refer');
@@ -40,7 +41,7 @@ test('rateLimitedRequest uses custom axios instance', async () => { //verify ins
   instSpy.mockRestore();
 });
 
-test('rateLimitedRequest rejects on axios failure and schedules call', async () => {
+test('rateLimitedRequest rejects on axios failure and schedules call', async () => { // rateLimitedRequest rejects on axios failure and schedules call
   mock.onGet('http://bad').networkError(); //simulate network error
   const { rateLimitedRequest } = require('../lib/qserp');
   await expect(rateLimitedRequest('http://bad')).rejects.toThrow('Network Error'); //axios rejects with error
@@ -56,7 +57,7 @@ test('fetchSearchItems returns items and uses num argument', async () => { //ens
   expect(mock.history.get[0].url).toBe('https://customsearch.googleapis.com/customsearch/v1?q=term&key=key&cx=cx&fields=items(title,snippet,link)&num=2'); //url should include num and fields filter
 });
 
-test('getGoogleURL builds proper url', () => {
+test('getGoogleURL builds proper url', () => { // getGoogleURL builds proper url
   const { getGoogleURL } = require('../lib/qserp');
   const url = getGoogleURL('hello world');
   expect(url).toBe('https://customsearch.googleapis.com/customsearch/v1?q=hello%20world&key=key&cx=cx&fields=items(title,snippet,link)');
@@ -64,7 +65,7 @@ test('getGoogleURL builds proper url', () => {
   expect(urlNum).toBe('https://customsearch.googleapis.com/customsearch/v1?q=hello&key=key&cx=cx&fields=items(title,snippet,link)&num=5'); //should include num param and fields filter
 });
 
-test('getGoogleURL encodes key and cx values', () => {
+test('getGoogleURL encodes key and cx values', () => { // getGoogleURL encodes key and cx values
   process.env.GOOGLE_API_KEY = 'k+/val'; //set api key with special chars
   process.env.GOOGLE_CX = 'cx/+'; //set cx with special chars
   const { getGoogleURL } = require('../lib/qserp');
@@ -72,7 +73,7 @@ test('getGoogleURL encodes key and cx values', () => {
   expect(url).toBe('https://customsearch.googleapis.com/customsearch/v1?q=encode&key=k%2B%2Fval&cx=cx%2F%2B&fields=items(title,snippet,link)'); //encoded key and cx
 });
 
-test('handleAxiosError logs with qerrors and returns true', async () => {
+test('handleAxiosError logs with qerrors and returns true', async () => { // handleAxiosError logs with qerrors and returns true
   const { handleAxiosError } = require('../lib/qserp');
   const err = new Error('fail');
   const res = await handleAxiosError(err, 'ctx');
@@ -92,7 +93,7 @@ test('handleAxiosError logs sanitized response object and returns true', async (
   spy.mockRestore(); //restore console.error
 });
 
-test('handleAxiosError masks api key in network error logs', async () => {
+test('handleAxiosError masks api key in network error logs', async () => { // handleAxiosError masks api key in network error logs
   const { handleAxiosError } = require('../lib/qserp'); //load function under test
   const err = { request: {}, message: 'bad key=key', config: { url: 'http://x?key=key' } }; //mock network error with key
   const spy = mockConsole('error'); //spy on console.error
@@ -138,7 +139,7 @@ test.each(['True', 'true', 'TRUE', true])('rateLimitedRequest returns mock when 
   delete process.env.CODEX; //clean up env variable for other tests
 }); //test ensures CODEX casings bypass network
 
-test('fetchSearchItems bypasses url build in CODEX mode', async () => {
+test('fetchSearchItems bypasses url build in CODEX mode', async () => { // fetchSearchItems bypasses url build in CODEX mode
   process.env.CODEX = 'true'; //enable codex offline mode
   ({ mock, scheduleMock, qerrorsMock } = initSearchTest()); //reinit with codex flag
   const qserp = require('../lib/qserp'); //import after env set

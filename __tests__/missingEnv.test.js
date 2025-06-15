@@ -1,3 +1,4 @@
+// Summary: missingEnv.test.js validates module behavior and edge cases
 
 const { saveEnv, restoreEnv } = require('./utils/testSetup'); //import env helpers //(new utilities)
 let savedEnv; //variable to store original env //(for restore)

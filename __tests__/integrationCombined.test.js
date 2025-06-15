@@ -1,3 +1,4 @@
+// Summary: integrationCombined.test.js validates module behavior and edge cases
 const { initSearchTest, resetMocks, createScheduleMock, createQerrorsMock, createAxiosMock } = require('./utils/testSetup'); //use helpers
 const { mockConsole } = require('./utils/consoleSpies'); //added console spy helper
 

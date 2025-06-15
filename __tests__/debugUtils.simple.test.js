@@ -1,3 +1,4 @@
+// Summary: debugUtils.simple.test.js validates module behavior and edge cases
 /**
  * debugUtils.simple.test.js - Basic functional tests for debug utilities
  * 
@@ -5,7 +6,7 @@
  * without complex mocking that causes module cache issues.
  */
 
-describe('debugUtils functionality', () => {
+describe('debugUtils functionality', () => { // debugUtils functionality
     let consoleSpy;
     let originalDebug;
 
@@ -24,8 +25,8 @@ describe('debugUtils functionality', () => {
         jest.resetModules();
     });
 
-    describe('debug utilities exist and are callable', () => {
-        it('should export required functions', () => {
+    describe('debug utilities exist and are callable', () => { // debug utilities exist and are callable
+        it('should export required functions', () => { // should export required functions
             const debugUtils = require('../lib/debugUtils');
             
             expect(typeof debugUtils.debugEntry).toBe('function');
@@ -38,7 +39,7 @@ describe('debugUtils functionality', () => {
             expect(typeof debugUtils.logReturn).toBe('function');
         });
 
-        it('should not throw errors when called', () => {
+        it('should not throw errors when called', () => { // should not throw errors when called
             const { debugEntry, debugExit, debugLog, createTracer, logStart, logReturn } = require('../lib/debugUtils');
             
             expect(() => {
@@ -56,8 +57,8 @@ describe('debugUtils functionality', () => {
         });
     });
 
-    describe('tracer functionality', () => {
-        it('should create tracer object with expected methods', () => {
+    describe('tracer functionality', () => { // tracer functionality
+        it('should create tracer object with expected methods', () => { // should create tracer object with expected methods
             const { createTracer } = require('../lib/debugUtils');
             const tracer = createTracer('testFunction');
             
@@ -69,7 +70,7 @@ describe('debugUtils functionality', () => {
             expect(typeof tracer.log).toBe('function');
         });
 
-        it('should execute tracer methods without errors', () => {
+        it('should execute tracer methods without errors', () => { // should execute tracer methods without errors
             const { createTracer } = require('../lib/debugUtils');
             const tracer = createTracer('testFunction');
             
@@ -81,8 +82,8 @@ describe('debugUtils functionality', () => {
         });
     });
 
-    describe('parameter handling', () => {
-        it('should handle various parameter types without throwing', () => {
+    describe('parameter handling', () => { // parameter handling
+        it('should handle various parameter types without throwing', () => { // should handle various parameter types without throwing
             const { debugEntry, debugExit } = require('../lib/debugUtils');
             
             expect(() => {
@@ -98,7 +99,7 @@ describe('debugUtils functionality', () => {
             }).not.toThrow();
         });
 
-        it('should handle circular references without throwing', () => {
+        it('should handle circular references without throwing', () => { // should handle circular references without throwing
             const { debugEntry } = require('../lib/debugUtils');
             
             const circular = { name: 'test' };
@@ -110,8 +111,8 @@ describe('debugUtils functionality', () => {
         });
     });
 
-    describe('integration with existing patterns', () => {
-        it('should replace logStart/logReturn patterns', () => {
+    describe('integration with existing patterns', () => { // integration with existing patterns
+        it('should replace logStart/logReturn patterns', () => { // should replace logStart/logReturn patterns
             // This test verifies the utilities can be used as drop-in replacements
             const { debugEntry, debugExit } = require('../lib/debugUtils');
             
@@ -126,7 +127,7 @@ describe('debugUtils functionality', () => {
             }).not.toThrow();
         });
 
-        it('should provide backward compatibility with logUtils module', () => {
+        it('should provide backward compatibility with logUtils module', () => { // should provide backward compatibility with logUtils module
             // Test consolidated logUtils functionality
             const { logStart, logReturn } = require('../lib/debugUtils');
             
