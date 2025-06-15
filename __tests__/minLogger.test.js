@@ -33,4 +33,30 @@ describe('minLogger', () => { // minLogger
     expect(spy).toHaveBeenCalledWith('bad'); //should log
     spy.mockRestore(); //cleanup
   });
+
+  test('silences output when LOG_LEVEL silent', () => { //no output expected
+    process.env.LOG_LEVEL = 'silent'; //activate silent mode
+    const warnSpy = mockConsole('warn'); //spy console.warn
+    const errorSpy = mockConsole('error'); //spy console.error
+    const { logWarn, logError } = require('../lib/minLogger'); //import funcs
+    logWarn('x'); //call warn
+    logError('y'); //call error
+    expect(warnSpy).not.toHaveBeenCalled(); //warn suppressed
+    expect(errorSpy).not.toHaveBeenCalled(); //error suppressed
+    warnSpy.mockRestore(); //restore warn
+    errorSpy.mockRestore(); //restore error
+  });
+
+  test('invalid LOG_LEVEL disables output', () => { //unknown should mute
+    process.env.LOG_LEVEL = 'unknown'; //set invalid level
+    const warnSpy = mockConsole('warn'); //spy console.warn
+    const errorSpy = mockConsole('error'); //spy console.error
+    const { logWarn, logError } = require('../lib/minLogger'); //import funcs
+    logWarn('x'); //call warn
+    logError('y'); //call error
+    expect(warnSpy).not.toHaveBeenCalled(); //warn suppressed
+    expect(errorSpy).not.toHaveBeenCalled(); //error suppressed
+    warnSpy.mockRestore(); //restore warn
+    errorSpy.mockRestore(); //restore error
+  });
 });
