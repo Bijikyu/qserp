@@ -169,6 +169,34 @@ test('sanitizeApiKey replaces all matches', () => { //ensure global replacement
   expect(res).toBe('start [redacted] middle [redacted] end'); //expect both replaced
 });
 
+test('sanitizeApiKey returns input and logs when regex fails', () => { //trigger catch branch
+  const savedDebug = process.env.DEBUG; //preserve debug flag
+  process.env.DEBUG = 'true'; //enable debug logging
+  jest.resetModules(); //reload module to capture debug flag
+  const { sanitizeApiKey } = require('../lib/qserp'); //load function with debug
+  const logSpy = require('./utils/consoleSpies').mockConsole('log'); //spy console.log
+  const originalEncode = global.encodeURIComponent; //capture original function
+  global.encodeURIComponent = jest.fn(() => { throw new Error('boom'); }); //force failure
+  const result = sanitizeApiKey('text'); //execute with failing encode
+  expect(result).toBe('text'); //should return input unchanged
+  const logs = logSpy.mock.calls.map(c => c[0]); //captured log messages
+  expect(logs).toContain('sanitizeApiKey is running with text'); //logs contain start message
+  expect(logs).toContain('sanitizeApiKey is returning text'); //logs contain end message
+  global.encodeURIComponent = originalEncode; //restore encodeURIComponent
+  logSpy.mockRestore(); //cleanup spy
+  if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore env
+});
+
+test('normalizeNum returns null when parseInt throws', () => { //validate catch path
+  const { normalizeNum } = require('../lib/qserp'); //load function under test
+  const parseSpy = jest.spyOn(global, 'parseInt').mockImplementation(() => { throw new Error('bad'); }); //mock parseInt throw
+  const logSpy = require('./utils/consoleSpies').mockConsole('log'); //spy on logging
+  const res = normalizeNum('5'); //invoke with numeric string
+  expect(res).toBeNull(); //should return null due to error
+  parseSpy.mockRestore(); //restore parseInt
+  logSpy.mockRestore(); //restore console
+});
+
 test.each(['plain error', { foo: 'bar' }])('handleAxiosError handles %p input', async val => {
   const { handleAxiosError } = require('../lib/qserp'); //load function under test
   const res = await handleAxiosError(val, 'ctx'); //invoke with arbitrary input
