@@ -38,6 +38,33 @@ describe('loadQerrors', () => { //group loader tests
   });
 });
 
+describe('createCompatible', () => { //validate compatibility wrapper
+  test('converts string error and forwards', () => { //string input becomes Error
+    jest.isolateModules(() => { //isolate per test
+      const qerr = jest.fn(); //mock qerrors
+      jest.doMock('qerrors', () => qerr); //replace dependency
+      const { createCompatible } = require('../lib/qerrorsLoader'); //import creator
+      const wrap = createCompatible(); //build wrapped fn
+      wrap('oops', 'ctx', { extra: 1 }); //invoke with string
+      const arg = qerr.mock.calls[0][0]; //capture first arg
+      expect(arg).toBeInstanceOf(Error); //should convert
+      expect(arg.message).toBe('oops'); //preserve message
+      expect(qerr).toHaveBeenCalledWith(arg, 'ctx', { extra: 1 }); //forward args
+    });
+  });
+
+  test('passes Error instance through', () => { //existing Error unchanged
+    jest.isolateModules(() => { //isolate per test
+      const qerr = jest.fn(); //mock qerrors
+      jest.doMock('qerrors', () => qerr); //replace dependency
+      const { createCompatible } = require('../lib/qerrorsLoader'); //import creator
+      const wrap = createCompatible(); //build wrapped fn
+      const err = new Error('boom'); //prepare error
+      wrap(err, 'ctx2'); //call with Error
+      expect(qerr).toHaveBeenCalledWith(err, 'ctx2', {}); //expect same object
+    });
+  });
+});
 describe('safeQerrors', () => { //new tests for sanitized logging
   test('logStart omits error message', async () => { // logStart omits error message
     let safeQerrors, spy, mockConsole;
