@@ -5,7 +5,6 @@ const { mockConsole } = require('./utils/consoleSpies'); //added console spy hel
 let { mock, scheduleMock, qerrorsMock } = initSearchTest(); //init environment and mocks
 
 const { googleSearch, getTopSearchResults } = require('../lib/qserp'); //load functions under test
-const { OPENAI_WARN_MSG } = require('../lib/constants'); //import warning constant
 
 describe('integration googleSearch and getTopSearchResults', () => { //describe block
   beforeEach(() => { //reset mocks
@@ -47,7 +46,8 @@ describe('integration googleSearch and getTopSearchResults', () => { //describe 
     mock.onGet(/Warn/).reply(200, { items: [{ title: 't', snippet: 's', link: 'l' }] }); //mock search success
     const res = await tokenlessSearch('Warn'); //perform search with mocked data
     expect(res).toEqual([{ title: 't', snippet: 's', link: 'l' }]); //ensure results returned
-    expect(warnSpy).toHaveBeenCalledWith(OPENAI_WARN_MSG); //check warning message
+    const expectedWarning = 'Warning: Optional environment variables missing: OPENAI_TOKEN. Some features may not work as expected.'; //dynamic warning text
+    expect(warnSpy).toHaveBeenCalledWith(expectedWarning); //check warning message
     warnSpy.mockRestore(); //restore console.warn
     process.env.OPENAI_TOKEN = saveToken; //restore original token
   });

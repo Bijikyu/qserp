@@ -4,7 +4,7 @@ const { initSearchTest, resetMocks } = require('./utils/testSetup'); //use new h
 const { mock, scheduleMock, qerrorsMock } = initSearchTest(); //initialize env and mocks
 
 const { googleSearch, getTopSearchResults, fetchSearchItems, clearCache, getGoogleURL } = require('../lib/qserp'); //load functions under test from library
-const { OPENAI_WARN_MSG, OPTIONAL_VARS } = require('../lib/constants'); //import warning message constant and optional list
+const { OPTIONAL_VARS } = require('../lib/constants'); //import optional list for env warning checks
 
 describe('qserp module', () => { //group qserp tests
   beforeEach(() => { //reset mocks before each test
@@ -106,8 +106,9 @@ describe('qserp module', () => { //group qserp tests
     mockLocal.onGet(/Two/).reply(200, { items: [{ link: '2' }] }); //mock second term
     const urls = await topSearch(['One', 'Two']); //run function expecting warning
     expect(urls).toEqual(['1', '2']); //ensure urls returned correctly
-    expect(warnEnvSpy).toHaveBeenCalledWith(OPTIONAL_VARS, OPENAI_WARN_MSG); //ensure optional vars list used
-    expect(warnSpy).toHaveBeenCalledWith(OPENAI_WARN_MSG); //warning should reference constant
+    const expectedWarning = 'Warning: Optional environment variables missing: OPENAI_TOKEN. Some features may not work as expected.'; //dynamic message based on missing var
+    expect(warnEnvSpy).toHaveBeenCalledWith(OPTIONAL_VARS); //ensure optional vars list used without custom message
+    expect(warnSpy).toHaveBeenCalledWith(expectedWarning); //warning should include missing token
     warnEnvSpy.mockRestore(); //restore env utils spy
     warnSpy.mockRestore(); //restore console.warn spy
     process.env.OPENAI_TOKEN = tokenSave; //restore original token
