@@ -35,37 +35,37 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     jest.dontMock('../lib/qerrorsLoader'); //remove loader mock to avoid cross-suite impact
   });
 
-  test('handles all variables present', () => { //verify no missing vars //(first case)
+  test('handles all variables present', async () => { //verify no missing vars //(first case)
     const { getMissingEnvVars, throwIfMissingEnvVars, warnIfMissingEnvVars } = require('../lib/envUtils'); //require utils fresh //(ensure env captured)
     process.env.A = '1'; //define env A //(setup)
     process.env.B = '2'; //define env B //(setup)
-    expect(getMissingEnvVars(['A', 'B'])).toEqual([]); //should find none missing //(assert)
-    expect(throwIfMissingEnvVars(['A', 'B'])).toEqual([]); //should return empty //(assert)
-    expect(warnIfMissingEnvVars(['A', 'B'], 'warn')).toBe(true); //should not warn //(assert)
+    await expect(getMissingEnvVars(['A', 'B'])).resolves.toEqual([]); //should find none missing //(assert)
+    await expect(throwIfMissingEnvVars(['A', 'B'])).resolves.toEqual([]); //should return empty //(assert)
+    await expect(warnIfMissingEnvVars(['A', 'B'], 'warn')).resolves.toBe(true); //should not warn //(assert)
     expect(warnSpy).not.toHaveBeenCalled(); //warn not called //(check)
     expect(errorSpy).not.toHaveBeenCalled(); //error not called //(check)
     expect(qerrors).not.toHaveBeenCalled(); //qerrors not called //(check)
     expect(safeQerrors).not.toHaveBeenCalled(); //safeQerrors not called //(check)
   });
 
-  test('handles some variables missing', () => { //verify missing logic //(second case)
+  test('handles some variables missing', async () => { //verify missing logic //(second case)
     const { getMissingEnvVars, throwIfMissingEnvVars, warnIfMissingEnvVars } = require('../lib/envUtils'); //require utils fresh //(ensure env captured)
     process.env.A = '1'; //define env A only //(setup)
     delete process.env.B; //remove env B //(force missing)
-    expect(getMissingEnvVars(['A', 'B'])).toEqual(['B']); //should detect B missing //(assert)
-    expect(() => throwIfMissingEnvVars(['A', 'B'])).toThrow('Missing required'); //should throw on missing vars //(assert)
-    expect(warnIfMissingEnvVars(['A', 'B'], 'warn')).toBe(false); //should warn //(assert)
+    await expect(getMissingEnvVars(['A', 'B'])).resolves.toEqual(['B']); //should detect B missing //(assert)
+    await expect(throwIfMissingEnvVars(['A', 'B'])).rejects.toThrow('Missing required'); //should throw on missing vars //(assert)
+    await expect(warnIfMissingEnvVars(['A', 'B'], 'warn')).resolves.toBe(false); //should warn //(assert)
     expect(warnSpy).toHaveBeenCalledWith('warn'); //warn called with message //(check)
     expect(errorSpy).toHaveBeenCalledWith('Missing required environment variables: B'); //error logged //(check)
     expect(qerrors).not.toHaveBeenCalled(); //qerrors not used directly //(check)
     expect(safeQerrors).toHaveBeenCalledTimes(1); //safeQerrors invoked once //(check)
   });
 
-  test('handles undefined variable array', () => { //verify undefined input //(third case)
+  test('handles undefined variable array', async () => { //verify undefined input //(third case)
     const { getMissingEnvVars, throwIfMissingEnvVars, warnIfMissingEnvVars } = require('../lib/envUtils'); //require utils fresh //(ensure env captured)
-    expect(getMissingEnvVars(undefined)).toEqual([]); //returns empty array //(assert)
-    expect(throwIfMissingEnvVars(undefined)).toEqual([]); //throws handled //(assert)
-    expect(warnIfMissingEnvVars(undefined, 'warn')).toBe(true); //should not warn //(assert)
+    await expect(getMissingEnvVars(undefined)).resolves.toEqual([]); //returns empty array //(assert)
+    await expect(throwIfMissingEnvVars(undefined)).resolves.toEqual([]); //throws handled //(assert)
+    await expect(warnIfMissingEnvVars(undefined, 'warn')).resolves.toBe(true); //should not warn //(assert)
     expect(warnSpy).not.toHaveBeenCalled(); //warn not called //(check)
     expect(errorSpy).not.toHaveBeenCalled(); //error not called //(check)
     expect(qerrors).not.toHaveBeenCalled(); //qerrors not used directly //(check)
@@ -73,13 +73,23 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     expect(safeQerrors).toHaveBeenCalledTimes(3); //safeQerrors invoked three times //(check)
   });
 
-  test('does not log when DEBUG false', () => { //verify debug gating
+  test('does not log when DEBUG false', async () => { //verify debug gating
     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); //spy on console.log
     delete process.env.DEBUG; //ensure debug flag unset
     const { getMissingEnvVars } = require('../lib/envUtils'); //import after env set
     const before = logSpy.mock.calls.length; //record initial log count
-    getMissingEnvVars([]); //call function expecting no logs
+    await getMissingEnvVars([]); //call function expecting no logs
     expect(logSpy.mock.calls.length).toBe(before); //no additional logs when debug off
     logSpy.mockRestore(); //restore console.log
+  });
+
+  test('safeQerrors rejection handled', async () => { //ensure no unhandled rejection
+    const { getMissingEnvVars } = require('../lib/envUtils'); //load utils
+    safeQerrors.mockRejectedValueOnce(new Error('fail')); //force rejection
+    const unhandled = jest.fn(); //spy for unhandled rejections
+    process.once('unhandledRejection', unhandled); //attach spy
+    await getMissingEnvVars(undefined); //trigger error path
+    await new Promise(r => setImmediate(r)); //allow promise chain to settle
+    expect(unhandled).not.toHaveBeenCalled(); //verify no unhandled rejection
   });
 });
