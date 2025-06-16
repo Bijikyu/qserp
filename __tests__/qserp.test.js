@@ -190,6 +190,17 @@ describe('qserp module', () => { //group qserp tests
     expect(scheduleMock).not.toHaveBeenCalled(); //no new request expected
   });
 
+  test.each([null, 'bad'])('non-numeric num %p shares cache with explicit 10', async val => { //new invalid type test
+    mock.onGet(/NonNum/).reply(200, { items: [{ link: 'x' }] }); //mock initial request
+    const first = await fetchSearchItems('NonNum', val); //populate cache using invalid value
+    scheduleMock.mockClear(); //reset counter for second request
+    mock.onGet(/NonNum/).reply(200, { items: [{ link: 'y' }] }); //different data if fetched again
+    const second = await fetchSearchItems('NonNum', 10); //call with 10 should hit same cache
+    expect(first).toEqual([{ link: 'x' }]); //initial result stored
+    expect(second).toEqual([{ link: 'x' }]); //cache entry reused
+    expect(scheduleMock).not.toHaveBeenCalled(); //no network on second call
+  });
+
   test.each([1, 5, 10])('getGoogleURL includes valid num %i', valid => { //verify clamped url for valid num
     const url = getGoogleURL('Val', valid); //build url with provided num
     expect(url).toBe(`https://customsearch.googleapis.com/customsearch/v1?q=Val&key=key&cx=cx&fields=items(title,snippet,link)&num=${valid}`); //should match num
