@@ -178,7 +178,8 @@ Tests automatically mock network requests and set required environment variables
 When the environment variable `CODEX` is set to any case-insensitive `true` value, the library operates in offline mode:
 
 - **No network requests** are made to Google APIs
-- **Mock responses** are returned from all search functions
+- **googleSearch** and **fetchSearchItems** return empty arrays
+- **rateLimitedRequest** resolves to `{ data: { items: [] } }`
 - **Environment validation** is bypassed for API credentials
 - **Full functionality** is preserved for testing and development
 
@@ -198,8 +199,6 @@ In offline mode `rateLimitedRequest` resolves to:
 ```javascript
 { data: { items: [] } }
 ```
-
-Only the items array is returned.
 
 This enables development and testing in environments without internet access or API credentials.
 
