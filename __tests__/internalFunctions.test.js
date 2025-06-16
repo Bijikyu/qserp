@@ -180,7 +180,7 @@ test('sanitizeApiKey replaces all matches', () => { //ensure global replacement
   expect(res).toBe('start [redacted] middle [redacted] end'); //expect both replaced
 });
 
-test('sanitizeApiKey returns input and logs when regex fails', () => { //trigger catch branch
+test('sanitizeApiKey returns sanitized string when regex fails', () => { //trigger catch branch
   const savedDebug = process.env.DEBUG; //preserve debug flag
   process.env.DEBUG = 'true'; //enable debug logging
   jest.resetModules(); //reload module to capture debug flag
@@ -188,11 +188,11 @@ test('sanitizeApiKey returns input and logs when regex fails', () => { //trigger
   const logSpy = require('./utils/consoleSpies').mockConsole('log'); //spy console.log
   const originalEncode = global.encodeURIComponent; //capture original function
   global.encodeURIComponent = jest.fn(() => { throw new Error('boom'); }); //force failure
-  const result = sanitizeApiKey('text'); //execute with failing encode
-  expect(result).toBe('text'); //should return input unchanged
+  const result = sanitizeApiKey('text key text'); //execute with failing encode and key present
+  expect(result).toBe('text [redacted] text'); //should return sanitized value
   const logs = logSpy.mock.calls.map(c => c[0]); //captured log messages
-  expect(logs).toContain('sanitizeApiKey is running with text'); //logs contain start message
-  expect(logs).toContain('sanitizeApiKey is returning text'); //logs contain end message
+  expect(logs).toContain('sanitizeApiKey is running with text [redacted] text'); //logs contain sanitized start message
+  expect(logs).toContain('sanitizeApiKey is returning text [redacted] text'); //logs contain sanitized end message
   global.encodeURIComponent = originalEncode; //restore encodeURIComponent
   logSpy.mockRestore(); //cleanup spy
   if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore env
