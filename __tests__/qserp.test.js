@@ -4,7 +4,7 @@ const { initSearchTest, resetMocks } = require('./utils/testSetup'); //use new h
 const { mock, scheduleMock, qerrorsMock } = initSearchTest(); //initialize env and mocks
 
 const { googleSearch, getTopSearchResults, fetchSearchItems, clearCache, getGoogleURL } = require('../lib/qserp'); //load functions under test from library
-const { OPENAI_WARN_MSG, OPTIONAL_VARS } = require('../lib/constants'); //import warning message constant and optional list
+const { OPENAI_WARN_MSG } = require('../lib/constants'); //import warning message constant
 
 describe('qserp module', () => { //group qserp tests
   beforeEach(() => { //reset mocks before each test
@@ -106,7 +106,8 @@ describe('qserp module', () => { //group qserp tests
     mockLocal.onGet(/Two/).reply(200, { items: [{ link: '2' }] }); //mock second term
     const urls = await topSearch(['One', 'Two']); //run function expecting warning
     expect(urls).toEqual(['1', '2']); //ensure urls returned correctly
-    expect(warnEnvSpy).toHaveBeenCalledWith(OPTIONAL_VARS, OPENAI_WARN_MSG); //ensure optional vars list used
+    expect(warnEnvSpy).toHaveBeenNthCalledWith(1, ['OPENAI_TOKEN'], OPENAI_WARN_MSG); //first call validates token
+    expect(warnEnvSpy).toHaveBeenNthCalledWith(2, ['GOOGLE_REFERER']); //second call validates referer
     expect(warnSpy).toHaveBeenCalledWith(OPENAI_WARN_MSG); //warning should reference constant
     warnEnvSpy.mockRestore(); //restore env utils spy
     warnSpy.mockRestore(); //restore console.warn spy
