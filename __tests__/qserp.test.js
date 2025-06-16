@@ -301,6 +301,15 @@ describe('qserp module', () => { //group qserp tests
     if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore debug
   });
 
+  test('sanitizeApiKey handles non-string input', () => { //verify object input converted
+    jest.resetModules(); //reload module to ensure fresh state
+    const { setTestEnv } = require('./utils/testSetup'); //setup env for key
+    setTestEnv(); //apply environment variables
+    const { sanitizeApiKey } = require('../lib/qserp'); //require sanitized function
+    const result = sanitizeApiKey(new Error('pre key post')); //pass Error object
+    expect(result).toBe('Error: pre [redacted] post'); //should sanitize within stringified error
+  });
+
   test('cache helpers log when DEBUG true', () => { //verify logging occurs
     const savedDebug = process.env.DEBUG; //preserve env var
     process.env.DEBUG = 'true'; //enable debug output
