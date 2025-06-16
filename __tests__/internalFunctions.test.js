@@ -139,6 +139,17 @@ test.each(['True', 'true', 'TRUE', true, ' true '])('rateLimitedRequest returns 
   delete process.env.CODEX; //clean up env variable for other tests
 }); //test ensures CODEX variants including whitespace bypass network
 
+test('rateLimitedRequest returns mock when CODEX has spaces', async () => { // verify trimming of CODEX env var
+  process.env.CODEX = ' true '; //value with spaces should still enable mock mode
+  ({ mock, scheduleMock, qerrorsMock } = initSearchTest()); //reinitialize with CODEX set
+  const { rateLimitedRequest } = require('../lib/qserp'); //require after env modifications
+  const res = await rateLimitedRequest('http://codex-space'); //expect mocked response due to trimmed true
+  expect(res).toEqual({ data: { items: [] } }); //mocked structure should match
+  expect(scheduleMock).not.toHaveBeenCalled(); //no rate limiting when offline
+  expect(mock.history.get.length).toBe(0); //axios not executed
+  delete process.env.CODEX; //cleanup env variable
+}); //test ensures CODEX with whitespace bypasses network
+
 test('fetchSearchItems bypasses url build in CODEX mode', async () => { // fetchSearchItems bypasses url build in CODEX mode
   process.env.CODEX = 'true'; //enable codex offline mode
   ({ mock, scheduleMock, qerrorsMock } = initSearchTest()); //reinit with codex flag
