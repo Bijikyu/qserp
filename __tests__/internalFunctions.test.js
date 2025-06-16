@@ -113,6 +113,7 @@ test('handleAxiosError passes sanitized error to qerrors', async () => { //verif
   expect(arg).not.toBe(err); //should be copied
   expect(arg.message).toBe('bad [redacted]=[redacted]'); //message sanitized
   expect(arg.config.url).toBe('http://x?[redacted]=[redacted]'); //url sanitized
+  expect(arg.stack).toBe(err.stack); //stack should be retained on sanitized copy
 });
 
 test('handleAxiosError returns false when qerrors throws', async () => { //verify fallback on qerrors failure
