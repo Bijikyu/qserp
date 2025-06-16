@@ -39,7 +39,7 @@ These variables enhance functionality but are not required:
 - `OPENAI_TOKEN` – Used by the `qerrors` dependency for enhanced error analysis and logging
 - `CODEX` – When set to any case-insensitive `true` value, enables offline mode with mocked responses
 - `LOG_LEVEL` – Controls `warn` and `error` output (`info` by default)
-- `QSERP_MAX_CACHE_SIZE` – Maximum cache entries (default: 1000, range: 10-50000) for memory management
+- `QSERP_MAX_CACHE_SIZE` – Maximum cache entries (default: 1000, range: 0-50000 (0 disables caching)) for memory management
 - `GOOGLE_REFERER` – Adds a Referer header to requests when set
 
 ## Usage
@@ -222,7 +222,7 @@ The module implements intelligent LRU caching with automatic memory management t
 ### Memory Management
 Configure cache behavior with the `QSERP_MAX_CACHE_SIZE` environment variable:
 - **Default**: 1000 entries (~10MB typical usage)
-- **Range**: 10-50000 entries (automatically constrained for security)
+- **Range**: 0-50000 entries (0 disables caching, automatically constrained for security)
 - **Eviction**: Automatic LRU eviction when size limit reached
 
 ### Cache Examples

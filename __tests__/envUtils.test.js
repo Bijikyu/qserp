@@ -68,8 +68,8 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     expect(warnIfMissingEnvVars(undefined, 'warn')).toBe(true); //should not warn //(assert)
     expect(warnSpy).not.toHaveBeenCalled(); //warn not called //(check)
     expect(errorSpy).not.toHaveBeenCalled(); //error not called //(check)
-    expect(qerrors).toHaveBeenCalledTimes(3); //qerrors invoked three times //(check)
-    expect(safeQerrors).not.toHaveBeenCalled(); //safeQerrors not called //(check)
+    expect(qerrors).not.toHaveBeenCalled(); //qerrors should not be called //(check)
+    expect(safeQerrors).toHaveBeenCalledTimes(3); //safeQerrors invoked three times //(check)
   });
 
   test('does not log when DEBUG false', () => { //verify debug gating
