@@ -7,6 +7,7 @@
  */
 
 const { parseStringVar, validateEnvVar } = require('../lib/envValidator');
+const { saveEnv, restoreEnv } = require('./utils/testSetup'); //import env helpers
 
 // Mock dependencies to isolate functionality
 jest.mock('../lib/debugUtils');
@@ -14,15 +15,15 @@ jest.mock('../lib/debugUtils');
 const { debugEntry, debugExit } = require('../lib/debugUtils');
 
 describe('parseStringVar', () => { // parseStringVar
-    let originalEnv;
+    let savedEnv; //snapshot of environment for restoration
 
     beforeEach(() => {
-        originalEnv = { ...process.env };
-        jest.clearAllMocks();
+        savedEnv = saveEnv(); //capture current env using util
+        jest.clearAllMocks(); //reset mocks
     });
 
     afterEach(() => {
-        process.env = originalEnv;
+        restoreEnv(savedEnv); //restore env after each test
     });
 
     describe('basic string parsing', () => { // basic string parsing
@@ -133,15 +134,15 @@ describe('parseStringVar', () => { // parseStringVar
 });
 
 describe('validateEnvVar', () => { // validateEnvVar
-    let originalEnv;
+    let savedEnv; //env snapshot for restore
 
     beforeEach(() => {
-        originalEnv = { ...process.env };
-        jest.clearAllMocks();
+        savedEnv = saveEnv(); //store current env
+        jest.clearAllMocks(); //reset mocks per test
     });
 
     afterEach(() => {
-        process.env = originalEnv;
+        restoreEnv(savedEnv); //restore environment
     });
 
     describe('required variable validation', () => { // required variable validation

@@ -7,21 +7,20 @@
  */
 
 const { getDebugFlag } = require('../lib/getDebugFlag');
+const { saveEnv, restoreEnv } = require('./utils/testSetup'); //import env helpers for isolation
 
 describe('getDebugFlag', () => { // getDebugFlag
-    let originalEnv;
-    let consoleSpy;
+    let savedEnv; //holds snapshot of process.env for restoration
+    let consoleSpy; //console spy for log assertions
 
     beforeEach(() => {
-        // Save original environment and mock console
-        originalEnv = { ...process.env };
-        consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+        savedEnv = saveEnv(); //capture env using shared util
+        consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); //stub console.log
     });
 
     afterEach(() => {
-        // Restore original environment and console
-        process.env = originalEnv;
-        consoleSpy.mockRestore();
+        restoreEnv(savedEnv); //reset env after test using util
+        consoleSpy.mockRestore(); //restore console
     });
 
     describe('case-insensitive true detection', () => { // case-insensitive true detection
