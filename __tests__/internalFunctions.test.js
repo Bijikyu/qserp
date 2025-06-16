@@ -89,7 +89,7 @@ test('handleAxiosError logs sanitized response object and returns true', async (
   expect(res).toBe(true); //should return true
   const logged = spy.mock.calls[0][0]; //capture logged object for inspection
   expect(JSON.stringify(logged)).not.toContain('key=key'); //verify key removed from log
-  expect(logged.config.url).toBe('http://x?[redacted]=[redacted]'); //url should be fully sanitized
+  expect(logged.config.url).toBe('http://x?key=[redacted]'); //parameter name preserved
   spy.mockRestore(); //restore console.error
 });
 
@@ -111,8 +111,8 @@ test('handleAxiosError passes sanitized error to qerrors', async () => { //verif
   await handleAxiosError(err, 'ctx'); //invoke handler
   const arg = qerrorsMock.mock.calls[0][0]; //extract error passed to qerrors
   expect(arg).not.toBe(err); //should be copied
-  expect(arg.message).toBe('bad [redacted]=[redacted]'); //message sanitized
-  expect(arg.config.url).toBe('http://x?[redacted]=[redacted]'); //url sanitized
+  expect(arg.message).toBe('bad key=[redacted]'); //only api key value masked
+  expect(arg.config.url).toBe('http://x?key=[redacted]'); //parameter name kept
   expect(arg.stack).toBe(err.stack); //stack should be retained on sanitized copy
 });
 
@@ -179,6 +179,12 @@ test('sanitizeApiKey replaces all matches', () => { //ensure global replacement
   const { sanitizeApiKey } = require('../lib/qserp'); //import function under test
   const res = sanitizeApiKey('start key middle key end'); //call with repeated key
   expect(res).toBe('start [redacted] middle [redacted] end'); //expect both replaced
+});
+
+test('sanitizeApiKey ignores partial-word matches', () => { //verify no substring replacement
+  const { sanitizeApiKey } = require('../lib/qserp'); //load helper
+  const res = sanitizeApiKey('monkey business key=key'); //include word containing key
+  expect(res).toBe('monkey business key=[redacted]'); //only value replaced
 });
 
 test('sanitizeApiKey returns sanitized string when regex fails', () => { //trigger catch branch
