@@ -68,4 +68,26 @@ describe('minLogger', () => { // minLogger
     expect(logSpy).not.toHaveBeenCalled(); //console.log should be muted
     logSpy.mockRestore(); //cleanup spy
   });
+
+  test('trims trailing space on warn level', () => { //ensure whitespace is ignored
+    process.env.LOG_LEVEL = 'warn '; //set level with trailing space
+    const spy = mockConsole('warn'); //spy on console.warn
+    const { logWarn } = require('../lib/minLogger'); //import function
+    logWarn('b'); //call logger
+    expect(spy).toHaveBeenCalledWith('b'); //should log despite space
+    spy.mockRestore(); //cleanup spy
+  });
+
+  test('trims spaces on error level', () => { //error level should still suppress warn
+    process.env.LOG_LEVEL = ' error '; //level with spaces around
+    const warnSpy = mockConsole('warn'); //spy console.warn
+    const errorSpy = mockConsole('error'); //spy console.error
+    const { logWarn, logError } = require('../lib/minLogger'); //import funcs
+    logWarn('x'); //call warn
+    logError('y'); //call error
+    expect(warnSpy).not.toHaveBeenCalled(); //warn suppressed due to level
+    expect(errorSpy).toHaveBeenCalledWith('y'); //error logged despite spaces
+    warnSpy.mockRestore(); //cleanup warn spy
+    errorSpy.mockRestore(); //cleanup error spy
+  });
 });
