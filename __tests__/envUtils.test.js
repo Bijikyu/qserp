@@ -15,7 +15,7 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     jest.doMock('../lib/qerrorsLoader', () => { //mock qerrors loader per test
       const mockFn = jest.fn(); //placeholder qerrors function
       const loader = jest.fn(() => mockFn); //callable default export
-      loader.safeQerrors = jest.fn(); //spy for resilience wrapper
+      loader.safeQerrors = jest.fn(() => Promise.resolve()); //spy returning promise to mimic async
       loader.default = loader; //support .default usage
       return loader; //export loader function
     });
@@ -81,5 +81,19 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     getMissingEnvVars([]); //call function expecting no logs
     expect(logSpy.mock.calls.length).toBe(before); //no additional logs when debug off
     logSpy.mockRestore(); //restore console.log
+  });
+
+  test('safeQerrors rejection is handled', async () => { //verify promise rejection is caught
+    safeQerrors.mockImplementation(() => Promise.reject(new Error('fail'))); //force rejection from wrapper
+    const rejections = []; //collect unhandled rejections
+    process.on('unhandledRejection', err => rejections.push(err)); //capture events
+    const { getMissingEnvVars, throwIfMissingEnvVars } = require('../lib/envUtils'); //reload module
+    expect(getMissingEnvVars(undefined)).toEqual([]); //should handle rejection in calcMissing
+    process.env.A = '1'; //set one var
+    delete process.env.B; //unset second var to trigger throw
+    expect(() => throwIfMissingEnvVars(['A', 'B'])).toThrow('Missing required'); //should still throw synchronously
+    await new Promise(res => setImmediate(res)); //allow promise rejection to surface
+    process.removeAllListeners('unhandledRejection'); //cleanup listener
+    expect(rejections.length).toBe(0); //no unhandled rejections observed
   });
 });
