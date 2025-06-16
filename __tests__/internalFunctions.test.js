@@ -205,6 +205,19 @@ test('sanitizeApiKey returns sanitized string when regex fails', () => { //trigg
   if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore env
 });
 
+test('sanitizeApiKey handles object input via toString', () => { //non-string object sanitization
+  const { sanitizeApiKey } = require('../lib/qserp'); //load helper after env setup
+  const obj = { toString() { return 'obj key=key'; } }; //object with key in toString
+  const res = sanitizeApiKey(obj); //invoke with object
+  expect(res).toBe('obj key=[redacted]'); //object string sanitized
+});
+
+test('sanitizeApiKey handles number input without error', () => { //numeric input sanitization
+  const { sanitizeApiKey } = require('../lib/qserp'); //load helper
+  const res = sanitizeApiKey(123); //invoke with number
+  expect(res).toBe('123'); //result coerced to string
+});
+
 test('normalizeNum returns null when parseInt throws', () => { //validate catch path
   const { normalizeNum } = require('../lib/qserp'); //load function under test
   const parseSpy = jest.spyOn(global, 'parseInt').mockImplementation(() => { throw new Error('bad'); }); //mock parseInt throw
