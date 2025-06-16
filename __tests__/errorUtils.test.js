@@ -117,14 +117,14 @@ describe('errorUtils', () => { // errorUtils
     });
 
     describe('error reporting functions', () => { // error reporting functions
-        it('should report error with enriched context', () => { // should report error with enriched context
+        it('should report error with enriched context', async () => { // should report error with enriched context
             const { reportError } = require('../lib/errorUtils');
             
             const error = new Error('Test error');
             const context = { category: 'test_error', operation: 'testing' };
             const customDetails = { userId: 123, action: 'search' };
             
-            reportError(error, 'Test error message', context, customDetails);
+            await reportError(error, 'Test error message', context, customDetails); //await async call
             
             expect(mockSafeQerrors).toHaveBeenCalledWith(
                 error,
@@ -141,7 +141,7 @@ describe('errorUtils', () => { // errorUtils
             );
         });
 
-        it('should handle qerrors failure gracefully', () => { // should handle qerrors failure gracefully
+        it('should handle qerrors failure gracefully', async () => { // should handle qerrors failure gracefully
             const { reportError } = require('../lib/errorUtils');
             
             // Make qerrors throw an error
@@ -151,15 +151,14 @@ describe('errorUtils', () => { // errorUtils
             
             const error = new Error('Original error');
             
-            expect(() => {
-                reportError(error, 'Test message', {});
-            }).not.toThrow();
+            const result = await reportError(error, 'Test message', {}); //invoke async function
+            expect(result).toBe(false); //should signal failure without throw
             
             expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', expect.any(Error));
             expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', error);
         });
 
-        it('should return false when qerrors throws', () => { // ensure failure return value
+        it('should return false when qerrors throws', async () => { // ensure failure return value
             const { reportError } = require('../lib/errorUtils');
 
             mockSafeQerrors.mockImplementation(() => { //force safeQerrors failure
@@ -168,7 +167,7 @@ describe('errorUtils', () => { // errorUtils
 
             const error = new Error('Original error');
 
-            const result = reportError(error, 'Test message');
+            const result = await reportError(error, 'Test message'); //await async function
 
             expect(result).toBe(false);
             expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', expect.any(Error));
@@ -177,12 +176,12 @@ describe('errorUtils', () => { // errorUtils
     });
 
     describe('convenience reporting functions', () => { // convenience reporting functions
-        it('should report API error with proper context', () => { // should report API error with proper context
+        it('should report API error with proper context', async () => { // should report API error with proper context
             const { reportApiError } = require('../lib/errorUtils');
             
             const error = new Error('Network timeout');
             
-            reportApiError(error, 'Google search request', {
+            await reportApiError(error, 'Google search request', { //await async call
                 url: 'https://googleapis.com/search',
                 timeout: 5000
             });
@@ -199,12 +198,12 @@ describe('errorUtils', () => { // errorUtils
             );
         });
 
-        it('should report config error with proper context', () => { // should report config error with proper context
+        it('should report config error with proper context', async () => { // should report config error with proper context
             const { reportConfigError } = require('../lib/errorUtils');
             
             const error = new Error('Missing environment variable');
             
-            reportConfigError(error, 'API key validation', {
+            await reportConfigError(error, 'API key validation', { //await async call
                 variable: 'GOOGLE_API_KEY',
                 required: true
             });
@@ -221,40 +220,40 @@ describe('errorUtils', () => { // errorUtils
             );
         });
 
-        it('should return false when reportApiError fails', () => { // propagate false on failure
+        it('should return false when reportApiError fails', async () => { // propagate false on failure
             const { reportApiError } = require('../lib/errorUtils');
 
             mockSafeQerrors.mockImplementation(() => { throw new Error('Reporting failed'); });
 
             const error = new Error('Network failure');
 
-            const result = reportApiError(error, 'Fetch data', { url: 'http://example.com' });
+            const result = await reportApiError(error, 'Fetch data', { url: 'http://example.com' }); //await async function
 
             expect(result).toBe(false);
             expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', expect.any(Error));
             expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', error);
         });
 
-        it('should return false when reportConfigError fails', () => { // propagate false on config failure
+        it('should return false when reportConfigError fails', async () => { // propagate false on config failure
             const { reportConfigError } = require('../lib/errorUtils');
 
             mockSafeQerrors.mockImplementation(() => { throw new Error('Reporting failed'); });
 
             const error = new Error('Bad config');
 
-            const result = reportConfigError(error, 'Env check', { variable: 'TEST' });
+            const result = await reportConfigError(error, 'Env check', { variable: 'TEST' }); //await async function
 
             expect(result).toBe(false);
             expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', expect.any(Error));
             expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', error);
         });
 
-        it('should report validation error with proper context', () => { // should report validation error with proper context
+        it('should report validation error with proper context', async () => { // should report validation error with proper context
             const { reportValidationError } = require('../lib/errorUtils');
             
             const error = new Error('Invalid input');
             
-            reportValidationError(error, 'Search query validation', {
+            await reportValidationError(error, 'Search query validation', { //await async call
                 input: '',
                 rule: 'must be non-empty',
                 field: 'query'
