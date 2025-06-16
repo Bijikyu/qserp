@@ -7,10 +7,10 @@
  */
 
 // Mock qerrorsLoader to avoid loading actual qerrors dependency
-const mockQerrors = jest.fn();
-jest.mock('../lib/qerrorsLoader', () => {
-    return () => mockQerrors;
-});
+const mockSafeQerrors = jest.fn();
+jest.mock('../lib/qerrorsLoader', () => ({
+    safeQerrors: mockSafeQerrors //provide safeQerrors for tests
+}));
 
 describe('errorUtils', () => { // errorUtils
     let consoleErrorSpy;
@@ -21,7 +21,7 @@ describe('errorUtils', () => { // errorUtils
         
         // Clear all mocks
         jest.clearAllMocks();
-        mockQerrors.mockClear();
+        mockSafeQerrors.mockClear();
     });
 
     afterEach(() => {
@@ -126,7 +126,7 @@ describe('errorUtils', () => { // errorUtils
             
             reportError(error, 'Test error message', context, customDetails);
             
-            expect(mockQerrors).toHaveBeenCalledWith(
+            expect(mockSafeQerrors).toHaveBeenCalledWith(
                 error,
                 'Test error message',
                 expect.objectContaining({
@@ -145,7 +145,7 @@ describe('errorUtils', () => { // errorUtils
             const { reportError } = require('../lib/errorUtils');
             
             // Make qerrors throw an error
-            mockQerrors.mockImplementation(() => {
+            mockSafeQerrors.mockImplementation(() => {
                 throw new Error('Reporting failed');
             });
             
@@ -162,7 +162,7 @@ describe('errorUtils', () => { // errorUtils
         it('should return false when qerrors throws', () => { // ensure failure return value
             const { reportError } = require('../lib/errorUtils');
 
-            mockQerrors.mockImplementation(() => { //force qerrors failure
+            mockSafeQerrors.mockImplementation(() => { //force safeQerrors failure
                 throw new Error('Reporting failed');
             });
 
@@ -187,7 +187,7 @@ describe('errorUtils', () => { // errorUtils
                 timeout: 5000
             });
             
-            expect(mockQerrors).toHaveBeenCalledWith(
+            expect(mockSafeQerrors).toHaveBeenCalledWith(
                 error,
                 'API Error: Google search request',
                 expect.objectContaining({
@@ -209,7 +209,7 @@ describe('errorUtils', () => { // errorUtils
                 required: true
             });
             
-            expect(mockQerrors).toHaveBeenCalledWith(
+            expect(mockSafeQerrors).toHaveBeenCalledWith(
                 error,
                 'Configuration Error: API key validation',
                 expect.objectContaining({
@@ -224,7 +224,7 @@ describe('errorUtils', () => { // errorUtils
         it('should return false when reportApiError fails', () => { // propagate false on failure
             const { reportApiError } = require('../lib/errorUtils');
 
-            mockQerrors.mockImplementation(() => { throw new Error('Reporting failed'); });
+            mockSafeQerrors.mockImplementation(() => { throw new Error('Reporting failed'); });
 
             const error = new Error('Network failure');
 
@@ -238,7 +238,7 @@ describe('errorUtils', () => { // errorUtils
         it('should return false when reportConfigError fails', () => { // propagate false on config failure
             const { reportConfigError } = require('../lib/errorUtils');
 
-            mockQerrors.mockImplementation(() => { throw new Error('Reporting failed'); });
+            mockSafeQerrors.mockImplementation(() => { throw new Error('Reporting failed'); });
 
             const error = new Error('Bad config');
 
@@ -260,7 +260,7 @@ describe('errorUtils', () => { // errorUtils
                 field: 'query'
             });
             
-            expect(mockQerrors).toHaveBeenCalledWith(
+            expect(mockSafeQerrors).toHaveBeenCalledWith(
                 error,
                 'Validation Error: Search query validation',
                 expect.objectContaining({
