@@ -127,7 +127,7 @@ test('handleAxiosError returns false when qerrors throws', async () => { //verif
   spy.mockRestore(); //restore console.error
 }); //end test ensuring failure path
 
-test.each(['True', 'true', 'TRUE', true])('rateLimitedRequest returns mock when CODEX=%s', async val => {
+test.each(['True', 'true', 'TRUE', true, ' true '])('rateLimitedRequest returns mock when CODEX=%s', async val => {
   process.env.CODEX = val; //set CODEX variant to trigger mock response
   ({ mock, scheduleMock, qerrorsMock } = initSearchTest()); //reinit with CODEX set
   const { rateLimitedRequest } = require('../lib/qserp'); //import after env setup
@@ -137,7 +137,7 @@ test.each(['True', 'true', 'TRUE', true])('rateLimitedRequest returns mock when 
   expect(scheduleMock).not.toHaveBeenCalled(); //limiter should be bypassed
   expect(mock.history.get.length).toBe(0); //axios should not receive any request
   delete process.env.CODEX; //clean up env variable for other tests
-}); //test ensures CODEX casings bypass network
+}); //test ensures CODEX variants including whitespace bypass network
 
 test('rateLimitedRequest returns mock when CODEX has spaces', async () => { // verify trimming of CODEX env var
   process.env.CODEX = ' true '; //value with spaces should still enable mock mode
