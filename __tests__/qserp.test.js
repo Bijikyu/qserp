@@ -140,6 +140,19 @@ describe('qserp module', () => { //group qserp tests
     expect(scheduleMock).toHaveBeenCalled(); //new request scheduled
   });
 
+  test('CODEX mode does not populate cache', async () => { //verify mock results are not cached
+    process.env.CODEX = 'true'; //enable offline mode
+    const first = await fetchSearchItems('NoCache'); //call with codex enabled
+    scheduleMock.mockClear(); //reset scheduler count
+    process.env.CODEX = 'false'; //disable codex without clearing cache
+    mock.onGet(/NoCache/).reply(200, { items: [{ link: 'real' }] }); //mock api response
+    const second = await fetchSearchItems('NoCache'); //should fetch since cache unused
+    expect(first).toEqual([]); //mock path returns empty array
+    expect(second).toEqual([{ link: 'real' }]); //should use network data
+    expect(scheduleMock).toHaveBeenCalled(); //network request confirms no cache
+    delete process.env.CODEX; //cleanup env var
+  });
+
   test('fetchSearchItems caches per num value', async () => { //ensure num forms part of cache key
     mock.onGet(/NumKey/).reply(200, { items: [{ link: '1' }] }); //mock first request
     const first = await fetchSearchItems('NumKey', 1); //populate cache with num=1
