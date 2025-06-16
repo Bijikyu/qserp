@@ -301,6 +301,17 @@ describe('qserp module', () => { //group qserp tests
     if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore debug
   });
 
+  test('sanitizeApiKey handles non-string input', () => { //verify coercion to string
+    jest.resetModules(); //reload module for clean state
+    const { setTestEnv } = require('./utils/testSetup'); //env helper for vars
+    setTestEnv(); //ensure required env vars present
+    const { sanitizeApiKey } = require('../lib/qserp'); //load module under test
+    const numRes = sanitizeApiKey(12345); //number input
+    const objRes = sanitizeApiKey({ a: 1 }); //object input
+    expect(numRes).toBe('12345'); //returns string version of number
+    expect(objRes).toBe('[object Object]'); //returns object converted to string
+  });
+
   test('cache helpers log when DEBUG true', () => { //verify logging occurs
     const savedDebug = process.env.DEBUG; //preserve env var
     process.env.DEBUG = 'true'; //enable debug output
