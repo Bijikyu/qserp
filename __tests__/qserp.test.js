@@ -162,6 +162,17 @@ describe('qserp module', () => { //group qserp tests
     expect(scheduleMock).not.toHaveBeenCalled(); //no new request expected
   });
 
+  test('undefined num shares cache with explicit 10', async () => { //new unified key test
+    mock.onGet(/Default/).reply(200, { items: [{ link: 'a' }] }); //mock initial request
+    const first = await fetchSearchItems('Default', 10); //populate cache with explicit num 10
+    scheduleMock.mockClear(); //reset counter for second request
+    mock.onGet(/Default/).reply(200, { items: [{ link: 'b' }] }); //different data if fetched again
+    const second = await fetchSearchItems('Default'); //call without num should hit same cache
+    expect(first).toEqual([{ link: 'a' }]); //first response data
+    expect(second).toEqual([{ link: 'a' }]); //should match cached data
+    expect(scheduleMock).not.toHaveBeenCalled(); //no new request expected
+  });
+
   test.each([1, 5, 10])('getGoogleURL includes valid num %i', valid => { //verify clamped url for valid num
     const url = getGoogleURL('Val', valid); //build url with provided num
     expect(url).toBe(`https://customsearch.googleapis.com/customsearch/v1?q=Val&key=key&cx=cx&fields=items(title,snippet,link)&num=${valid}`); //should match num
