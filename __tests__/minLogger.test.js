@@ -59,4 +59,13 @@ describe('minLogger', () => { // minLogger
     warnSpy.mockRestore(); //restore warn
     errorSpy.mockRestore(); //restore error
   });
+
+  test('console.log not called when silent', () => { //verify trace suppression
+    process.env.LOG_LEVEL = 'silent'; //force silent mode
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); //direct spy to avoid helper noise
+    const { logWarn } = require('../lib/minLogger'); //import warn for check
+    logWarn('trace'); //execute warn
+    expect(logSpy).not.toHaveBeenCalled(); //console.log should be muted
+    logSpy.mockRestore(); //cleanup spy
+  });
 });
