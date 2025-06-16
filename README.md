@@ -158,9 +158,10 @@ The module provides comprehensive error handling:
 
 ## Testing
 
-Run the included Jest test suite:
+Run the included Jest test suite. Install dependencies first if you haven't already:
 
 ```bash
+npm install
 npm test
 ```
 
