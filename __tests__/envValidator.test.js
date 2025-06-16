@@ -7,6 +7,7 @@
  */
 
 const { parseIntWithBounds, parseBooleanVar, parseStringVar, validateEnvVar } = require('../lib/envValidator');
+const { saveEnv, restoreEnv } = require('./utils/testSetup'); //env helpers for isolation
 
 // Mock dependencies to isolate envValidator functionality
 jest.mock('../lib/debugUtils');
@@ -14,17 +15,15 @@ jest.mock('../lib/debugUtils');
 const { debugEntry, debugExit } = require('../lib/debugUtils');
 
 describe('envValidator', () => { // envValidator
-    let originalEnv;
+    let savedEnv; //snapshot for env restoration
 
     beforeEach(() => {
-        // Save original environment variables
-        originalEnv = { ...process.env };
-        jest.clearAllMocks();
+        savedEnv = saveEnv(); //capture environment state
+        jest.clearAllMocks(); //reset mocks
     });
 
     afterEach(() => {
-        // Restore original environment variables
-        process.env = originalEnv;
+        restoreEnv(savedEnv); //restore environment state
     });
 
     describe('parseIntWithBounds', () => { // parseIntWithBounds
