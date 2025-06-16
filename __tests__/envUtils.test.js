@@ -73,6 +73,18 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     expect(safeQerrors).toHaveBeenCalledTimes(3); //safeQerrors invoked three times //(check)
   });
 
+  test('handles non-array variable type', () => { //verify invalid object input //(new case)
+    const { getMissingEnvVars, throwIfMissingEnvVars, warnIfMissingEnvVars } = require('../lib/envUtils'); //require utils fresh //(ensure env captured)
+    const badVal = { foo: 'bar' }; //object passed instead of array //(setup)
+    expect(getMissingEnvVars(badVal)).toEqual([]); //should return empty array //(assert)
+    expect(throwIfMissingEnvVars(badVal)).toEqual([]); //should not throw //(assert)
+    expect(warnIfMissingEnvVars(badVal, 'warn')).toBe(true); //should not warn //(assert)
+    expect(warnSpy).not.toHaveBeenCalled(); //warn not called //(check)
+    expect(errorSpy).not.toHaveBeenCalled(); //error not called //(check)
+    expect(qerrors).not.toHaveBeenCalled(); //qerrors not used directly //(check)
+    expect(safeQerrors).toHaveBeenCalledTimes(3); //safeQerrors invoked three times //(check)
+  });
+
   test('does not log when DEBUG false', () => { //verify debug gating
     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); //spy on console.log
     delete process.env.DEBUG; //ensure debug flag unset
