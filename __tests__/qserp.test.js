@@ -4,7 +4,7 @@ const { initSearchTest, resetMocks } = require('./utils/testSetup'); //use new h
 const { mock, scheduleMock, qerrorsMock } = initSearchTest(); //initialize env and mocks
 
 const { googleSearch, getTopSearchResults, fetchSearchItems, clearCache, getGoogleURL } = require('../lib/qserp'); //load functions under test from library
-const { OPENAI_WARN_MSG } = require('../lib/constants'); //import warning message constant
+const { OPENAI_WARN_MSG, OPTIONAL_VARS } = require('../lib/constants'); //import warning message constant and optional list
 
 describe('qserp module', () => { //group qserp tests
   beforeEach(() => { //reset mocks before each test
@@ -96,6 +96,8 @@ describe('qserp module', () => { //group qserp tests
     jest.resetModules(); //reload modules to re-evaluate env vars
     const { createAxiosMock, createScheduleMock, createQerrorsMock } = require('./utils/testSetup'); //reacquire helpers post reset
     const warnSpy = require('./utils/consoleSpies').mockConsole('warn'); //create console.warn spy
+    const envUtils = require('../lib/envUtils'); //import env utils for spy
+    const warnEnvSpy = jest.spyOn(envUtils, 'warnIfMissingEnvVars'); //spy on env warning call
     const mockLocal = createAxiosMock(); //create fresh axios adapter
     createScheduleMock(); //recreate Bottleneck schedule mock
     createQerrorsMock(); //recreate qerrors mock
@@ -104,7 +106,9 @@ describe('qserp module', () => { //group qserp tests
     mockLocal.onGet(/Two/).reply(200, { items: [{ link: '2' }] }); //mock second term
     const urls = await topSearch(['One', 'Two']); //run function expecting warning
     expect(urls).toEqual(['1', '2']); //ensure urls returned correctly
+    expect(warnEnvSpy).toHaveBeenCalledWith(OPTIONAL_VARS, OPENAI_WARN_MSG); //ensure optional vars list used
     expect(warnSpy).toHaveBeenCalledWith(OPENAI_WARN_MSG); //warning should reference constant
+    warnEnvSpy.mockRestore(); //restore env utils spy
     warnSpy.mockRestore(); //restore console.warn spy
     process.env.OPENAI_TOKEN = tokenSave; //restore original token
   });
