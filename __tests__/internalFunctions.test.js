@@ -165,6 +165,19 @@ test('fetchSearchItems bypasses url build in CODEX mode', async () => { // fetch
   delete process.env.CODEX; //cleanup codex flag
 }); //test verifies fetchSearchItems skips url creation and internal request when CODEX true
 
+test('fetchSearchItems does not create cache key in CODEX mode', async () => { //ensure cache bypassed
+  process.env.CODEX = 'true'; //enable codex offline
+  ({ mock, scheduleMock, qerrorsMock } = initSearchTest()); //reinitialize mocks
+  const qserp = require('../lib/qserp'); //require module with CODEX true
+  const keySpy = jest.spyOn(qserp, 'createCacheKey'); //spy on key creation helper
+  const res = await qserp.fetchSearchItems('skipKey'); //invoke fetch expecting bypass
+  expect(res).toEqual([]); //mocked empty array
+  expect(keySpy).not.toHaveBeenCalled(); //no cache key generated
+  expect(qserp.performCacheCleanup()).toBe(false); //cache remains empty
+  keySpy.mockRestore(); //restore spy
+  delete process.env.CODEX; //clean environment
+}); //test ensures CODEX mode avoids cache access
+
 test('validateSearchQuery accepts non-empty strings', () => { //(verify valid input)
   const { validateSearchQuery } = require('../lib/qserp'); //import helper
   expect(validateSearchQuery('ok')).toBe(true); //should return true for normal string
