@@ -116,6 +116,15 @@ test('handleAxiosError passes sanitized error to qerrors', async () => { //verif
   expect(arg.stack).toBe(err.stack); //stack should be retained on sanitized copy
 });
 
+test('handleAxiosError passes original error name to qerrors', async () => { //verify preserved name
+  const { handleAxiosError } = require('../lib/qserp'); //import function
+  const err = new Error('named');
+  err.name = 'NamedError';
+  await handleAxiosError(err, 'ctx');
+  const arg = qerrorsMock.mock.calls[0][0];
+  expect(arg.name).toBe('NamedError'); //sanitized error keeps original name
+});
+
 test('handleAxiosError returns false when qerrors throws', async () => { //verify fallback on qerrors failure
   const { handleAxiosError } = require('../lib/qserp'); //load function under test
   const err = new Error('bad'); //mock basic error
