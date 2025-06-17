@@ -1,15 +1,16 @@
+// Mock debugUtils before loading any modules that depend on it
+jest.mock('../lib/debugUtils'); //ensures debug calls are tracked correctly
+
 // Summary: parseStringVar.test.js validates module behavior and edge cases
 /**
  * parseStringVar.test.js - Additional unit tests for string parsing functionality
- * 
+ *
  * Tests the parseStringVar and validateEnvVar functions from envValidator
  * to ensure comprehensive coverage of string validation scenarios.
  */
 
-// Mock dependencies first so envValidator uses the mocked debug utils
-jest.mock('../lib/debugUtils'); //ensure debug utilities mocked before module load
-
-const { saveEnv, restoreEnv } = require('./utils/testSetup'); //import env helpers
+let saveEnv; //helper loaded after modules reset
+let restoreEnv; //helper loaded after modules reset
 
 let parseStringVar; //function reference loaded after modules reset
 let validateEnvVar; //function reference loaded after modules reset
@@ -23,6 +24,7 @@ describe('parseStringVar', () => { // parseStringVar
         jest.resetModules(); //reload modules so mocks apply correctly
         ({ debugEntry, debugExit } = require('../lib/debugUtils')); //obtain mocked utils after reset
         ({ parseStringVar, validateEnvVar } = require('../lib/envValidator')); //load functions under test
+        ({ saveEnv, restoreEnv } = require('./utils/testSetup')); //reload helpers using mocked debug utils
 
         savedEnv = saveEnv(); //capture current env using util
         jest.clearAllMocks(); //reset mocks

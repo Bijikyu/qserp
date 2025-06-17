@@ -1,15 +1,16 @@
+// Mock debugUtils before requiring any modules that depend on it
+jest.mock('../lib/debugUtils'); //ensures debug calls are intercepted
+
 // Summary: envValidator.test.js validates module behavior and edge cases
 /**
  * envValidator.test.js - Comprehensive unit tests for environment variable validation
- * 
+ *
  * Tests the centralized environment variable parsing and validation utilities
  * that provide secure bounds checking and type conversion across the codebase.
  */
 
-// Mock dependencies first so envValidator loads with mocked debug utilities
-jest.mock('../lib/debugUtils'); //ensure debug utils mocked before module import
-
-const { saveEnv, restoreEnv } = require('./utils/testSetup'); //env helpers for isolation
+let saveEnv; //helper loaded after modules reset
+let restoreEnv; //helper loaded after modules reset
 
 let parseIntWithBounds; //function loaded after reset
 let parseBooleanVar; //function loaded after reset
@@ -25,6 +26,7 @@ describe('envValidator', () => { // envValidator
         jest.resetModules(); //reload modules so mocks apply correctly
         ({ debugEntry, debugExit } = require('../lib/debugUtils')); //get mocked utils after reset
         ({ parseIntWithBounds, parseBooleanVar, parseStringVar, validateEnvVar } = require('../lib/envValidator')); //load functions under test
+        ({ saveEnv, restoreEnv } = require('./utils/testSetup')); //reload helpers using mocked debug utils
 
         savedEnv = saveEnv(); //capture environment state
         jest.clearAllMocks(); //reset mocks
