@@ -63,9 +63,9 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
 
   test('handles undefined variable array', () => { //verify undefined input //(third case)
     const { getMissingEnvVars, throwIfMissingEnvVars, warnIfMissingEnvVars } = require('../lib/envUtils'); //require utils fresh //(ensure env captured)
-    expect(getMissingEnvVars(undefined)).toEqual([]); //returns empty array //(assert)
-    expect(throwIfMissingEnvVars(undefined)).toEqual([]); //throws handled //(assert)
-    expect(warnIfMissingEnvVars(undefined, 'warn')).toBe(true); //should not warn //(assert)
+    expect(() => getMissingEnvVars(undefined)).toThrow(TypeError); //should throw when param invalid //(assert)
+    expect(() => throwIfMissingEnvVars(undefined)).toThrow(TypeError); //should propagate error //(assert)
+    expect(() => warnIfMissingEnvVars(undefined, 'warn')).toThrow(TypeError); //should throw on misuse //(assert)
     expect(warnSpy).not.toHaveBeenCalled(); //warn not called //(check)
     expect(errorSpy).not.toHaveBeenCalled(); //error not called //(check)
     expect(qerrors).not.toHaveBeenCalled(); //qerrors not used directly //(check)
@@ -76,9 +76,9 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
   test('handles non-array variable type', () => { //verify invalid object input //(new case)
     const { getMissingEnvVars, throwIfMissingEnvVars, warnIfMissingEnvVars } = require('../lib/envUtils'); //require utils fresh //(ensure env captured)
     const badVal = { foo: 'bar' }; //object passed instead of array //(setup)
-    expect(getMissingEnvVars(badVal)).toEqual([]); //should return empty array //(assert)
-    expect(throwIfMissingEnvVars(badVal)).toEqual([]); //should not throw //(assert)
-    expect(warnIfMissingEnvVars(badVal, 'warn')).toBe(true); //should not warn //(assert)
+    expect(() => getMissingEnvVars(badVal)).toThrow(TypeError); //should throw when param invalid //(assert)
+    expect(() => throwIfMissingEnvVars(badVal)).toThrow(TypeError); //should also throw //(assert)
+    expect(() => warnIfMissingEnvVars(badVal, 'warn')).toThrow(TypeError); //should throw as well //(assert)
     expect(warnSpy).not.toHaveBeenCalled(); //warn not called //(check)
     expect(errorSpy).not.toHaveBeenCalled(); //error not called //(check)
     expect(qerrors).not.toHaveBeenCalled(); //qerrors not used directly //(check)
@@ -115,7 +115,7 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
       return loader;
     });
     const { getMissingEnvVars } = require('../lib/envUtils'); //require with mock
-    getMissingEnvVars(undefined); //trigger safeQerrors
+    expect(() => getMissingEnvVars(undefined)).toThrow(TypeError); //trigger safeQerrors while asserting throw
     setImmediate(() => { //allow promise microtask to run
       process.removeListener('unhandledRejection', handler); //cleanup listener
       done(); //complete test if no rejection
