@@ -34,3 +34,21 @@ test('parses QSERP_MAX_CACHE_SIZE with leading zero as decimal', () => { // pars
 
   expect(LRUCacheMock).toHaveBeenCalledWith(expect.objectContaining({ max: 8 })); // ensure parsed value 8 is passed to cache constructor
 });
+
+test('invalid QSERP_MAX_CACHE_SIZE falls back to default', () => { // non-numeric value uses default
+  setTestEnv();
+  process.env.QSERP_MAX_CACHE_SIZE = '10abc';
+
+  const LRUCacheMock = jest.fn().mockImplementation(() => ({
+    get: jest.fn(), // placeholder methods for interface compatibility
+    set: jest.fn(), // cache setter mock to avoid actual caching
+    clear: jest.fn(), // clear mock
+    purgeStale: jest.fn(() => 0), // stub TTL cleanup
+    size: 0
+  })); // mock constructor to inspect configuration
+  jest.doMock('lru-cache', () => ({ LRUCache: LRUCacheMock })); // replace lru-cache so we can check max option
+
+  require('../lib/qserp'); // load module under test after mocking
+
+  expect(LRUCacheMock).toHaveBeenCalledWith(expect.objectContaining({ max: 1000 })); // default value applied
+});

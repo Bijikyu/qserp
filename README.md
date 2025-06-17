@@ -41,6 +41,7 @@ These variables enhance functionality but are not required:
 - `LOG_LEVEL` – Controls `warn` and `error` output (`info` by default)
 
 - `QSERP_MAX_CACHE_SIZE` – Maximum cache entries (default: 1000, range: 0-50000 (0 disables caching)) for memory management
+  Non-numeric values are ignored and the default is used.
 
 - `GOOGLE_REFERER` – Adds a Referer header to requests when set
 
