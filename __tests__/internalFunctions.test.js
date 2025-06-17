@@ -207,6 +207,23 @@ test('sanitizeApiKey masks encoded api key parameters', () => { //verify encoded
   expect(res).toBe('http://x?key=[redacted]'); //value should be masked
 });
 
+test('sanitizeApiKey escapes special characters in logs and urls', () => { //verify chars like * and .
+  const savedDebug = process.env.DEBUG; //preserve debug
+  process.env.DEBUG = 'true'; //enable logging to inspect output
+  process.env.GOOGLE_API_KEY = 'a*b'; //set key with metachar
+  jest.resetModules(); //reload module with new env
+  const { sanitizeApiKey } = require('../lib/qserp'); //import after env change
+  const logSpy = require('./utils/consoleSpies').mockConsole('log'); //spy log output
+  const url = `http://x?key=${encodeURIComponent('a*b')}`; //build url containing key
+  const res = sanitizeApiKey(url); //sanitize url with special key
+  expect(res).toBe('http://x?key=[redacted]'); //url should be sanitized
+  const logs = logSpy.mock.calls.map(c => c[0].toString()).join(' '); //collect logs
+  expect(logs).not.toContain('a*b'); //raw key should not appear
+  expect(logs).not.toContain(encodeURIComponent('a*b')); //encoded key should not appear
+  logSpy.mockRestore(); //cleanup spy
+  if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore debug
+});
+
 test('sanitizeApiKey returns sanitized string when regex fails', () => { //trigger catch branch
   const savedDebug = process.env.DEBUG; //preserve debug flag
   process.env.DEBUG = 'true'; //enable debug logging
