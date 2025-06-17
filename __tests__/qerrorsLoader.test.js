@@ -130,3 +130,18 @@ describe('safeQerrors', () => { //new tests for sanitized logging
     expect(result).toBe(false); //should return false rather than throw
   });
 });
+
+describe('sanitizeApiKey', () => { //verify key masking logic
+  test('keeps words containing key intact', () => { //word with key should remain
+    const savedKey = process.env.GOOGLE_API_KEY; //save environment key
+    process.env.GOOGLE_API_KEY = 'key'; //set predictable key for test
+    jest.resetModules(); //reload module with new key
+    let sanitizeApiKey;
+    jest.isolateModules(() => { //isolate to avoid cache interference
+      ({ sanitizeApiKey } = require('../lib/qerrorsLoader')); //import function
+    });
+    const result = sanitizeApiKey('monkey key keyhole'); //call sanitizer
+    expect(result).toBe('monkey [redacted] keyhole'); //only actual key masked
+    if (savedKey !== undefined) { process.env.GOOGLE_API_KEY = savedKey; } else { delete process.env.GOOGLE_API_KEY; } //restore key
+  });
+});
