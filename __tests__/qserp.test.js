@@ -244,7 +244,7 @@ describe('qserp module', () => { //group qserp tests
     jest.resetModules(); //reload module with noop cache
     const { clearCache: clearLocal, performCacheCleanup } = require('../lib/qserp'); //require fresh module
     expect(clearLocal()).toBe(true); //clearCache should succeed
-    expect(performCacheCleanup()).toBe(0); //no stale entries removed
+    expect(performCacheCleanup()).toBe(false); //no stale entries removed
     process.env.QSERP_MAX_CACHE_SIZE = savedSize; //restore env value
   });
 

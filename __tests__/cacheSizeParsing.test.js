@@ -25,7 +25,7 @@ test('parses QSERP_MAX_CACHE_SIZE with leading zero as decimal', () => { // pars
     get: jest.fn(), // placeholder methods for interface compatibility
     set: jest.fn(), // cache setter mock to avoid actual caching
     clear: jest.fn(), // clear mock
-    purgeStale: jest.fn(() => 0), // stub TTL cleanup
+    purgeStale: jest.fn(() => false), // stub TTL cleanup
     size: 0
   })); // mock constructor to inspect configuration
   jest.doMock('lru-cache', () => ({ LRUCache: LRUCacheMock })); // replace lru-cache so we can check max option
@@ -43,7 +43,7 @@ test('invalid QSERP_MAX_CACHE_SIZE falls back to default', () => { // non-numeri
     get: jest.fn(), // placeholder methods for interface compatibility
     set: jest.fn(), // cache setter mock to avoid actual caching
     clear: jest.fn(), // clear mock
-    purgeStale: jest.fn(() => 0), // stub TTL cleanup
+    purgeStale: jest.fn(() => false), // stub TTL cleanup
     size: 0
   })); // mock constructor to inspect configuration
   jest.doMock('lru-cache', () => ({ LRUCache: LRUCacheMock })); // replace lru-cache so we can check max option
