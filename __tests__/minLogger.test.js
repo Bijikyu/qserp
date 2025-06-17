@@ -90,4 +90,14 @@ describe('minLogger', () => { // minLogger
     warnSpy.mockRestore(); //cleanup warn spy
     errorSpy.mockRestore(); //cleanup error spy
   });
+
+  test('logs object input as JSON string', () => { //object serialization check
+    process.env.LOG_LEVEL = 'warn'; //allow warnings
+    const spy = mockConsole('warn'); //spy console.warn
+    const { logWarn } = require('../lib/minLogger'); //import function
+    const obj = { a: 1 }; //sample object
+    logWarn(obj); //call logger with object
+    expect(spy).toHaveBeenCalledWith(JSON.stringify(obj)); //should log as string
+    spy.mockRestore(); //cleanup
+  });
 });
