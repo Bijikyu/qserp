@@ -144,4 +144,24 @@ describe('sanitizeApiKey', () => { //verify key masking logic
     expect(result).toBe('monkey [redacted] keyhole'); //only actual key masked
     if (savedKey !== undefined) { process.env.GOOGLE_API_KEY = savedKey; } else { delete process.env.GOOGLE_API_KEY; } //restore key
   });
+
+  test('regenerates regex after key change', () => { //ensure runtime key update sanitized
+    const savedDebug = process.env.DEBUG; //preserve debug flag
+    process.env.DEBUG = 'true'; //enable debug output
+    jest.resetModules(); //reload module to capture new env
+    const logSpy = require('./utils/consoleSpies').mockConsole('log'); //spy on console.log
+    const { setTestEnv } = require('./utils/testSetup'); //env helper
+    setTestEnv(); //initial key 'key'
+    logSpy.mockClear(); //discard setup logs
+    const { sanitizeApiKey } = require('../lib/qerrorsLoader'); //import after env setup
+    logSpy.mockClear(); //clear module init logs
+    process.env.GOOGLE_API_KEY = 'new'; //change key to new value
+    const result = sanitizeApiKey('pre key new post'); //call with text containing both keys
+    const joined = logSpy.mock.calls.map(c => c[0]).join(' '); //concat log messages
+    expect(result).toBe('pre [redacted] [redacted] post'); //both keys masked in result
+    expect(joined).not.toMatch('key'); //old key not logged
+    expect(joined).not.toMatch('new'); //new key not logged
+    logSpy.mockRestore(); //cleanup spy
+    if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore flag
+  });
 });
