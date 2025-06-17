@@ -94,4 +94,23 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     expect(logSpy.mock.calls.length).toBe(before); //no additional logs when debug off
     logSpy.mockRestore(); //restore console.log
   });
+
+  test('safeQerrors promise handled to avoid unhandled rejection', done => { //new test for promise handling
+    jest.resetModules(); //reload modules for isolated mock
+    const handler = () => { done.fail('unhandled rejection'); }; //fail test if triggered
+    process.once('unhandledRejection', handler); //listen for unhandled
+    jest.doMock('../lib/qerrorsLoader', () => { //mock loader with rejecting safeQerrors
+      const mockFn = jest.fn();
+      const loader = jest.fn(() => mockFn);
+      loader.safeQerrors = jest.fn(() => Promise.reject(new Error('fail')));
+      loader.default = loader;
+      return loader;
+    });
+    const { getMissingEnvVars } = require('../lib/envUtils'); //require with mock
+    getMissingEnvVars(undefined); //trigger safeQerrors
+    setImmediate(() => { //allow promise microtask to run
+      process.removeListener('unhandledRejection', handler); //cleanup listener
+      done(); //complete test if no rejection
+    });
+  });
 });
