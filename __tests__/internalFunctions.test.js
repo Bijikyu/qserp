@@ -265,6 +265,12 @@ test('normalizeNum returns null when parseInt throws', () => { //validate catch 
   logSpy.mockRestore(); //restore console
 });
 
+test.each(['10abc', '4.5'])('normalizeNum returns null for invalid integer strings %p', val => { //reject mixed characters and decimals
+  const { normalizeNum } = require('../lib/qserp'); //load helper
+  const res = normalizeNum(val); //validate with invalid input
+  expect(res).toBeNull(); //should return null for invalid string
+});
+
 test.each(['plain error', { foo: 'bar' }])('handleAxiosError handles %p input', async val => {
   const { handleAxiosError } = require('../lib/qserp'); //load function under test
   const res = await handleAxiosError(val, 'ctx'); //invoke with arbitrary input
