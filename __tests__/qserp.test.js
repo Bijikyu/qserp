@@ -347,4 +347,12 @@ describe('qserp module', () => { //group qserp tests
     logSpy.mockRestore(); //cleanup
     if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore env
   });
+
+  test('fetchSearchItems handles undefined response gracefully', async () => { //new edge case test
+    const qserp = require('../lib/qserp');
+    const spy = jest.spyOn(qserp, 'rateLimitedRequest').mockResolvedValueOnce(undefined); //simulate missing response
+    const items = await qserp.fetchSearchItems('undef'); //call with spy
+    expect(items).toEqual([]); //should return empty array
+    spy.mockRestore(); //cleanup spy
+  });
 });
