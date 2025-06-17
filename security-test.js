@@ -123,10 +123,8 @@ async function securityPenetrationTest() {
     
     // Test 5: Error Information Disclosure
     console.log('\n--- Testing Error Information Disclosure ---');
-    
-    const originalHandler = qserp.handleAxiosError;
-    let errorLogged = '';
-    
+    // removed unused originalHandler and errorLogged variables for clarity
+
     // Mock error handling to capture output
     const mockError = {
         message: 'Network error with sensitive data: key=secret123',
