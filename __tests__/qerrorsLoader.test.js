@@ -96,7 +96,7 @@ describe('safeQerrors', () => { //new tests for sanitized logging
   });
 
   test('fallback masks api key in logs', async () => { // verify key never logged
-    let safeQerrors, spy, mockConsole;
+    let safeQerrors, errSpy, logSpy, mockConsole;
     const savedKey = process.env.GOOGLE_API_KEY; //preserve existing key
     process.env.GOOGLE_API_KEY = 'key'; //set test key
     jest.isolateModules(() => { //isolate module for mocking
@@ -104,12 +104,17 @@ describe('safeQerrors', () => { //new tests for sanitized logging
       jest.doMock('qerrors', () => qerr); //mock qerrors dependency
       ({ safeQerrors } = require('../lib/qerrorsLoader')); //load function under test
       ({ mockConsole } = require('./utils/consoleSpies')); //console spy helper
-      spy = mockConsole('error'); //intercept error logs
+      errSpy = mockConsole('error'); //intercept error logs
+      logSpy = mockConsole('log'); //intercept logStart output
     });
     await safeQerrors(new Error('bad key'), 'ctx key'); //invoke with key in inputs
-    const output = spy.mock.calls.map(c => c.join(' ')).join(' '); //aggregate logs
-    expect(output).not.toMatch('key'); //raw api key should not appear
-    spy.mockRestore(); //cleanup
+    const errOut = errSpy.mock.calls.map(c => c.join(' ')).join(' '); //aggregate error logs
+    const logOut = logSpy.mock.calls.map(c => c.join(' ')).join(' '); //aggregate logStart logs
+    expect(errOut).not.toMatch('key'); //raw api key should not appear in errors
+    expect(logOut).not.toMatch('key'); //raw api key should not appear in logs
+    expect(logOut).toMatch('safeQerrors is running with ctx [redacted]'); //context sanitized in logStart
+    errSpy.mockRestore(); //cleanup error spy
+    logSpy.mockRestore(); //cleanup log spy
     if (savedKey !== undefined) { process.env.GOOGLE_API_KEY = savedKey; } else { delete process.env.GOOGLE_API_KEY; } //restore key
   });
 
