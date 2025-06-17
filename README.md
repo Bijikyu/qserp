@@ -133,11 +133,14 @@ Performs parallel searches for multiple terms and returns only the top result UR
 Fetches raw Google Custom Search API items for a query. Optional `num` limits the number of returned items.
 
 **Parameters:**
-- `query` (string): The search query (must be non-empty)
-- `num` (number, optional): Maximum number of items to return (range 1-10; only integer strings are accepted). Any other value falls back to the default of 10
+- `query` (string): The search query (must be non-empty and no longer than 2048 characters; longer queries throw an error)
+- `num` (number, optional): Number of items to return. Values less than 1 are clamped to 1 and values greater than 10 are clamped to 10; non-integer strings use the default of 10
 
 **Returns:**
 - `Promise<Array>`: Raw items array from Google API or empty array on error
+
+**Throws:**
+- `Error`: If the query is not a valid string or exceeds the 2048 character limit
 
 ## Rate Limiting
 
