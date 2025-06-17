@@ -173,6 +173,22 @@ describe('errorUtils', () => { // errorUtils
             expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', expect.any(Error));
             expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', error);
         });
+
+        it('should return false when safeQerrors resolves false', async () => { //verify failure branch without throw
+            const { reportError } = require('../lib/errorUtils');
+
+            mockSafeQerrors.mockResolvedValue(false); //simulate failure result
+            const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); //capture logReturn output
+
+            const error = new Error('Original error');
+
+            const result = await reportError(error, 'Test message'); //invoke async function
+
+            expect(result).toBe(false); //function should propagate failure
+            expect(logSpy).toHaveBeenCalledWith('reportError returning failure'); //ensure failure branch logged
+
+            logSpy.mockRestore(); //cleanup spy
+        });
     });
 
     describe('convenience reporting functions', () => { // convenience reporting functions
