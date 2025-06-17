@@ -11,6 +11,7 @@ const mockSafeQerrors = jest.fn();
 jest.mock('../lib/qerrorsLoader', () => ({
     safeQerrors: mockSafeQerrors //provide safeQerrors for tests
 }));
+const { mockConsole } = require('./utils/consoleSpies'); //helper for log spies
 
 describe('errorUtils', () => { // errorUtils
     let consoleErrorSpy;
@@ -172,6 +173,19 @@ describe('errorUtils', () => { // errorUtils
             expect(result).toBe(false);
             expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', expect.any(Error));
             expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', error);
+        });
+
+        it('should return false when qerrors resolves false', async () => { //fail when safeQerrors returns false
+            const { reportError } = require('../lib/errorUtils');
+            const logSpy = mockConsole('log'); //capture log messages
+
+            mockSafeQerrors.mockResolvedValueOnce(false); //simulate wrapper failure without throw
+
+            const result = await reportError(new Error('simple'), 'msg'); //invoke function under test
+
+            expect(result).toBe(false);
+            expect(logSpy).not.toHaveBeenCalledWith('reportError returning success');
+            logSpy.mockRestore(); //cleanup spy
         });
     });
 
