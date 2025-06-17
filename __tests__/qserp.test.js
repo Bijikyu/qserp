@@ -316,10 +316,11 @@ describe('qserp module', () => { //group qserp tests
     const { sanitizeApiKey } = require('../lib/qserp'); //load module with initial key
     logSpy.mockClear(); //ignore module logs
     process.env.GOOGLE_API_KEY = 'new'; //change key at runtime
-    const result = sanitizeApiKey('pre new post'); //call using new key
-    expect(result).toBe('pre [redacted] post'); //expect sanitized
-    expect(logSpy).toHaveBeenNthCalledWith(1, 'sanitizeApiKey is running with pre [redacted] post'); //input sanitized
-    expect(logSpy).toHaveBeenNthCalledWith(2, 'sanitizeApiKey is returning pre [redacted] post'); //output sanitized
+    const result = sanitizeApiKey('pre key new post'); //call including both keys
+    const joined = logSpy.mock.calls.map(c => c[0]).join(' '); //combine logs
+    expect(result).toBe('pre [redacted] [redacted] post'); //expect both keys masked
+    expect(joined).not.toMatch('key'); //old key removed from logs
+    expect(joined).not.toMatch('new'); //new key removed from logs
     logSpy.mockRestore(); //cleanup
     if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore debug
   });
