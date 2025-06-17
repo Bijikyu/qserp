@@ -130,11 +130,11 @@ Performs parallel searches for multiple terms and returns only the top result UR
 
 ### fetchSearchItems(query, num)
 
-Fetches raw Google Custom Search API items for a query. Optional `num` limits the number of returned items.
+Fetches raw Google Custom Search API items for a query. Optional `num` sets the number of returned items and is always clamped between 1 and 10.
 
 **Parameters:**
-- `query` (string): The search query (must be non-empty and no longer than 2048 characters; longer queries throw an error)
-- `num` (number, optional): Number of items to return. Values less than 1 are clamped to 1 and values greater than 10 are clamped to 10; non-integer strings use the default of 10
+- `query` (string): The search query. Queries longer than 2048 characters throw an error.
+- `num` (number, optional): Number of items to return. Numbers less than 1 become `1` and numbers greater than 10 become `10`. Non-integer values default to 10.
 
 **Returns:**
 - `Promise<Array>`: Raw items array from Google API or empty array on error
