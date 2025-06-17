@@ -82,13 +82,13 @@ describe('envValidator', () => { // envValidator
             expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 50);
         });
 
-        it('should handle floating point numbers by truncating to integer', () => { // should handle floating point numbers by truncating to integer
+        it('should fallback to default for floating point numbers', () => { // decimals are invalid; default should be used
             process.env.TEST_VAR = '75.8';
 
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
 
-            expect(result).toBe(75);
-            expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 75);
+            expect(result).toBe(50);
+            expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 50);
         });
 
         it('should fallback to default for values with trailing characters', () => { // ensure trailing chars are rejected
