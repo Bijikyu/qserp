@@ -34,7 +34,6 @@ describe('createCacheKey', () => {
 
   test.each([
     [0, 1],
-    [-1, 1],
     [11, 10]
   ])('clamps out of range %p to %p', (input, clamp) => { //verify clamping logic
     const { createCacheKey } = require('../lib/qserp');
@@ -42,9 +41,10 @@ describe('createCacheKey', () => {
     expect(res).toBe(`clamp:${clamp}`); //should use clamped value
   });
 
-  test.each([undefined, null, NaN, 'bad'])('omits num when invalid %p', val => { //verify omission on invalid values
+  test.each([undefined, null, NaN, 'bad', -1])('omits num when invalid %p', val => { //verify omission on invalid values
     const { createCacheKey } = require('../lib/qserp');
     const res = createCacheKey('NoNum', val); //call with invalid value
     expect(res).toBe('nonum'); //should return normalized query only
   });
+
 });

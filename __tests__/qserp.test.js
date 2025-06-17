@@ -167,7 +167,7 @@ describe('qserp module', () => { //group qserp tests
 
   test.each([
     [0, 1],
-    [-1, 1],
+    [-1, 10],
     [11, 10]
   ])('invalid num %i shares cache with %i', async (bad, clamp) => { //new cache clamp test
     mock.onGet(/Clamp/).reply(200, { items: [{ link: 'x' }] }); //mock first response
@@ -212,10 +212,15 @@ describe('qserp module', () => { //group qserp tests
     expect(url).toBe('https://customsearch.googleapis.com/customsearch/v1?q=Val&key=key&cx=cx&fields=items(title,snippet,link)&num=5'); //string should parse to num 5
   });
 
-  test.each([0, -1, 11])('getGoogleURL clamps out of range %i', bad => { //invalid values clamp to range
+  test.each([0, 11])('getGoogleURL clamps out of range %i', bad => { //invalid values clamp to range
     const url = getGoogleURL('Bad', bad); //build url with invalid num
     const clamped = bad < 1 ? 1 : 10; //expected clamp result
     expect(url).toBe(`https://customsearch.googleapis.com/customsearch/v1?q=Bad&key=key&cx=cx&fields=items(title,snippet,link)&num=${clamped}`); //should clamp
+  });
+
+  test('getGoogleURL omits num for negative input', () => { //ensure negatives are rejected
+    const url = getGoogleURL('Bad', -1); //build url with negative num
+    expect(url).toBe('https://customsearch.googleapis.com/customsearch/v1?q=Bad&key=key&cx=cx&fields=items(title,snippet,link)'); //num parameter absent
   });
 
   test('disables caching when env var is zero', async () => { //new zero cache test
