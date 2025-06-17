@@ -2,6 +2,8 @@
 // Runs without CODEX mocks to inspect real throttling
 process.env.DEBUG = 'false'; // limit console noise during test
 delete process.env.CODEX; // enable real Bottleneck behavior instead of mocks
+process.env.GOOGLE_API_KEY = `test-key`; //dummy key ensures script runs without config
+process.env.GOOGLE_CX = `test-cx`; //dummy cx prevents env validation failure
 
 const qserp = require('./lib/qserp.js'); // module providing axios instance
 
