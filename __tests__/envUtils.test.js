@@ -85,6 +85,14 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     expect(safeQerrors).toHaveBeenCalledTimes(3); //safeQerrors invoked three times //(check)
   });
 
+  test('safeQerrors context for calcMissing error', () => { //verify catch block context
+    const { getMissingEnvVars } = require('../lib/envUtils'); //require utils fresh
+    const arr = ['A']; //valid array base for filter
+    arr.filter = () => { throw new Error('boom'); }; //force error during filter
+    expect(getMissingEnvVars(arr)).toEqual([]); //should fallback to empty array
+    expect(safeQerrors).toHaveBeenCalledWith(expect.any(Error), 'calcMissing error', { varArr: arr }); //ensure context string
+  });
+
   test('does not log when DEBUG false', () => { //verify debug gating
     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); //spy on console.log
     delete process.env.DEBUG; //ensure debug flag unset
