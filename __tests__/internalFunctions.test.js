@@ -73,6 +73,17 @@ test('getGoogleURL encodes key and cx values', () => { // getGoogleURL encodes k
   expect(url).toBe('https://customsearch.googleapis.com/customsearch/v1?q=encode&key=k%2B%2Fval&cx=cx%2F%2B&fields=items(title,snippet,link)'); //encoded key and cx
 });
 
+test('getGoogleURL omits credentials when absent in CODEX mode', () => { //verify undefined creds are skipped
+  delete process.env.GOOGLE_API_KEY; //remove key to simulate unset state
+  delete process.env.GOOGLE_CX; //remove cx for same reason
+  process.env.CODEX = 'true'; //enable codex to bypass env checks
+  jest.resetModules(); //reload module to read modified env
+  const { getGoogleURL } = require('../lib/qserp');
+  const url = getGoogleURL('noauth'); //build url without credentials
+  expect(url).toBe('https://customsearch.googleapis.com/customsearch/v1?q=noauth&fields=items(title,snippet,link)'); //should not contain key or cx params
+  delete process.env.CODEX; //cleanup to avoid affecting other tests
+});
+
 test('handleAxiosError logs with qerrors and returns true', async () => { // handleAxiosError logs with qerrors and returns true
   const { handleAxiosError } = require('../lib/qserp');
   const err = new Error('fail');
