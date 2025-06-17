@@ -8,14 +8,19 @@
 
 // Mock qerrorsLoader to avoid loading actual qerrors dependency
 const mockSafeQerrors = jest.fn();
-jest.mock('../lib/qerrorsLoader', () => ({
-    safeQerrors: mockSafeQerrors //provide safeQerrors for tests
-}));
+jest.mock('../lib/qerrorsLoader', () => {
+    const def = jest.fn(() => mockSafeQerrors); //default export function
+    def.safeQerrors = mockSafeQerrors; //attach named export
+    return def; //module exports function with property
+});
 
 describe('errorUtils', () => { // errorUtils
     let consoleErrorSpy;
+    let savedCodex;
 
     beforeEach(() => {
+        savedCodex = process.env.CODEX; //preserve offline flag
+        process.env.CODEX = 'true'; //bypass env validation during module load
         // Spy on console.error for fallback logging tests
         consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
         
@@ -26,6 +31,7 @@ describe('errorUtils', () => { // errorUtils
 
     afterEach(() => {
         consoleErrorSpy.mockRestore();
+        if (savedCodex !== undefined) { process.env.CODEX = savedCodex; } else { delete process.env.CODEX; } //restore flag
     });
 
     describe('context creation functions', () => { // context creation functions
@@ -153,9 +159,9 @@ describe('errorUtils', () => { // errorUtils
             
             const result = await reportError(error, 'Test message', {}); //invoke async function
             expect(result).toBe(false); //should signal failure without throw
-            
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', expect.any(Error));
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', error);
+
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', 'Error: Reporting failed'); //message sanitized to string
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', 'Error: Original error'); //original error sanitized
         });
 
         it('should return false when qerrors throws', async () => { // ensure failure return value
@@ -170,8 +176,8 @@ describe('errorUtils', () => { // errorUtils
             const result = await reportError(error, 'Test message'); //await async function
 
             expect(result).toBe(false);
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', expect.any(Error));
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', error);
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', 'Error: Reporting failed'); //sanitized error string
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', 'Error: Original error'); //sanitized original message
         });
 
         it('should return false when safeQerrors resolves false', async () => { //verify failure branch without throw
@@ -188,6 +194,24 @@ describe('errorUtils', () => { // errorUtils
             expect(logSpy).toHaveBeenCalledWith('reportError returning failure'); //ensure failure branch logged
 
             logSpy.mockRestore(); //cleanup spy
+        });
+
+        it('should sanitize log messages when qerrors fails', async () => { //verify api key masking
+            const { reportError } = require('../lib/errorUtils');
+            const savedKey = process.env.GOOGLE_API_KEY; //preserve key
+            process.env.GOOGLE_API_KEY = 'key'; //set test key
+
+            mockSafeQerrors.mockImplementation(() => { throw new Error('Reporting failed key'); });
+
+            const error = new Error('Original key error');
+
+            await reportError(error, 'Msg'); //invoke function to trigger catch
+
+            const joined = consoleErrorSpy.mock.calls.map(c => c.join(' ')).join(' '); //aggregate output
+            expect(joined).not.toMatch('key'); //raw key should be absent
+            expect(joined).toMatch('\[redacted\]'); //masked value present
+
+            if (savedKey !== undefined) { process.env.GOOGLE_API_KEY = savedKey; } else { delete process.env.GOOGLE_API_KEY; } //restore key
         });
     });
 
@@ -246,8 +270,8 @@ describe('errorUtils', () => { // errorUtils
             const result = await reportApiError(error, 'Fetch data', { url: 'http://example.com' }); //await async function
 
             expect(result).toBe(false);
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', expect.any(Error));
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', error);
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', 'Error: Reporting failed'); //sanitized failure message
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', 'Error: Network failure'); //sanitized original error
         });
 
         it('should return false when reportConfigError fails', async () => { // propagate false on config failure
@@ -260,8 +284,8 @@ describe('errorUtils', () => { // errorUtils
             const result = await reportConfigError(error, 'Env check', { variable: 'TEST' }); //await async function
 
             expect(result).toBe(false);
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', expect.any(Error));
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', error);
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Error reporting failed:', 'Error: Reporting failed'); //sanitized failure message
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Original error:', 'Error: Bad config'); //sanitized original error
         });
 
         it('should report validation error with proper context', async () => { // should report validation error with proper context
