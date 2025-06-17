@@ -242,6 +242,22 @@ test('sanitizeApiKey returns sanitized string when regex fails', () => { //trigg
   if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore env
 });
 
+test('sanitizeApiKey masks encoded key when encodeURIComponent fails', () => { //verify encoded regex in catch
+  const savedDebug = process.env.DEBUG; //preserve debug
+  process.env.DEBUG = 'true'; //enable logging to trigger messages
+  const encoded = encodeURIComponent('key'); //prepare encoded key before stub
+  jest.resetModules(); //reload with debug
+  const { sanitizeApiKey } = require('../lib/qserp'); //import sanitized helper
+  const logSpy = require('./utils/consoleSpies').mockConsole('log'); //spy log output
+  const originalEncode = global.encodeURIComponent; //save original function
+  global.encodeURIComponent = jest.fn(() => { throw new Error('fail'); }); //force failure
+  const res = sanitizeApiKey(`http://x?key=${encoded}`); //call with encoded key
+  expect(res).toBe('http://x?key=[redacted]'); //encoded parameter masked
+  global.encodeURIComponent = originalEncode; //restore function
+  logSpy.mockRestore(); //cleanup spy
+  if (savedDebug !== undefined) { process.env.DEBUG = savedDebug; } else { delete process.env.DEBUG; } //restore env
+});
+
 test('sanitizeApiKey handles object input via toString', () => { //non-string object sanitization
   const { sanitizeApiKey } = require('../lib/qserp'); //load helper after env setup
   const obj = { toString() { return 'obj key=key'; } }; //object with key in toString
