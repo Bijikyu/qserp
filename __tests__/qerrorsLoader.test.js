@@ -112,4 +112,16 @@ describe('safeQerrors', () => { //new tests for sanitized logging
     spy.mockRestore(); //cleanup
     if (savedKey !== undefined) { process.env.GOOGLE_API_KEY = savedKey; } else { delete process.env.GOOGLE_API_KEY; } //restore key
   });
+
+  test('returns false when thrown value lacks message', async () => { //non-Error input should not crash
+    jest.resetModules(); //reset module cache for clean mocks
+    let safeQerrors;
+    jest.isolateModules(() => { //isolate module for mocking
+      const qerr = jest.fn(() => { throw new Error('fail'); }); //mock qerrors that fails
+      jest.doMock('qerrors', () => qerr); //replace dependency
+      ({ safeQerrors } = require('../lib/qerrorsLoader')); //load function under test
+    });
+    const result = await safeQerrors({ bad: true }, 'ctx'); //object without message
+    expect(result).toBe(false); //should return false rather than throw
+  });
 });
