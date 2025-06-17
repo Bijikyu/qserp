@@ -187,6 +187,13 @@ test('sanitizeApiKey ignores partial-word matches', () => { //verify no substrin
   expect(res).toBe('monkey business key=[redacted]'); //only value replaced
 });
 
+test('sanitizeApiKey masks encoded api key parameters', () => { //verify encoded value replaced
+  process.env.GOOGLE_API_KEY = 'a+b'; //set key with special char
+  const { sanitizeApiKey } = require('../lib/qserp'); //load function
+  const res = sanitizeApiKey(`http://x?key=${encodeURIComponent('a+b')}`); //call with encoded value
+  expect(res).toBe('http://x?key=[redacted]'); //value should be masked
+});
+
 test('sanitizeApiKey returns sanitized string when regex fails', () => { //trigger catch branch
   const savedDebug = process.env.DEBUG; //preserve debug flag
   process.env.DEBUG = 'true'; //enable debug logging
