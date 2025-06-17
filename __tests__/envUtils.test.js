@@ -61,6 +61,19 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
     expect(safeQerrors).toHaveBeenCalledTimes(1); //safeQerrors invoked once //(check)
   });
 
+  test('treats whitespace-only values as missing', () => { //verify whitespace handling //(new case)
+    const { getMissingEnvVars, throwIfMissingEnvVars, warnIfMissingEnvVars } = require('../lib/envUtils'); //require utils fresh
+    process.env.A = '   '; //set env A to whitespace only
+    process.env.B = 'val'; //define env B normally
+    expect(getMissingEnvVars(['A', 'B'])).toEqual(['A']); //should detect A as missing
+    expect(() => throwIfMissingEnvVars(['A', 'B'])).toThrow('Missing required'); //should throw on whitespace value
+    expect(warnIfMissingEnvVars(['A', 'B'], 'warn')).toBe(false); //should warn when whitespace present
+    expect(warnSpy).toHaveBeenCalledWith('warn'); //warn called with message
+    expect(errorSpy).toHaveBeenCalledWith('Missing required environment variables: A'); //error logged for A
+    expect(qerrors).not.toHaveBeenCalled(); //qerrors not used directly
+    expect(safeQerrors).toHaveBeenCalledTimes(1); //safeQerrors invoked once
+  });
+
   test('handles undefined variable array', () => { //verify undefined input //(third case)
     const { getMissingEnvVars, throwIfMissingEnvVars, warnIfMissingEnvVars } = require('../lib/envUtils'); //require utils fresh //(ensure env captured)
     expect(() => getMissingEnvVars(undefined)).toThrow(TypeError); //should throw when param invalid //(assert)
