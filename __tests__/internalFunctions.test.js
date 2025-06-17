@@ -87,9 +87,10 @@ test('handleAxiosError logs sanitized response object and returns true', async (
   const spy = mockConsole('error'); //spy on console.error via helper
   const res = await handleAxiosError(err, 'ctx'); //call function with response error
   expect(res).toBe(true); //should return true
-  const logged = spy.mock.calls[0][0]; //capture logged object for inspection
-  expect(JSON.stringify(logged)).not.toContain('key=key'); //verify key removed from log
-  expect(logged.config.url).toBe('http://x?key=[redacted]'); //parameter name preserved
+  const logged = spy.mock.calls[0][0]; //capture logged string for inspection
+  expect(logged).not.toContain('key=key'); //verify key removed from log
+  const parsed = JSON.parse(logged); //parse JSON string back to object
+  expect(parsed.config.url).toBe('http://x?key=[redacted]'); //parameter name preserved
   spy.mockRestore(); //restore console.error
 });
 
