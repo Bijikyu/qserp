@@ -90,6 +90,13 @@ describe('qserp module', () => { //group qserp tests
     expect(scheduleMock).toHaveBeenCalledTimes(2); //schedule called once per unique term
   });
 
+  test('deduplicates trimmed and case-insensitive terms', async () => { //new normalization test
+    mock.onGet(/Node\.js/).reply(200, { items: [{ link: 'http://n' }] }); //mock node search
+    const urls = await getTopSearchResults(['Node.js', ' node.js ', 'NODE.JS']); //variations of same term
+    expect(urls).toEqual(['http://n']); //single result expected
+    expect(scheduleMock).toHaveBeenCalledTimes(1); //only one api request
+  });
+
   test('warns on missing OPENAI_TOKEN for getTopSearchResults', async () => { //new warning test
     const tokenSave = process.env.OPENAI_TOKEN; //store existing token for restore
     delete process.env.OPENAI_TOKEN; //remove token to trigger warning logic
