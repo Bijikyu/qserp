@@ -148,6 +148,17 @@ describe('qserp module', () => { //group qserp tests
     expect(scheduleMock).toHaveBeenCalled(); //new request scheduled
   });
 
+  test('fetchSearchItems caches empty results', async () => { //verify empty array cached
+    mock.onGet(/EmptyCache/).reply(200, { items: [] }); //mock no results response
+    const first = await fetchSearchItems('EmptyCache'); //populate cache with empty array
+    scheduleMock.mockClear(); //reset counter before second call
+    mock.onGet(/EmptyCache/).reply(200, { items: [{ link: 'x' }] }); //would be new data if fetched again
+    const second = await fetchSearchItems('EmptyCache'); //should use cached empty array
+    expect(first).toEqual([]); //first call returns empty array
+    expect(second).toEqual([]); //second call should also return cached empty array
+    expect(scheduleMock).not.toHaveBeenCalled(); //no second request due to cache
+  });
+
   test('CODEX mode does not populate cache', async () => { //verify mock results are not cached
     process.env.CODEX = 'true'; //enable offline mode
     const first = await fetchSearchItems('NoCache'); //call with codex enabled
