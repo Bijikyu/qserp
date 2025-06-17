@@ -6,18 +6,24 @@
  * to ensure comprehensive coverage of string validation scenarios.
  */
 
-const { parseStringVar, validateEnvVar } = require('../lib/envValidator');
+// Mock dependencies first so envValidator uses the mocked debug utils
+jest.mock('../lib/debugUtils'); //ensure debug utilities mocked before module load
+
 const { saveEnv, restoreEnv } = require('./utils/testSetup'); //import env helpers
 
-// Mock dependencies to isolate functionality
-jest.mock('../lib/debugUtils');
-
-const { debugEntry, debugExit } = require('../lib/debugUtils');
+let parseStringVar; //function reference loaded after modules reset
+let validateEnvVar; //function reference loaded after modules reset
+let debugEntry; //mocked debugEntry loaded after modules reset
+let debugExit; //mocked debugExit loaded after modules reset
 
 describe('parseStringVar', () => { // parseStringVar
     let savedEnv; //snapshot of environment for restoration
 
     beforeEach(() => {
+        jest.resetModules(); //reload modules so mocks apply correctly
+        ({ debugEntry, debugExit } = require('../lib/debugUtils')); //obtain mocked utils after reset
+        ({ parseStringVar, validateEnvVar } = require('../lib/envValidator')); //load functions under test
+
         savedEnv = saveEnv(); //capture current env using util
         jest.clearAllMocks(); //reset mocks
     });
@@ -29,12 +35,14 @@ describe('parseStringVar', () => { // parseStringVar
     describe('basic string parsing', () => { // basic string parsing
         it('should return environment variable value when set', () => { // should return environment variable value when set
             process.env.TEST_STRING = 'hello world';
-            
+
             const result = parseStringVar('TEST_STRING', 'default');
-            
+
             expect(result).toBe('hello world');
             expect(debugEntry).toHaveBeenCalledWith('parseStringVar', 'TEST_STRING, default: default, maxLength: 0');
             expect(debugExit).toHaveBeenCalledWith('parseStringVar', 'length: 11');
+            expect(debugEntry).toHaveBeenCalledTimes(1); //ensure mocked calls tracked correctly
+            expect(debugExit).toHaveBeenCalledTimes(1); //ensure mocked calls tracked correctly
         });
 
         it('should return default value when environment variable is not set', () => { // should return default value when environment variable is not set

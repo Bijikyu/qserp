@@ -6,18 +6,26 @@
  * that provide secure bounds checking and type conversion across the codebase.
  */
 
-const { parseIntWithBounds, parseBooleanVar, parseStringVar, validateEnvVar } = require('../lib/envValidator');
+// Mock dependencies first so envValidator loads with mocked debug utilities
+jest.mock('../lib/debugUtils'); //ensure debug utils mocked before module import
+
 const { saveEnv, restoreEnv } = require('./utils/testSetup'); //env helpers for isolation
 
-// Mock dependencies to isolate envValidator functionality
-jest.mock('../lib/debugUtils');
-
-const { debugEntry, debugExit } = require('../lib/debugUtils');
+let parseIntWithBounds; //function loaded after reset
+let parseBooleanVar; //function loaded after reset
+let parseStringVar; //function loaded after reset
+let validateEnvVar; //function loaded after reset
+let debugEntry; //mocked debugEntry after reset
+let debugExit; //mocked debugExit after reset
 
 describe('envValidator', () => { // envValidator
     let savedEnv; //snapshot for env restoration
 
     beforeEach(() => {
+        jest.resetModules(); //reload modules so mocks apply correctly
+        ({ debugEntry, debugExit } = require('../lib/debugUtils')); //get mocked utils after reset
+        ({ parseIntWithBounds, parseBooleanVar, parseStringVar, validateEnvVar } = require('../lib/envValidator')); //load functions under test
+
         savedEnv = saveEnv(); //capture environment state
         jest.clearAllMocks(); //reset mocks
     });
@@ -29,12 +37,14 @@ describe('envValidator', () => { // envValidator
     describe('parseIntWithBounds', () => { // parseIntWithBounds
         it('should return default value when environment variable is not set', () => { // should return default value when environment variable is not set
             delete process.env.TEST_VAR;
-            
+
             const result = parseIntWithBounds('TEST_VAR', 50, 10, 100);
-            
+
             expect(result).toBe(50);
             expect(debugEntry).toHaveBeenCalledWith('parseIntWithBounds', 'TEST_VAR, default: 50, range: 10-100');
             expect(debugExit).toHaveBeenCalledWith('parseIntWithBounds', 50);
+            expect(debugEntry).toHaveBeenCalledTimes(1); //verify call count from mock
+            expect(debugExit).toHaveBeenCalledTimes(1); //verify call count from mock
         });
 
         it('should parse valid environment variable within bounds', () => { // should parse valid environment variable within bounds
