@@ -142,6 +142,28 @@ Fetches raw Google Custom Search API items for a query. Optional `num` sets the 
 **Throws:**
 - `Error`: If the query is not a valid string or exceeds the 2048 character limit
 
+### clearCache()
+
+Clears all cached search results. Returns `true` when the cache is emptied and performs no action when caching is disabled.
+
+```javascript
+const { clearCache } = require('qserp');
+
+clearCache();
+// => true
+```
+
+### performCacheCleanup()
+
+Purges any expired entries from the cache. Returns a boolean indicating whether stale items were removed. If caching is disabled, it simply returns `false` without altering state.
+
+```javascript
+const { performCacheCleanup } = require('qserp');
+
+performCacheCleanup();
+// => false when nothing to purge
+```
+
 ## Rate Limiting
 
 The module includes built-in rate limiting to prevent API quota exhaustion:
@@ -255,11 +277,11 @@ process.env.QSERP_MAX_CACHE_SIZE = '100';  // Limit to 100 entries
 
 ### Manual Cache Cleanup
 
-While LRU-cache evicts expired entries automatically, the library exposes
-`performCacheCleanup()` for diagnostic tests. Calling this function triggers
-`cache.purgeStale()` to remove any expired items. When caching is disabled with
-`QSERP_MAX_CACHE_SIZE=0`, both `clearCache()` and `performCacheCleanup()` are
-safe no-ops that return without modifying state.
+While LRU-cache evicts expired entries automatically, the module exports the
+`clearCache()` and `performCacheCleanup()` utilities for manual maintenance or
+diagnostic tests. Calling `performCacheCleanup()` triggers `cache.purgeStale()`
+to remove expired items. When caching is disabled with `QSERP_MAX_CACHE_SIZE=0`,
+both utilities are safe no-ops that return without modifying state.
 
 ## Security Features
 
