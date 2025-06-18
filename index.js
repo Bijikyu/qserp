@@ -1,4 +1,4 @@
-
+// Node-specific entry ensures CommonJS; RATIONALE: avoids ESM for easier hosting
 /**
  * Entry point for the qserp package.
  * RATIONALE: Keeps the root clean and allows internal refactoring while exposing

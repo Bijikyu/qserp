@@ -1,3 +1,4 @@
+// Simple config for Jest running in Node; RATIONALE: minimal setup for faster runs
 /**
  * Jest configuration for the qserp project.
  * RATIONALE: Tests run in Node, so we skip jsdom to avoid unnecessary browser
