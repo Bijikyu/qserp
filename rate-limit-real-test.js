@@ -1,7 +1,7 @@
 // Real rate limit test using Bottleneck configuration from qserp
 // Runs without CODEX mocks to inspect real throttling
-process.env.DEBUG = 'false'; // limit console noise during test
-delete process.env.CODEX; // enable real Bottleneck behavior instead of mocks
+process.env.DEBUG = 'false'; // limit console noise during test run
+delete process.env.CODEX; // remove offline mode to test real rate limiter
 process.env.GOOGLE_API_KEY = `test-key`; //dummy key ensures script runs without config
 process.env.GOOGLE_CX = `test-cx`; //dummy cx prevents env validation failure
 
@@ -15,9 +15,9 @@ async function testRealRateLimiting() {
     console.log('=== Real Rate Limiting Test ===');
     
     // Test actual Bottleneck behavior with mock axios
-    const MockAdapter = require('axios-mock-adapter');
-    const axios = require('axios');
-    const mock = new MockAdapter(qserp.axiosInstance);
+    const MockAdapter = require('axios-mock-adapter'); // lightweight HTTP mock
+    const axios = require('axios'); // actual axios used by qserp
+    const mock = new MockAdapter(qserp.axiosInstance); // intercept qserp network calls
     
     // Mock Google API responses
     mock.onGet().reply(200, {
@@ -31,8 +31,8 @@ async function testRealRateLimiting() {
     const startTime = Date.now(); // overall timing for 20 requests
     const promises = []; // track all outgoing requests for this run
     
-    for (let i = 0; i < 20; i++) { // high volume burst to trigger limiter
-        promises.push(qserp.googleSearch(`rate-test-${i}`));
+    for (let i = 0; i < 20; i++) { // high volume burst to trigger limiter limits
+        promises.push(qserp.googleSearch(`rate-test-${i}`)); // each push initiates immediate call
     }
     
     await Promise.all(promises); // complete first batch before timing
@@ -47,8 +47,8 @@ async function testRealRateLimiting() {
     
     const burstStart = Date.now(); // timing for immediate burst
     const burstPromises = []; // capture second burst for comparison
-    for (let i = 0; i < 10; i++) { // send 10 requests without delay
-        burstPromises.push(qserp.googleSearch(`burst-${i}`));
+    for (let i = 0; i < 10; i++) { // send 10 requests without delay to mimic attack
+        burstPromises.push(qserp.googleSearch(`burst-${i}`)); // saturate the limiter again
     }
     await Promise.all(burstPromises); // ensure burst batch finishes before measuring
     const burstDuration = Date.now() - burstStart;
@@ -66,7 +66,7 @@ async function testRealRateLimiting() {
         console.log('Rate limiting working effectively');
     }
     
-    mock.restore();
+    mock.restore(); // remove mock adapter to clean up axios instance
     console.log('=== Rate Limiting Test Complete ===');
 }
 

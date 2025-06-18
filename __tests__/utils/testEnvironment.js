@@ -68,13 +68,13 @@ class TestEnvironment {
 
         // Set test-specific environment variables
         Object.entries(envVars).forEach(([key, value]) => {
-            process.env[key] = value;
+            process.env[key] = value; //apply overrides individually to keep unrelated vars intact
         });
 
         // Create console spies for output verification
         consoleSpies.forEach(method => {
-            const spy = mockConsole(method);
-            this.spies.set(method, spy);
+            const spy = mockConsole(method); //spy on console method without noise
+            this.spies.set(method, spy); //store for later assertions and restore
         });
 
         // Reset module cache to ensure fresh requires
@@ -85,8 +85,8 @@ class TestEnvironment {
         // Reacquire mock modules after reset
         const mocks = {};
         mockModules.forEach(moduleName => {
-            mocks[moduleName] = require(moduleName);
-            this.mockModules.add(moduleName);
+            mocks[moduleName] = require(moduleName); //re-require after jest.resetModules
+            this.mockModules.add(moduleName); //track for cleanup
         });
 
         this.isSetup = true;
@@ -120,7 +120,7 @@ class TestEnvironment {
 
         // Restore console methods
         this.spies.forEach(spy => {
-            spy.mockRestore();
+            spy.mockRestore(); //put console back to original behavior
         });
         this.spies.clear();
 

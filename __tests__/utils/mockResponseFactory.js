@@ -75,8 +75,8 @@ function createSearchItem(overrides = {}) {
  * @returns {Array} - Array of search result items
  */
 function createMultipleItems(count = 3, baseTitle = 'Test Result', baseUrl = 'https://example.com/result') {
-    return Array.from({ length: count }, (_, index) => {
-        const num = index + 1;
+    return Array.from({ length: count }, (_, index) => { //create predictable sequence of items
+        const num = index + 1; //use 1-based numbering for readability
         return createSearchItem({
             title: `${baseTitle} ${num}`,
             snippet: `This is test result number ${num} with sample content.`,
@@ -84,7 +84,7 @@ function createMultipleItems(count = 3, baseTitle = 'Test Result', baseUrl = 'ht
             displayLink: `example.com/result-${num}`,
             formattedUrl: `${baseUrl}-${num}`
         });
-    });
+    }); //return array of generated items
 }
 
 /**
@@ -140,10 +140,10 @@ function createErrorResponse(code = 400, message = 'Bad Request') {
  * @returns {Array} - Array of mock responses corresponding to queries
  */
 function createBatchResponses(queries = ['query1', 'query2', 'query3']) {
-    return queries.map(query => {
+    return queries.map(query => { //produce response per query for parallel tests
         const items = createMultipleItems(1, `Result for ${query}`, `https://example.com/${query}`);
-        return createGoogleSearchResponse(items);
-    });
+        return createGoogleSearchResponse(items); //each item uses createMultipleItems helper
+    }); //result array mirrors input order
 }
 
 /**

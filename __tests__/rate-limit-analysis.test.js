@@ -19,7 +19,7 @@ describe('rate-limit-analysis script', () => {
     restoreEnv(savedEnv); // restore env to original values for next test
   });
 
-  test('rateLimitingAnalysis runs and logs completion', async () => {
+  test('rateLimitingAnalysis runs and logs completion', async () => { //checks script runs offline and prints banners
     const { rateLimitingAnalysis } = require('../rate-limit-analysis.js'); //import script under test
     await expect(rateLimitingAnalysis()).resolves.toBeUndefined(); //script completes without returning value
     const logs = logSpy.mock.calls.map(c => c[0]);

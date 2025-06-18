@@ -3,7 +3,7 @@
 
 // Mock environment for testing
 process.env.CODEX = 'true'; // use mocked results for deterministic memory metrics
-process.env.DEBUG = 'false'; // disable verbose logging for clarity
+process.env.DEBUG = 'false'; // disable verbose logging for clarity during analysis
 
 const qserp = require('./lib/qserp.js');
 
@@ -12,12 +12,12 @@ const qserp = require('./lib/qserp.js');
  * RATIONALE: baseline and post-cache metrics help identify leaks
  */
 function measureMemory() {
-    const used = process.memoryUsage();
+    const used = process.memoryUsage(); // Node provides current process stats
     return {
         rss: Math.round(used.rss / 1024 / 1024),
         heapTotal: Math.round(used.heapTotal / 1024 / 1024),
         heapUsed: Math.round(used.heapUsed / 1024 / 1024),
-        external: Math.round(used.external / 1024 / 1024)
+        external: Math.round(used.external / 1024 / 1024) // convert to MB for easier reporting
     };
 }
 
@@ -34,15 +34,15 @@ async function memoryGrowthAnalysis() {
     // Simulate sustained cache usage
     const phases = [100, 500, 1000, 2000, 5000]; // escalating counts highlight memory trends
     
-    for (const phase of phases) { // measure memory cost per cache size
-        console.log(`\n--- Testing ${phase} cache entries ---`);
+    for (const phase of phases) { // iterate over each test size to gauge scaling
+        console.log(`\n--- Testing ${phase} cache entries ---`); // heading per phase for readability
         
         // Clear cache before each phase
-        qserp.clearCache(); // ensures each phase starts fresh
+        qserp.clearCache(); // ensures each phase starts fresh without residual data
         
         // Fill cache with unique queries
-        for (let i = 0; i < phase; i++) { // repeated fetch simulates load
-            await qserp.fetchSearchItems(`query-${i}-${Date.now()}`);
+        for (let i = 0; i < phase; i++) { // sequentially add unique entries to cache
+            await qserp.fetchSearchItems(`query-${i}-${Date.now()}`); // unique key avoids collisions
         }
         
         const current = measureMemory();
@@ -52,8 +52,8 @@ async function memoryGrowthAnalysis() {
         console.log(`Memory per entry: ${(growth / phase * 1024).toFixed(2)}KB`);
         
         // Force garbage collection if available
-        if (global.gc) { // optional GC to observe reclaim effectiveness
-            global.gc(); // manually trigger garbage collector
+        if (global.gc) { // optional GC to observe reclaim effectiveness (requires --expose-gc)
+            global.gc(); // manually trigger garbage collector to compare memory after cleanup
             const afterGC = measureMemory();
             console.log(`After GC: ${afterGC.heapUsed}MB`);
         }
