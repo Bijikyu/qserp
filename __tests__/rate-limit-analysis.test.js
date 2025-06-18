@@ -20,8 +20,8 @@ describe('rate-limit-analysis script', () => {
   });
 
   test('rateLimitingAnalysis runs and logs completion', async () => {
-    const { rateLimitingAnalysis } = require('../rate-limit-analysis.js');
-    await expect(rateLimitingAnalysis()).resolves.toBeUndefined();
+    const { rateLimitingAnalysis } = require('../rate-limit-analysis.js'); //import script under test
+    await expect(rateLimitingAnalysis()).resolves.toBeUndefined(); //script completes without returning value
     const logs = logSpy.mock.calls.map(c => c[0]);
     expect(logs.some(l => l.includes('=== Rate Limiting Performance Analysis ==='))).toBe(true); //verify start banner
     expect(logs.some(l => l.includes('=== Rate Limiting Analysis Complete ==='))).toBe(true); //verify completion banner

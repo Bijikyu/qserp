@@ -22,8 +22,8 @@ describe('memory-growth-analysis script', () => {
   });
 
   test('memoryGrowthAnalysis runs and logs completion', async () => {
-    const { memoryGrowthAnalysis } = require('../memory-growth-analysis.js');
-    await expect(memoryGrowthAnalysis()).resolves.toBeUndefined();
+    const { memoryGrowthAnalysis } = require('../memory-growth-analysis.js'); //import script under test
+    await expect(memoryGrowthAnalysis()).resolves.toBeUndefined(); //script resolves with no return value
     const logs = logSpy.mock.calls.map(c => c[0]);
     expect(logs.some(l => l.includes('=== Memory Growth Analysis ==='))).toBe(true); //check start banner
     expect(logs.some(l => l.includes('=== Memory Analysis Complete ==='))).toBe(true); //check completion banner

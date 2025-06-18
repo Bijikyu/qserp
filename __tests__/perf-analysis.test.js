@@ -22,8 +22,8 @@ describe('perf-analysis script', () => {
   });
 
   test('cachePerformanceTest runs and logs summary', async () => {
-    const { cachePerformanceTest } = require('../perf-analysis.js');
-    await expect(cachePerformanceTest()).resolves.toBeUndefined();
+    const { cachePerformanceTest } = require('../perf-analysis.js'); //import script for execution
+    await expect(cachePerformanceTest()).resolves.toBeUndefined(); //script resolves when complete
     const logs = logSpy.mock.calls.map(c => c[0]);
     expect(logs.some(l => l.includes('=== Cache Performance Analysis ==='))).toBe(true); //verify start log
     expect(logs.some(l => l.includes('=== Performance Analysis Complete ==='))).toBe(true); //verify end log
