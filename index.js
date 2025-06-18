@@ -1,4 +1,4 @@
-// Node-specific entry ensures CommonJS; RATIONALE: avoids ESM for easier hosting
+// Node-specific entry ensures CommonJS; RATIONALE: package.json `main` points here and default type is CJS so require() keeps compatibility across Node versions
 /**
  * Entry point for the qserp package.
  * RATIONALE: Keeps the root clean and allows internal refactoring while exposing
@@ -12,4 +12,4 @@
 // RATIONALE: Direct delegation preserves all export metadata and ensures identical
 // behavior to importing lib/qserp.js directly, while maintaining the standard
 // npm package structure consumers expect
-module.exports = require('./lib/qserp'); // expose all library exports
+module.exports = require('./lib/qserp'); // expose all library exports via CommonJS for maximal tool support
