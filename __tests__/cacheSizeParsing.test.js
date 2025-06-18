@@ -17,8 +17,8 @@ afterEach(() => {
 
 
 test('parses QSERP_MAX_CACHE_SIZE with leading zero as decimal', () => { // parses QSERP_MAX_CACHE_SIZE with leading zero as decimal
-  setTestEnv();
-  process.env.QSERP_MAX_CACHE_SIZE = '08';
+  setTestEnv(); //provide all required env vars for module
+  process.env.QSERP_MAX_CACHE_SIZE = '08'; //value with leading zero should parse as decimal
 
 
   const LRUCacheMock = jest.fn().mockImplementation(() => ({
@@ -36,8 +36,8 @@ test('parses QSERP_MAX_CACHE_SIZE with leading zero as decimal', () => { // pars
 });
 
 test('invalid QSERP_MAX_CACHE_SIZE falls back to default', () => { // non-numeric value uses default
-  setTestEnv();
-  process.env.QSERP_MAX_CACHE_SIZE = '10abc';
+  setTestEnv(); //populate env vars so module loads
+  process.env.QSERP_MAX_CACHE_SIZE = '10abc'; //nonnumeric value should trigger default
 
   const LRUCacheMock = jest.fn().mockImplementation(() => ({
     get: jest.fn(), // placeholder methods for interface compatibility
