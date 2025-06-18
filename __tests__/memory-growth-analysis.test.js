@@ -21,7 +21,7 @@ describe('memory-growth-analysis script', () => {
     restoreEnv(savedEnv); // restore saved environment to keep tests isolated
   });
 
-  test('memoryGrowthAnalysis runs and logs completion', async () => {
+  test('memoryGrowthAnalysis runs and logs completion', async () => { //verifies script executes and prints banners
     const { memoryGrowthAnalysis } = require('../memory-growth-analysis.js'); //import script under test
     await expect(memoryGrowthAnalysis()).resolves.toBeUndefined(); //script resolves with no return value
     const logs = logSpy.mock.calls.map(c => c[0]);

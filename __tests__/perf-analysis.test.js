@@ -21,7 +21,7 @@ describe('perf-analysis script', () => {
     restoreEnv(savedEnv); // restore env so next test starts clean
   });
 
-  test('cachePerformanceTest runs and logs summary', async () => {
+  test('cachePerformanceTest runs and logs summary', async () => { //verifies script outputs banner messages
     const { cachePerformanceTest } = require('../perf-analysis.js'); //import script for execution
     await expect(cachePerformanceTest()).resolves.toBeUndefined(); //script resolves when complete
     const logs = logSpy.mock.calls.map(c => c[0]);
