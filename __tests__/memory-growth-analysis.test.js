@@ -1,5 +1,7 @@
+
 const { mockConsole } = require('./utils/consoleSpies'); //silence console.log during script execution
 const { saveEnv, restoreEnv, setTestEnv } = require('./utils/testSetup'); //manage env vars for isolation
+
 
 describe('memory-growth-analysis script', () => {
   let savedEnv;

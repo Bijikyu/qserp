@@ -1,3 +1,4 @@
+// Summary: rate-limit-analysis.test.js validates the rate limiting script and checks expected log output //added descriptive summary
 const { mockConsole } = require('./utils/consoleSpies');
 const { saveEnv, restoreEnv, setTestEnv } = require('./utils/testSetup');
 
