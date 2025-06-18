@@ -9,7 +9,7 @@ describe('perf-analysis script', () => {
   let logSpy;
 
   beforeEach(() => {
-    savedEnv = saveEnv(); // capture env so modifications are cleaned up later
+    savedEnv = saveEnv(); // snapshot env so CODEX and other vars don't persist to other tests
     setTestEnv(); //ensure required env vars present
     process.env.CODEX = 'true'; //offline mode for deterministic test
     jest.resetModules(); //reset module cache

@@ -11,10 +11,10 @@ let axiosMock; //axios adapter to intercept HTTP calls during require
 
 describe('throwIfMissingEnvVars', () => { //describe missing env block
   beforeAll(() => { //setup before tests
-    savedEnv = saveEnv(); // save starting env so we can restore and keep suites isolated
-    delete process.env.GOOGLE_API_KEY; //clear key
-    delete process.env.GOOGLE_CX; //clear cx
-    process.env.OPENAI_TOKEN = 'token'; //set token for qerrors
+    savedEnv = saveEnv(); // snapshot env so modifications here don't affect other suites
+    delete process.env.GOOGLE_API_KEY; // remove key to simulate missing variable
+    delete process.env.GOOGLE_CX; // remove cx to trigger validation error
+    process.env.OPENAI_TOKEN = 'token'; // set minimal token required for qerrors
     jest.resetModules(); //reset modules to apply env changes
     const { createAxiosMock } = require('./utils/testSetup'); //import adapter creator for axios instance
     axiosMock = createAxiosMock(); //mock adapter so requiring module won't hit network

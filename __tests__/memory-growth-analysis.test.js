@@ -9,7 +9,7 @@ describe('memory-growth-analysis script', () => {
   let logSpy;
 
   beforeEach(() => {
-    savedEnv = saveEnv(); // copy env so modifications during test can be undone
+    savedEnv = saveEnv(); // snapshot env so each test can change vars without leaking state
     setTestEnv(); //ensure required vars defined
     process.env.CODEX = 'true'; //offline mode avoids network requests
     jest.resetModules(); //reset module cache between tests
