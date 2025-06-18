@@ -35,9 +35,9 @@ async function securityPenetrationTest() {
     
     let vulnerabilities = 0; // count issues found
     
-    for (const input of maliciousInputs) { // ensure validation rejects malicious input
+    for (const input of maliciousInputs) { // loop through bad payloads to verify sanitization
         try {
-            const result = await qserp.googleSearch(input);
+            const result = await qserp.googleSearch(input); // attempt query that should fail
             console.log(`⚠️  Input "${JSON.stringify(input)}" was accepted`);
             vulnerabilities++;
         } catch (error) {
@@ -60,7 +60,7 @@ async function securityPenetrationTest() {
     
     for (const query of urlInjectionTests) { // verify URL building safely encodes input
         try {
-            const url = qserp.getGoogleURL(query);
+            const url = qserp.getGoogleURL(query); // build final URL to inspect encoding
             const hasInjection = url.includes('malicious=') || url.includes('inject=');
             if (hasInjection) {
                 console.log(`🚨 URL injection vulnerability: ${url}`);
@@ -108,7 +108,7 @@ async function securityPenetrationTest() {
     
     // Attempt to fill cache beyond limits
     for (let i = 0; i < 2000; i++) { // try to exceed cache limits
-        await qserp.fetchSearchItems(`memory-test-${i}`);
+        await qserp.fetchSearchItems(`memory-test-${i}`); // large volume to force memory growth
     }
     
     const finalMemory = process.memoryUsage().heapUsed;
@@ -151,7 +151,7 @@ async function securityPenetrationTest() {
     const startTime = Date.now(); // measure throughput
     
     const promises = Array.from({length: rapidRequests}, (_, i) => // saturate API with rapid calls
-        qserp.googleSearch(`rapid-${i}`)
+        qserp.googleSearch(`rapid-${i}`) // each call scheduled immediately
     );
     
     await Promise.all(promises); // wait for all rapid calls to finish
