@@ -12,7 +12,7 @@ const qserp = require('./lib/qserp.js'); // module under scrutiny
  * RATIONALE: exposes potential cache or environment exploits in isolation
  */
 async function advancedSecurityTesting() {
-    console.log('=== Advanced Security Vulnerability Testing ===');
+    console.log('=== Advanced Security Vulnerability Testing ==='); // banner for manual runs
     
     // Test 1: Cache Poisoning Attacks
     console.log('\n--- Cache Poisoning Attack Vectors ---');

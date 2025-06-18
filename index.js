@@ -12,4 +12,4 @@
 // RATIONALE: Direct delegation preserves all export metadata and ensures identical
 // behavior to importing lib/qserp.js directly, while maintaining the standard
 // npm package structure consumers expect
-module.exports = require('./lib/qserp'); // expose all library exports via CommonJS for maximal tool support
+module.exports = require('./lib/qserp'); // expose all library exports via CommonJS for maximal tool support and Node compatibility

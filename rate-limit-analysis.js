@@ -14,7 +14,7 @@ const qserp = require('./lib/qserp.js'); // main module to throttle
  * RATIONALE: ensures Bottleneck settings handle bursts without exceeding quotas
  */
 async function rateLimitingAnalysis() {
-    console.log('=== Rate Limiting Performance Analysis ===');
+    console.log('=== Rate Limiting Performance Analysis ==='); // banner for clarity
     
     // Test concurrent request handling
     const concurrentTests = [1, 5, 10, 20, 50]; // range stresses limiter behavior
@@ -22,14 +22,14 @@ async function rateLimitingAnalysis() {
     for (const concurrency of concurrentTests) { // evaluate throughput at each level
         console.log(`\n--- Testing ${concurrency} concurrent requests ---`);
         
-        const start = performance.now(); // timing per batch
+        const start = performance.now(); // start high resolution timer per batch
         const promises = []; // store concurrent query promises
         
         for (let i = 0; i < concurrency; i++) { // fire multiple requests simultaneously
             promises.push(qserp.googleSearch(`concurrent test ${i}`));
         }
         
-        const results = await Promise.all(promises); // wait for all queries before measuring
+        const results = await Promise.all(promises); // run queries concurrently then measure
         const duration = performance.now() - start;
         
         console.log(`Duration: ${duration.toFixed(2)}ms`);

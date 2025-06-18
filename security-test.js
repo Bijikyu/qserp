@@ -11,7 +11,7 @@ const qserp = require('./lib/qserp.js'); // module being hardened
  * input validation, URL construction and rate limiting protections
  */
 async function securityPenetrationTest() {
-    console.log('=== Security Penetration Testing ===');
+    console.log('=== Security Penetration Testing ==='); // starting banner for clarity
     
     // Test 1: Input Validation Attack Vectors
     console.log('\n--- Testing Input Validation ---');

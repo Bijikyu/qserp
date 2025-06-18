@@ -12,12 +12,12 @@ const qserp = require('./lib/qserp.js'); // module under test
  * RATIONALE: used to monitor cache impact during cleanup tests
  */
 function measureMemory() {
-    const used = process.memoryUsage();
-    return {
-        rss: Math.round(used.rss / 1024 / 1024),
-        heapTotal: Math.round(used.heapTotal / 1024 / 1024),
-        heapUsed: Math.round(used.heapUsed / 1024 / 1024),
-        external: Math.round(used.external / 1024 / 1024)
+    const used = process.memoryUsage(); // capture Node memory stats at this moment
+    return { // convert bytes to MB for readability
+        rss: Math.round(used.rss / 1024 / 1024), // total memory allocated
+        heapTotal: Math.round(used.heapTotal / 1024 / 1024), // heap size limit
+        heapUsed: Math.round(used.heapUsed / 1024 / 1024), // currently used heap
+        external: Math.round(used.external / 1024 / 1024) // memory used by external libs
     };
 }
 
@@ -26,7 +26,7 @@ function measureMemory() {
  * TTL expiration to verify cleanup logic protects memory
  */
 async function testCacheCleanup() {
-    console.log('=== Cache Cleanup Performance Test ===');
+    console.log('=== Cache Cleanup Performance Test ==='); // start of cache cleanup experiment
     
     // Clear cache first
     qserp.clearCache(); // reset before measuring

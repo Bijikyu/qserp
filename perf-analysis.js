@@ -15,12 +15,12 @@ const qserp = require('./lib/qserp.js'); // main module under test
  * RATIONALE: quantifies impact of cache operations on system resources
  */
 function measureMemory() {
-    const used = process.memoryUsage();
-    return {
-        rss: Math.round(used.rss / 1024 / 1024),
-        heapTotal: Math.round(used.heapTotal / 1024 / 1024),
-        heapUsed: Math.round(used.heapUsed / 1024 / 1024),
-        external: Math.round(used.external / 1024 / 1024)
+    const used = process.memoryUsage(); // quick capture of Node memory snapshot
+    return { // present metrics in MB for readability
+        rss: Math.round(used.rss / 1024 / 1024), // Resident Set Size
+        heapTotal: Math.round(used.heapTotal / 1024 / 1024), // total heap allocated
+        heapUsed: Math.round(used.heapUsed / 1024 / 1024), // heap actually used
+        external: Math.round(used.external / 1024 / 1024) // memory outside V8 heap
     };
 }
 
@@ -29,7 +29,7 @@ function measureMemory() {
  * demonstrate speed benefits of caching compared to direct API calls
  */
 async function cachePerformanceTest() {
-    console.log('=== Cache Performance Analysis ===');
+    console.log('=== Cache Performance Analysis ==='); // banner indicates start of benchmark suite
     console.log('Initial memory:', measureMemory());
     
     // Generate test queries
@@ -38,7 +38,7 @@ async function cachePerformanceTest() {
         queries.push(`test query ${i}`);
     }
     
-    const start = performance.now(); // track cache fill duration
+    const start = performance.now(); // high resolution start time
     
     // Fill cache with entries
     console.log('Filling cache with 100 entries...');
@@ -62,7 +62,7 @@ async function cachePerformanceTest() {
     
     // Test cache misses
     console.log('Testing cache miss performance...');
-    const missStart = performance.now(); // start miss timing
+    const missStart = performance.now(); // start miss timing to compare with hits
     for (let i = 0; i < 5; i++) { // miss cache with new queries for comparison
         await qserp.fetchSearchItems(`new query ${i}`);
     }

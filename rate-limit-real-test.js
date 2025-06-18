@@ -12,15 +12,15 @@ const qserp = require('./lib/qserp.js'); // module providing axios instance
  * Google API to confirm configuration prevents request bursts
  */
 async function testRealRateLimiting() {
-    console.log('=== Real Rate Limiting Test ===');
+    console.log('=== Real Rate Limiting Test ==='); // banner for manual execution
     
     // Test actual Bottleneck behavior with mock axios
-    const MockAdapter = require('axios-mock-adapter');
-    const axios = require('axios');
-    const mock = new MockAdapter(qserp.axiosInstance);
+    const MockAdapter = require('axios-mock-adapter'); // lightweight axios interceptor
+    const axios = require('axios'); // needed for adapter
+    const mock = new MockAdapter(qserp.axiosInstance); // instrument qserp axios
     
     // Mock Google API responses
-    mock.onGet().reply(200, {
+    mock.onGet().reply(200, { // provide deterministic response body
         items: [
             { title: 'Test Result', snippet: 'Test snippet', link: 'https://example.com' }
         ]
@@ -28,7 +28,7 @@ async function testRealRateLimiting() {
     
     console.log('Testing 20 requests with real rate limiting...');
     
-    const startTime = Date.now(); // overall timing for 20 requests
+    const startTime = Date.now(); // overall timing for first 20 request burst
     const promises = []; // track all outgoing requests for this run
     
     for (let i = 0; i < 20; i++) { // high volume burst to trigger limiter
