@@ -1,5 +1,5 @@
 // Summary: memory-growth-analysis.test.js verifies output of the memory growth analysis script
-// Rationale: confirms logging banners appear and script completes without errors //document test motivation
+// Rationale: ensures logging banners appear and the script completes without errors //clarify test purpose
 const { mockConsole } = require('./utils/consoleSpies'); //silence console.log during script execution
 const { saveEnv, restoreEnv, setTestEnv } = require('./utils/testSetup'); //manage env vars for isolation
 
