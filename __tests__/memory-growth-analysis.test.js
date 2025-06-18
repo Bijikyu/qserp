@@ -1,3 +1,4 @@
+// Summary: memory-growth-analysis.test.js verifies script runs and logs start and completion banners //added descriptive summary
 const { mockConsole } = require('./utils/consoleSpies');
 const { saveEnv, restoreEnv, setTestEnv } = require('./utils/testSetup');
 
