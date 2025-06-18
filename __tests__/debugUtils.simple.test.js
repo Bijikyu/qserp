@@ -12,15 +12,15 @@ describe('debugUtils functionality', () => { // debugUtils functionality
 
     beforeEach(() => {
         consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-        originalDebug = process.env.DEBUG;
+        originalDebug = process.env.DEBUG; // remember debug flag so we can restore after test
     });
 
     afterEach(() => {
         consoleSpy.mockRestore();
         if (originalDebug !== undefined) {
-            process.env.DEBUG = originalDebug;
+            process.env.DEBUG = originalDebug; // restore original flag for isolation
         } else {
-            delete process.env.DEBUG;
+            delete process.env.DEBUG; // ensure env var removal mirrors original state
         }
         jest.resetModules();
     });

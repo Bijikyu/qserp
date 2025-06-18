@@ -8,7 +8,7 @@ describe('memory-growth-analysis script', () => {
   let logSpy;
 
   beforeEach(() => {
-    savedEnv = saveEnv(); //snapshot current environment
+    savedEnv = saveEnv(); // copy env so modifications during test can be undone
     setTestEnv(); //ensure required vars defined
     process.env.CODEX = 'true'; //offline mode avoids network requests
     jest.resetModules(); //reset module cache between tests
@@ -17,7 +17,7 @@ describe('memory-growth-analysis script', () => {
 
   afterEach(() => {
     logSpy.mockRestore();
-    restoreEnv(savedEnv);
+    restoreEnv(savedEnv); // restore saved environment to keep tests isolated
   });
 
   test('memoryGrowthAnalysis runs and logs completion', async () => {

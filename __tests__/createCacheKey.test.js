@@ -17,7 +17,7 @@ describe('createCacheKey', () => {
   });
 
   afterEach(() => { //restore env and spies
-    teardown();
+    teardown(); // restores env vars and console spies to avoid cross-test contamination
   });
 
   test('trims and lowercases query without num', () => { //verify base normalization

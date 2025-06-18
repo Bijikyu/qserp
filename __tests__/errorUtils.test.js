@@ -19,7 +19,7 @@ describe('errorUtils', () => { // errorUtils
     let savedCodex;
 
     beforeEach(() => {
-        savedCodex = process.env.CODEX; //preserve offline flag
+        savedCodex = process.env.CODEX; // record current CODEX so we can restore it
         process.env.CODEX = 'true'; //bypass env validation during module load
         // Spy on console.error for fallback logging tests
         consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -31,7 +31,7 @@ describe('errorUtils', () => { // errorUtils
 
     afterEach(() => {
         consoleErrorSpy.mockRestore();
-        if (savedCodex !== undefined) { process.env.CODEX = savedCodex; } else { delete process.env.CODEX; } //restore flag
+        if (savedCodex !== undefined) { process.env.CODEX = savedCodex; } else { delete process.env.CODEX; } //restore flag to avoid polluting other tests
     });
 
     describe('context creation functions', () => { // context creation functions
