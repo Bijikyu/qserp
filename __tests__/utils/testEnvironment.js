@@ -152,7 +152,7 @@ class TestEnvironment {
  * @returns {TestEnvironment} - New test environment instance
  */
 function createTestEnvironment() {
-    return new TestEnvironment();
+    return new TestEnvironment(); //provide fresh environment manager per call
 }
 
 /**
@@ -165,12 +165,12 @@ function createTestEnvironment() {
  * @returns {Object} - Object with teardown function and spy/mock references
  */
 function setupStandardTest(options = {}) {
-    const env = new TestEnvironment();
-    const refs = env.setup(options);
-    
+    const env = new TestEnvironment(); //new instance for each test suite
+    const refs = env.setup(options); //perform setup with provided options
+
     return {
-        ...refs,
-        teardown: () => env.teardown()
+        ...refs, //expose spies and mocks to caller
+        teardown: () => env.teardown() //standardized cleanup wrapper
     };
 }
 

@@ -1,16 +1,16 @@
-const { mockConsole } = require('./utils/consoleSpies');
-const { saveEnv, restoreEnv, setTestEnv } = require('./utils/testSetup');
+const { mockConsole } = require('./utils/consoleSpies'); //silence console.log during script execution
+const { saveEnv, restoreEnv, setTestEnv } = require('./utils/testSetup'); //manage env vars for isolation
 
 describe('memory-growth-analysis script', () => {
   let savedEnv;
   let logSpy;
 
   beforeEach(() => {
-    savedEnv = saveEnv();
-    setTestEnv();
-    process.env.CODEX = 'true';
-    jest.resetModules();
-    logSpy = mockConsole('log');
+    savedEnv = saveEnv(); //snapshot current environment
+    setTestEnv(); //ensure required vars defined
+    process.env.CODEX = 'true'; //offline mode avoids network requests
+    jest.resetModules(); //reset module cache between tests
+    logSpy = mockConsole('log'); //capture log output for assertions
   });
 
   afterEach(() => {
