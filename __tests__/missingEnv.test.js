@@ -11,7 +11,7 @@ let axiosMock; //axios adapter to intercept HTTP calls during require
 
 describe('throwIfMissingEnvVars', () => { //describe missing env block
   beforeAll(() => { //setup before tests
-    savedEnv = saveEnv(); //snapshot env //(using util)
+    savedEnv = saveEnv(); // save starting env so we can restore and keep suites isolated
     delete process.env.GOOGLE_API_KEY; //clear key
     delete process.env.GOOGLE_CX; //clear cx
     process.env.OPENAI_TOKEN = 'token'; //set token for qerrors
@@ -21,7 +21,7 @@ describe('throwIfMissingEnvVars', () => { //describe missing env block
   });
 
   afterAll(() => { //restore env vars
-    restoreEnv(savedEnv); //restore full env //(using util)
+    restoreEnv(savedEnv); // restore original env so later suites start clean
   });
 
   test('module throws when env vars missing', () => { //test thrown error on require

@@ -9,7 +9,7 @@ describe('perf-analysis script', () => {
   let logSpy;
 
   beforeEach(() => {
-    savedEnv = saveEnv(); //snapshot env for restoration
+    savedEnv = saveEnv(); // capture env so modifications are cleaned up later
     setTestEnv(); //ensure required env vars present
     process.env.CODEX = 'true'; //offline mode for deterministic test
     jest.resetModules(); //reset module cache
@@ -18,7 +18,7 @@ describe('perf-analysis script', () => {
 
   afterEach(() => {
     logSpy.mockRestore(); //restore console.log
-    restoreEnv(savedEnv); //restore original env
+    restoreEnv(savedEnv); // restore env so next test starts clean
   });
 
   test('cachePerformanceTest runs and logs summary', async () => {

@@ -6,13 +6,13 @@ const { saveEnv, restoreEnv, setTestEnv } = require('./utils/testSetup'); // hel
 let savedEnv;
 
 beforeEach(() => {
-  savedEnv = saveEnv(); // store current env to keep tests isolated
-  jest.resetModules(); // clear module cache so env changes take effect
+  savedEnv = saveEnv(); // capture env snapshot so modifications don't leak to other tests
+  jest.resetModules(); // clear module cache so env changes apply to reloaded modules
 });
 
 afterEach(() => {
-  restoreEnv(savedEnv); // restore original env after each test
-  jest.resetModules(); // reset modules so next test has clean state
+  restoreEnv(savedEnv); // restore original env to prevent cross-test contamination
+  jest.resetModules(); // reset modules so the next test gets a clean instance
 });
 
 

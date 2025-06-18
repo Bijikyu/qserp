@@ -10,7 +10,7 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
 
   let savedEnv; //holder for env snapshot //(for restoration)
   beforeEach(() => { //prepare each test //(reset env and mocks)
-    savedEnv = saveEnv(); //capture current env //(using util)
+    savedEnv = saveEnv(); // capture env to restore later so tests remain independent
     jest.resetModules(); //reload modules so env vars re-evaluated //(ensures clean require)
     jest.doMock('../lib/qerrorsLoader', () => { //mock qerrors loader per test
       const mockFn = jest.fn(); //placeholder qerrors function
@@ -28,7 +28,7 @@ describe('envUtils', () => { //wrap all env util tests //(use describe as reques
   });
 
   afterEach(() => { //cleanup after each test //(restore settings)
-    restoreEnv(savedEnv); //reset environment after test //(using util)
+    restoreEnv(savedEnv); // restore environment to prevent cross-test contamination
     warnSpy.mockRestore(); //restore logWarn spy //(remove spy)
     errorSpy.mockRestore(); //restore logError spy //(remove spy)
     jest.clearAllMocks(); //clear any mock usage //(reset mock counts)

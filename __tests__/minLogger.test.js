@@ -4,8 +4,8 @@ const { saveEnv, restoreEnv } = require('./utils/testSetup'); //env helpers
 
 describe('minLogger', () => { // minLogger
   let savedEnv; //snapshot holder
-  beforeEach(() => { savedEnv = saveEnv(); }); //store env
-  afterEach(() => { restoreEnv(savedEnv); }); //restore env
+  beforeEach(() => { savedEnv = saveEnv(); }); // snapshot env to preserve original settings
+  afterEach(() => { restoreEnv(savedEnv); }); // restore to avoid env leakage between tests
 
   test('logWarn respects LOG_LEVEL warn', () => { //warn should log
     process.env.LOG_LEVEL = 'warn'; //set level

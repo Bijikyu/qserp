@@ -7,16 +7,16 @@ describe('rate-limit-analysis script', () => {
   let logSpy;
 
   beforeEach(() => {
-    savedEnv = saveEnv();
-    setTestEnv();
-    process.env.CODEX = 'true';
+    savedEnv = saveEnv(); // snapshot environment so we can revert after test
+    setTestEnv(); //ensure required vars present for script
+    process.env.CODEX = 'true'; //offline mode prevents real API calls
     jest.resetModules();
     logSpy = mockConsole('log');
   });
 
   afterEach(() => {
     logSpy.mockRestore();
-    restoreEnv(savedEnv);
+    restoreEnv(savedEnv); // restore env to original values for next test
   });
 
   test('rateLimitingAnalysis runs and logs completion', async () => {

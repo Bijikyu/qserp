@@ -18,7 +18,7 @@ describe('debugUtils', () => { // debugUtils
         consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 
         // Save original environment
-        originalEnv = process.env.DEBUG;
+        originalEnv = process.env.DEBUG; // preserve DEBUG so changes don't affect other tests
 
         // Clear module cache to ensure fresh imports
         jest.resetModules();
@@ -31,9 +31,9 @@ describe('debugUtils', () => { // debugUtils
         
         // Restore original environment
         if (originalEnv !== undefined) {
-            process.env.DEBUG = originalEnv;
+            process.env.DEBUG = originalEnv; // restore DEBUG to its prior value
         } else {
-            delete process.env.DEBUG;
+            delete process.env.DEBUG; // remove DEBUG entirely if it was unset
         }
     });
 

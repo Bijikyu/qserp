@@ -26,12 +26,12 @@ describe('parseStringVar', () => { // parseStringVar
         ({ parseStringVar, validateEnvVar } = require('../lib/envValidator')); //load functions under test
         ({ saveEnv, restoreEnv } = require('./utils/testSetup')); //reload helpers using mocked debug utils
 
-        savedEnv = saveEnv(); //capture current env using util
+        savedEnv = saveEnv(); // snapshot env so later tests run with their own settings
         jest.clearAllMocks(); //reset mocks
     });
 
     afterEach(() => {
-        restoreEnv(savedEnv); //restore env after each test
+        restoreEnv(savedEnv); // restore original env to avoid cross-test interference
     });
 
     describe('basic string parsing', () => { // basic string parsing
@@ -147,12 +147,12 @@ describe('validateEnvVar', () => { // validateEnvVar
     let savedEnv; //env snapshot for restore
 
     beforeEach(() => {
-        savedEnv = saveEnv(); //store current env
+        savedEnv = saveEnv(); // snapshot env so validation tests start from a known state
         jest.clearAllMocks(); //reset mocks per test
     });
 
     afterEach(() => {
-        restoreEnv(savedEnv); //restore environment
+        restoreEnv(savedEnv); // restore env to keep subsequent tests independent
     });
 
     describe('required variable validation', () => { // required variable validation

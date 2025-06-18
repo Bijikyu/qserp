@@ -28,12 +28,12 @@ describe('envValidator', () => { // envValidator
         ({ parseIntWithBounds, parseBooleanVar, parseStringVar, validateEnvVar } = require('../lib/envValidator')); //load functions under test
         ({ saveEnv, restoreEnv } = require('./utils/testSetup')); //reload helpers using mocked debug utils
 
-        savedEnv = saveEnv(); //capture environment state
+        savedEnv = saveEnv(); // snapshot env so each test starts with same configuration
         jest.clearAllMocks(); //reset mocks
     });
 
     afterEach(() => {
-        restoreEnv(savedEnv); //restore environment state
+        restoreEnv(savedEnv); // restore env to ensure no pollution between tests
     });
 
     describe('parseIntWithBounds', () => { // parseIntWithBounds

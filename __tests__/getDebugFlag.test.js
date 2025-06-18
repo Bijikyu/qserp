@@ -14,12 +14,12 @@ describe('getDebugFlag', () => { // getDebugFlag
     let consoleSpy; //console spy for log assertions
 
     beforeEach(() => {
-        savedEnv = saveEnv(); //capture env using shared util
+        savedEnv = saveEnv(); // snapshot env so modifications in this test don't bleed into others
         consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {}); //stub console.log
     });
 
     afterEach(() => {
-        restoreEnv(savedEnv); //reset env after test using util
+        restoreEnv(savedEnv); // restore env to its original state to keep suites independent
         consoleSpy.mockRestore(); //restore console
     });
 
