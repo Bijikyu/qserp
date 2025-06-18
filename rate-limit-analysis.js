@@ -29,7 +29,7 @@ async function rateLimitingAnalysis() {
             promises.push(qserp.googleSearch(`concurrent test ${i}`));
         }
         
-        const results = await Promise.all(promises);
+        const results = await Promise.all(promises); // wait for all queries before measuring
         const duration = performance.now() - start;
         
         console.log(`Duration: ${duration.toFixed(2)}ms`);

@@ -53,7 +53,7 @@ async function memoryGrowthAnalysis() {
         
         // Force garbage collection if available
         if (global.gc) { // optional GC to observe reclaim effectiveness
-            global.gc();
+            global.gc(); // manually trigger garbage collector
             const afterGC = measureMemory();
             console.log(`After GC: ${afterGC.heapUsed}MB`);
         }

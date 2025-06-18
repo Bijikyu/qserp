@@ -78,7 +78,7 @@ async function cachePerformanceTest() {
     
     // Memory analysis
     console.log('Memory usage analysis:');
-    const memAfterFill = measureMemory();
+    const memAfterFill = measureMemory(); // snapshot after caching to calculate memory per entry
     console.log(`Heap used for 100 cache entries: ${memAfterFill.heapUsed}MB`);
     console.log(`Estimated memory per entry: ${(memAfterFill.heapUsed/100).toFixed(2)}MB`);
     
