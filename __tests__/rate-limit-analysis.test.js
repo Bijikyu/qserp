@@ -7,7 +7,7 @@ describe('rate-limit-analysis script', () => {
   let logSpy;
 
   beforeEach(() => {
-    savedEnv = saveEnv(); // snapshot environment so we can revert after test
+    savedEnv = saveEnv(); // snapshot env so this test's changes don't persist
     setTestEnv(); //ensure required vars present for script
     process.env.CODEX = 'true'; //offline mode prevents real API calls
     jest.resetModules();

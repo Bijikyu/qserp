@@ -28,7 +28,7 @@ describe('envValidator', () => { // envValidator
         ({ parseIntWithBounds, parseBooleanVar, parseStringVar, validateEnvVar } = require('../lib/envValidator')); //load functions under test
         ({ saveEnv, restoreEnv } = require('./utils/testSetup')); //reload helpers using mocked debug utils
 
-        savedEnv = saveEnv(); // snapshot env so each test starts with same configuration
+        savedEnv = saveEnv(); // snapshot env so variable mutations stay isolated to this test
         jest.clearAllMocks(); //reset mocks
     });
 
