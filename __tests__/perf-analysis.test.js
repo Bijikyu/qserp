@@ -1,4 +1,4 @@
-// Summary: perf-analysis.test.js checks the performance analysis script and its log output in offline mode verifying console logs. //clarifies test purpose
+// Summary: perf-analysis.test.js checks the performance analysis script and its log output in offline mode verifying console logs
 
 const { mockConsole } = require('./utils/consoleSpies'); //spy utility for verifying logs
 const { saveEnv, restoreEnv, setTestEnv } = require('./utils/testSetup'); //environment helpers
