@@ -5,7 +5,7 @@ const { performance } = require('perf_hooks'); // high resolution timers
 
 // Mock environment for testing
 process.env.CODEX = 'true'; // run in offline mode for predictable timing
-process.env.DEBUG = 'false'; // suppress debug noise during metrics
+process.env.DEBUG = 'false'; // suppress debug noise during metrics collection
 
 const qserp = require('./lib/qserp.js'); // main module under test
 
@@ -15,12 +15,12 @@ const qserp = require('./lib/qserp.js'); // main module under test
  * RATIONALE: quantifies impact of cache operations on system resources
  */
 function measureMemory() {
-    const used = process.memoryUsage();
+    const used = process.memoryUsage(); // gather real-time memory stats
     return {
         rss: Math.round(used.rss / 1024 / 1024),
         heapTotal: Math.round(used.heapTotal / 1024 / 1024),
         heapUsed: Math.round(used.heapUsed / 1024 / 1024),
-        external: Math.round(used.external / 1024 / 1024)
+        external: Math.round(used.external / 1024 / 1024) // convert to MB for clarity
     };
 }
 
@@ -33,17 +33,17 @@ async function cachePerformanceTest() {
     console.log('Initial memory:', measureMemory());
     
     // Generate test queries
-    const queries = []; // container for synthetic queries
-    for (let i = 0; i < 100; i++) { // 100 entries ensure measurable cache size
-        queries.push(`test query ${i}`);
+    const queries = []; // container for synthetic queries to fill cache
+    for (let i = 0; i < 100; i++) { // build 100 unique terms for a meaningful dataset
+        queries.push(`test query ${i}`); // sequential naming guarantees distinct keys
     }
     
     const start = performance.now(); // track cache fill duration
     
     // Fill cache with entries
     console.log('Filling cache with 100 entries...');
-    for (const query of queries) { // populate cache to test retrieval speed
-        await qserp.fetchSearchItems(query);
+    for (const query of queries) { // prime cache sequentially for consistent timing
+        await qserp.fetchSearchItems(query); // offline mode returns instantly
     }
     
     const fillTime = performance.now() - start;
@@ -53,8 +53,8 @@ async function cachePerformanceTest() {
     // Test cache hits
     console.log('Testing cache hit performance...');
     const hitStart = performance.now(); // start hit timing
-    for (let i = 0; i < 10; i++) { // hit cached queries to measure best case
-        await qserp.fetchSearchItems(queries[i]);
+    for (let i = 0; i < 10; i++) { // repeat cached queries for optimal speed measurement
+        await qserp.fetchSearchItems(queries[i]); // hits should return from cache
     }
     const hitTime = performance.now() - hitStart;
     console.log(`Cache hit time (10 queries): ${hitTime.toFixed(2)}ms`);
@@ -63,8 +63,8 @@ async function cachePerformanceTest() {
     // Test cache misses
     console.log('Testing cache miss performance...');
     const missStart = performance.now(); // start miss timing
-    for (let i = 0; i < 5; i++) { // miss cache with new queries for comparison
-        await qserp.fetchSearchItems(`new query ${i}`);
+    for (let i = 0; i < 5; i++) { // use uncached queries to show slower path
+        await qserp.fetchSearchItems(`new query ${i}`); // forces network mock each iteration
     }
     const missTime = performance.now() - missStart;
     console.log(`Cache miss time (5 queries): ${missTime.toFixed(2)}ms`);
@@ -83,7 +83,7 @@ async function cachePerformanceTest() {
     console.log(`Estimated memory per entry: ${(memAfterFill.heapUsed/100).toFixed(2)}MB`);
     
     // Clear cache and measure
-    qserp.clearCache(); // ensure memory freed after test
+    qserp.clearCache(); // ensure memory freed after test so next runs start clean
     console.log('Memory after cache clear:', measureMemory());
     
     console.log('=== Performance Analysis Complete ===');
