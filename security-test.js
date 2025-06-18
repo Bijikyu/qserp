@@ -80,7 +80,7 @@ async function securityPenetrationTest() {
     process.env.GOOGLE_API_KEY = 'test-secret-key-12345';
     
     try {
-        const url = qserp.getGoogleURL('test query');
+        const url = qserp.getGoogleURL('test query'); // build search URL to check key exposure
         if (url.includes('test-secret-key-12345')) {
             console.log('🚨 API key exposed in URL construction');
             vulnerabilities++;
@@ -89,8 +89,8 @@ async function securityPenetrationTest() {
         }
         
         // Test logging sanitization
-        const testUrl = 'https://api.google.com/search?key=test-secret-key-12345&q=test';
-        const sanitized = testUrl.replace('test-secret-key-12345', '[redacted]');
+        const testUrl = 'https://api.google.com/search?key=test-secret-key-12345&q=test'; // sample raw request to examine sanitization
+        const sanitized = testUrl.replace('test-secret-key-12345', '[redacted]'); // mimic sanitization step
         if (sanitized.includes('test-secret-key-12345')) {
             console.log('🚨 API key not properly sanitized in logs');
             vulnerabilities++;
@@ -133,7 +133,7 @@ async function securityPenetrationTest() {
     };
     
     try {
-        await qserp.handleAxiosError(mockError, 'test context'); //await async handler
+        await qserp.handleAxiosError(mockError, 'test context'); // validate sanitized error handling
         console.log('✅ Error handling completed without throwing');
     } catch (error) {
         if (error.message.includes('secret123')) {
@@ -154,7 +154,7 @@ async function securityPenetrationTest() {
         qserp.googleSearch(`rapid-${i}`)
     );
     
-    await Promise.all(promises);
+    await Promise.all(promises); // wait for all rapid calls to finish
     const duration = Date.now() - startTime;
     const requestsPerSecond = rapidRequests / (duration / 1000);
     

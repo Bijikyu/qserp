@@ -35,7 +35,7 @@ async function testRealRateLimiting() {
         promises.push(qserp.googleSearch(`rate-test-${i}`));
     }
     
-    await Promise.all(promises);
+    await Promise.all(promises); // complete first batch before timing
     const duration = Date.now() - startTime;
     const requestsPerSecond = 20 / (duration / 1000);
     
@@ -50,7 +50,7 @@ async function testRealRateLimiting() {
     for (let i = 0; i < 10; i++) { // send 10 requests without delay
         burstPromises.push(qserp.googleSearch(`burst-${i}`));
     }
-    await Promise.all(burstPromises);
+    await Promise.all(burstPromises); // ensure burst batch finishes before measuring
     const burstDuration = Date.now() - burstStart;
     
     console.log(`Burst pattern (10 requests): ${burstDuration}ms`);

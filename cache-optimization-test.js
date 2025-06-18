@@ -47,14 +47,14 @@ async function testCacheCleanup() {
 
     // Test automatic cleanup during normal operation
     console.log('Testing automatic cleanup trigger...');
-    const beforeAuto = measureMemory();
+    const beforeAuto = measureMemory(); // snapshot before adding extra entries
     
     // Add more entries to trigger automatic cleanup
     for (let i = 60; i < 70; i++) { // new entries force auto cleanup
         await qserp.fetchSearchItems(`auto-cleanup-${i}`);
     }
     
-    const afterAuto = measureMemory();
+    const afterAuto = measureMemory(); // snapshot after automatic cleanup
     console.log('Memory before auto cleanup:', beforeAuto);
     console.log('Memory after auto cleanup:', afterAuto);
     
