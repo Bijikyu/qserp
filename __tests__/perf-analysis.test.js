@@ -1,6 +1,7 @@
-// Summary: perf-analysis.test.js ensures the performance script runs and logs its summary output //added descriptive summary
-const { mockConsole } = require('./utils/consoleSpies');
-const { saveEnv, restoreEnv, setTestEnv } = require('./utils/testSetup');
+
+const { mockConsole } = require('./utils/consoleSpies'); //spy utility for verifying logs
+const { saveEnv, restoreEnv, setTestEnv } = require('./utils/testSetup'); //environment helpers
+
 
 describe('perf-analysis script', () => {
   let savedEnv;
