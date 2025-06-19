@@ -350,6 +350,8 @@ The module implements multiple security layers to protect against common vulnera
 - **Structured Error Context**: `lib/errorUtils.js` builds standardized objects for qerrors so logs share consistent metadata
 - **OPENAI_TOKEN**: Advanced error reporting uses these helpers for AI-driven analysis and requires this token for full functionality
 
+`lib/qerrorsLoader.js` exposes `safeQerrors`, a wrapper that calls `qerrors` while masking API keys and catching any logging failures. This prevents crashes if qerrors itself throws and ensures sensitive credentials never appear in logs.
+
 ## Dependencies
 
 - **axios**: HTTP client for API requests with connection pooling
