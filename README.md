@@ -226,6 +226,19 @@ In offline mode `rateLimitedRequest` resolves to:
 
 This enables development and testing in environments without internet access or API credentials.
 
+## Development Tools
+
+Several helper scripts assist with profiling and security testing. They assume `CODEX=true` so no real network calls are made.
+
+- `perf-analysis.js`, `memory-growth-analysis.js`, `rate-limit-analysis.js` – performance and memory profiling utilities.
+- `security-test.js`, `advanced-security-test.js` – security-oriented stress tests.
+
+Run any script with Node, for example:
+
+```bash
+node perf-analysis.js
+```
+
 ## Caching System
 
 The module implements intelligent LRU caching with automatic memory management to optimize performance and reduce API quota usage:
