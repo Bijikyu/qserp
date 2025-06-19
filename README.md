@@ -13,7 +13,7 @@ A robust Node.js module for performing Google Custom Searches using the Google C
 - **Offline Testing**: Mock responses when `CODEX=true` for development without API calls
 - **Parallel Processing**: Support for multiple concurrent searches with optimal performance
 - **Performance Optimized**: Connection pooling, compression, and LRU cache optimization
-- **Detailed Logging**: Optional detailed execution logging for debugging
+- **Detailed Logging**: Optional verbose logs enabled with `DEBUG=true`
 - **Cache Maintenance Utilities**: `clearCache()` resets the cache and `performCacheCleanup()` purges stale entries for diagnostic tests
 
 
