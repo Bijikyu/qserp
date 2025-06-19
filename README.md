@@ -184,6 +184,15 @@ The module provides comprehensive error handling:
 - **HTTP errors** include full response details for debugging
 - **Structured error logging** via qerrors integration
 - **Graceful degradation** returns empty arrays instead of throwing when possible
+- **qerrors loader** `lib/qerrorsLoader.js` loads qerrors and masks API keys via `safeQerrors`
+
+Example access:
+
+```javascript
+const { loadQerrors, safeQerrors } = require('qserp/lib/qerrorsLoader');
+const qerrors = loadQerrors();
+safeQerrors(new Error('demo'), 'init');
+```
 
 ## Testing
 
