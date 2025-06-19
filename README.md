@@ -248,6 +248,27 @@ Run any script with Node, for example:
 node perf-analysis.js
 ```
 
+### Debug Utilities
+
+The `lib/debugUtils.js` module consolidates all logging helpers. It now
+re-exports `logStart` and `logReturn` to maintain compatibility, so
+`lib/logUtils.js` is deprecated and merely re-exports these functions.
+
+Example usage:
+
+```javascript
+const { debugEntry, debugExit } = require('./lib/debugUtils');
+
+function runTask() {
+  debugEntry('runTask');
+  // task logic
+  debugExit('runTask');
+}
+```
+
+Output from these helpers is controlled by the `DEBUG` environment
+variable.
+
 ## Caching System
 
 The module implements intelligent LRU caching with automatic memory management to optimize performance and reduce API quota usage:
