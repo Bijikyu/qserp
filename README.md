@@ -14,7 +14,8 @@ A robust Node.js module for performing Google Custom Searches using the Google C
 - **Parallel Processing**: Support for multiple concurrent searches with optimal performance
 - **Performance Optimized**: Connection pooling, compression, and LRU cache optimization
 - **Detailed Logging**: Optional detailed execution logging for debugging
-- **Cache Cleanup Tools**: `clearCache()` and `performCacheCleanup()` assist diagnostics and testing
+- **Cache Maintenance Utilities**: `clearCache()` resets the cache and `performCacheCleanup()` purges stale entries for diagnostic tests
+
 
 Google's API automatically compresses responses when `Accept-Encoding` includes `gzip`, `deflate`, or `br`. The library sets this header on all requests so payloads are smaller and parsing stays transparent.
 
@@ -145,25 +146,19 @@ Fetches raw Google Custom Search API items for a query. Optional `num` sets the 
 
 ### clearCache()
 
-Clears all cached search results. Returns `true` when the cache is emptied and performs no action when caching is disabled.
 
-```javascript
-const { clearCache } = require('qserp');
+Clears all cached search results and ensures a known state for tests.
 
-clearCache();
-// => true
-```
+**Returns:**
+- `boolean`: Always `true`. Acts as a no-op when caching is disabled.
 
 ### performCacheCleanup()
 
-Purges any expired entries from the cache. Returns a boolean indicating whether stale items were removed. If caching is disabled, it simply returns `false` without altering state.
+Purges any expired cache entries for diagnostic testing.
 
-```javascript
-const { performCacheCleanup } = require('qserp');
+**Returns:**
+- `boolean`: `true` if stale entries were removed, otherwise `false`. No operation when caching is disabled.
 
-performCacheCleanup();
-// => false when nothing to purge
-```
 
 ## Rate Limiting
 
