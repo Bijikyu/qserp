@@ -257,7 +257,7 @@ re-exports `logStart` and `logReturn` to maintain compatibility, so
 Example usage:
 
 ```javascript
-const { debugEntry, debugExit } = require('./lib/debugUtils');
+const { debugEntry, debugExit } = require('qserp/lib/debugUtils'); // use package import path for clarity
 
 function runTask() {
   debugEntry('runTask');
