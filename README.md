@@ -320,6 +320,10 @@ The module implements multiple security layers to protect against common vulnera
 - **Burst Prevention**: Minimum request spacing prevents rapid-fire attacks
 - **Concurrent Controls**: Maximum parallel requests prevent resource exhaustion
 
+### Logging Security
+- **Structured Error Context**: `lib/errorUtils.js` builds standardized objects for qerrors so logs share consistent metadata
+- **OPENAI_TOKEN**: Advanced error reporting uses these helpers for AI-driven analysis and requires this token for full functionality
+
 ## Dependencies
 
 - **axios**: HTTP client for API requests with connection pooling
