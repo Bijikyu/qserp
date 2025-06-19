@@ -236,8 +236,9 @@ Several helper scripts assist with profiling and security testing. They assume `
 
 - `perf-analysis.js`, `memory-growth-analysis.js`, `rate-limit-analysis.js` – performance and memory profiling utilities.
 - `security-test.js`, `advanced-security-test.js` – security-oriented stress tests.
-- `cache-optimization-test.js` – exercises LRU behavior and cache cleanup.
-- `rate-limit-real-test.js` – tests Bottleneck throttling using mocked HTTP calls.
+- `cache-optimization-test.js` – exercises cache cleanup and eviction logic.
+- `rate-limit-real-test.js` – validates real Bottleneck rate limiting using mocked API calls.
+
 
 Run any script with Node, for example:
 
