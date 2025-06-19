@@ -104,6 +104,10 @@ fetchSearchItems('JavaScript frameworks')
 
 ## API Reference
 
+**Note:**
+- `googleSearch`, `getTopSearchResults`, `fetchSearchItems`, `clearCache`, and `performCacheCleanup` are the supported API.
+- Other exported functions are for internal use/testing and may change without notice.
+
 ### googleSearch(query)
 
 Performs a single Google Custom Search and returns formatted results.
