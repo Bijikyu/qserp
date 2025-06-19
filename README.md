@@ -50,6 +50,8 @@ These variables enhance functionality but are not required:
 
 Environment values are parsed and validated with the helper functions in [`lib/envValidator.js`](lib/envValidator.js). Contributors can use `parseIntWithBounds`, `parseBooleanVar`, `parseStringVar`, and `validateEnvVar` when adding new configuration options. These utilities enforce secure bounds checking consistent with the library's own usage.
 
+You can also verify environment variable presence with the helpers in [`lib/envUtils.js`](lib/envUtils.js). `getMissingEnvVars(arr)` returns the names of any missing variables, `throwIfMissingEnvVars(arr)` throws when required values are absent, and `warnIfMissingEnvVars(arr, message)` logs a warning for optional variables and returns a boolean.
+
 ## Usage
 
 ### Basic Search
