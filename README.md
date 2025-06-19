@@ -48,6 +48,8 @@ These variables enhance functionality but are not required:
 
 - `GOOGLE_REFERER` – Adds a Referer header to requests when set
 
+Environment values are parsed and validated with the helper functions in [`lib/envValidator.js`](lib/envValidator.js). Contributors can use `parseIntWithBounds`, `parseBooleanVar`, `parseStringVar`, and `validateEnvVar` when adding new configuration options. These utilities enforce secure bounds checking consistent with the library's own usage.
+
 ## Usage
 
 ### Basic Search
