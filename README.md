@@ -14,6 +14,7 @@ A robust Node.js module for performing Google Custom Searches using the Google C
 - **Parallel Processing**: Support for multiple concurrent searches with optimal performance
 - **Performance Optimized**: Connection pooling, compression, and LRU cache optimization
 - **Detailed Logging**: Optional detailed execution logging for debugging
+- **Cache Cleanup Tools**: `clearCache()` and `performCacheCleanup()` assist diagnostics and testing
 
 Google's API automatically compresses responses when `Accept-Encoding` includes `gzip`, `deflate`, or `br`. The library sets this header on all requests so payloads are smaller and parsing stays transparent.
 
