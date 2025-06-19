@@ -136,7 +136,7 @@ Fetches raw Google Custom Search API items for a query. Optional `num` sets the 
 
 **Parameters:**
 - `query` (string): The search query. Queries longer than 2048 characters throw an error.
-- `num` (number, optional): Number of items to return. Numbers less than 1 become `1` and numbers greater than 10 become `10`. Non-integer values default to 10.
+- `num` (number, optional): Number of items to return. `0` becomes `1`, values above `10` clamp to `10`, and any negative or non-integer value defaults to `10`.
 
 **Returns:**
 - `Promise<Array>`: Raw items array from Google API or empty array on error
