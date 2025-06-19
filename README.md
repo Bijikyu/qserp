@@ -265,6 +265,10 @@ The `lib/debugUtils.js` module consolidates all logging helpers. It now
 re-exports `logStart` and `logReturn` to maintain compatibility, so
 `lib/logUtils.js` is deprecated and merely re-exports these functions.
 
+Use `debugLog` to print quick messages only when debugging is enabled. The
+`createTracer` helper builds an object with `entry` and `exit` methods to reduce
+boilerplate when a single function requires multiple trace points.
+
 Example usage:
 
 ```javascript
@@ -274,6 +278,19 @@ function runTask() {
   debugEntry('runTask');
   // task logic
   debugExit('runTask');
+}
+```
+
+`createTracer` example:
+
+```javascript
+const { createTracer } = require('./lib/debugUtils');
+
+function runTask() {
+  const trace = createTracer('runTask');
+  trace.entry();
+  // task logic
+  trace.exit();
 }
 ```
 
