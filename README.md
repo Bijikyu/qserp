@@ -3,6 +3,16 @@
 
 A robust Node.js module for performing Google Custom Searches using the Google Custom Search API. Features built-in rate limiting, comprehensive error handling, and offline testing capabilities.
 
+## Why qserp?
+
+Using the Google Custom Search API directly requires wiring up rate limiting, error handling, input validation, parallel request management, and a mock mode for development — before writing any application logic. qserp does all of that once so you don't have to do it in every project.
+
+Use qserp when you need Google search results from Node.js and want:
+- **No quota accidents** — rate limiting is already configured and enforced
+- **No credential juggling during development** — the CODEX offline mode lets you build and test without a live API key
+- **Parallel searches without boilerplate** — `getTopSearchResults` handles concurrent requests and deduplicates failures automatically
+- **Structured errors** — failures are logged with context through qerrors, not silently swallowed
+
 ## Features
 
 - **Rate Limited Requests**: Built-in rate limiting prevents API quota exhaustion
@@ -101,6 +111,8 @@ Performs a single Google Custom Search and returns formatted results.
 **Throws:**
 - `Error`: If query is not a non-empty string
 
+---
+
 ### getTopSearchResults(searchTerms)
 
 Performs parallel searches for multiple terms and returns only the top result URL for each.
@@ -114,6 +126,8 @@ Performs parallel searches for multiple terms and returns only the top result UR
 **Throws:**
 - `Error`: If searchTerms is not an array
 
+---
+
 ### fetchSearchItems(query)
 
 Fetches raw Google Custom Search API items for a query.
@@ -123,6 +137,34 @@ Fetches raw Google Custom Search API items for a query.
 
 **Returns:**
 - `Promise<Array>`: Raw items array from Google API or empty array on error
+
+**Throws:**
+- `Error`: If query is not a non-empty string
+
+---
+
+### validateSearchQuery(query)
+
+Validates that a value is a non-empty string suitable for use as a search query. Used internally by `googleSearch` and `fetchSearchItems`, but also exported for use in consuming code that wants to pre-validate input before calling search functions.
+
+**Parameters:**
+- `query` (any): The value to validate
+
+**Returns:**
+- `true` if the query is valid
+
+**Throws:**
+- `Error`: If query is not a string or is empty/whitespace-only
+
+---
+
+### Internal functions (exported for testing)
+
+The following functions are exported so the test suite can unit-test them in isolation. They are not part of the public API and should not be used directly in application code:
+
+- `rateLimitedRequest(url)` — HTTP request wrapper with Bottleneck rate limiting and CODEX mock support
+- `getGoogleURL(query)` — Builds the full Google Custom Search API URL with encoded query
+- `handleAxiosError(error, contextMsg)` — Centralized error handler that distinguishes network errors from HTTP errors
 
 ## Rate Limiting
 
@@ -142,6 +184,31 @@ The module provides comprehensive error handling:
 - **HTTP errors** include full response details for debugging
 - **Structured error logging** via qerrors integration
 - **Graceful degradation** returns empty arrays instead of throwing when possible
+
+## Utilities
+
+### safeRun(fnName, fn, defaultVal, context)
+
+A general-purpose safe execution wrapper exported from `lib/utils.js`. It runs a provided function inside a try/catch, logs any error through qerrors with the supplied context, and returns a fallback value instead of propagating the exception.
+
+```javascript
+const { safeRun } = require('qserp/lib/utils');
+
+const result = safeRun(
+  'parseConfig',          // name used in log output
+  () => JSON.parse(raw),  // function to run (parameterless)
+  {},                     // fallback value if it throws
+  { raw }                 // context attached to any error log
+);
+```
+
+**Parameters:**
+- `fnName` (string): Descriptive label used in log output
+- `fn` (Function): Parameterless function to execute
+- `defaultVal` (any): Value returned if `fn` throws
+- `context` (Object): Additional data attached to the error log
+
+**Returns:** Result of `fn()` on success, `defaultVal` on failure
 
 ## Testing
 
@@ -186,15 +253,18 @@ This enables development and testing in environments without internet access or 
 
 - **axios**: HTTP client for API requests
 - **bottleneck**: Rate limiting and request scheduling
-- **qerrors**: Enhanced error logging and analysis
+- **qerrors**: Structured error logging with optional OpenAI-enhanced analysis. Requires `OPENAI_TOKEN` for AI-assisted error context; works without it using standard logging only.
+- **qtests**: Testing utilities providing method stubbing (`stubMethod`) and no-op stubs for axios and winston. Used in the test suite to isolate units without making real network requests or generating log output.
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Ensure all tests pass with `npm test`
-5. Submit a pull request
+The project uses Jest for testing. Before submitting a pull request:
+
+1. Run `npm test` to ensure all tests pass. The suite mocks network requests automatically — no API credentials are needed.
+2. Set `CODEX=true` in your environment for development. This bypasses credential validation and returns mock responses, so you can work on the library without a live Google API key.
+3. New functions should follow the existing `logStart` / `logReturn` logging pattern from `lib/logUtils.js` so execution flow is traceable.
+4. Error paths should go through `qerrors` (via `lib/qerrorsLoader.js`) rather than plain `console.error` where possible, to keep error reporting consistent.
+5. If adding a function that might fail non-fatally, consider wrapping it with `safeRun` from `lib/utils.js` to maintain graceful degradation behavior.
 
 ## License
 
