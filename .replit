@@ -15,3 +15,6 @@ language = "nodejs"
 run = ["node", "index.js"]
 deploymentTarget = "cloudrun"
 ignorePorts = false
+
+[agent]
+expertMode = true
