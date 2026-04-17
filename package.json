@@ -1,7 +1,7 @@
 {
   "name": "qserp",
   "version": "2.0.0",
-  "description": "Robust Node.js module for Google Custom Search with rate limiting, error handling, and offline testing capabilities. Supports parallel searches and comprehensive result formatting.",
+  "description": "Robust Node.js module for Google Custom Search with rate limiting, LRU caching, input validation, error handling, and offline testing capabilities. Supports parallel searches and comprehensive result formatting.",
   "main": "index.js",
   "scripts": {
     "test": "node qtests-runner.mjs",
@@ -11,8 +11,11 @@
     "google",
     "search",
     "customsearch",
+    "google-custom-search",
     "api",
     "rate-limiting",
+    "caching",
+    "lru",
     "parallel",
     "batch",
     "error-handling",
@@ -20,8 +23,7 @@
     "testing",
     "axios",
     "bottleneck",
-    "search-engine",
-    "web-scraping"
+    "search-engine"
   ],
   "author": "Q",
   "license": "ISC",
