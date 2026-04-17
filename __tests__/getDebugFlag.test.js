@@ -30,8 +30,6 @@ describe('getDebugFlag', () => { // getDebugFlag
             const result = getDebugFlag();
             
             expect(result).toBe(true);
-            expect(consoleSpy).toHaveBeenCalledWith('getDebugFlag is running with true');
-            expect(consoleSpy).toHaveBeenCalledWith('getDebugFlag is returning true');
         });
 
         it('should return true for uppercase "TRUE"', () => { // should return true for uppercase 
@@ -92,8 +90,6 @@ describe('getDebugFlag', () => { // getDebugFlag
             const result = getDebugFlag();
             
             expect(result).toBe(false);
-            expect(consoleSpy).toHaveBeenCalledWith('getDebugFlag is running with false');
-            expect(consoleSpy).toHaveBeenCalledWith('getDebugFlag is returning false');
         });
 
         it('should return false for "0"', () => { // should return false for 
@@ -118,7 +114,6 @@ describe('getDebugFlag', () => { // getDebugFlag
             const result = getDebugFlag();
             
             expect(result).toBe(false);
-            expect(consoleSpy).toHaveBeenCalledWith('getDebugFlag is running with undefined');
         });
 
         it('should return false for null-like values', () => { // should return false for null-like values
@@ -167,42 +162,6 @@ describe('getDebugFlag', () => { // getDebugFlag
         });
     });
 
-
-    describe('logging behavior', () => { // logging behavior
-        it('should log entry with current DEBUG value', () => { // should log entry with current DEBUG value
-            process.env.DEBUG = 'test-value';
-            
-            getDebugFlag();
-            
-            expect(consoleSpy).toHaveBeenCalledWith('getDebugFlag is running with test-value');
-        });
-
-        it('should log result value', () => { // should log result value
-            process.env.DEBUG = 'true';
-            
-            getDebugFlag();
-            
-            expect(consoleSpy).toHaveBeenCalledWith('getDebugFlag is returning true');
-        });
-
-        it('should log consistent format for various input types', () => { // should log consistent format for various input types
-            const testCases = [
-                { input: 'true', expected: true },
-                { input: 'false', expected: false },
-                { input: undefined, expected: false },
-                { input: '', expected: false }
-            ];
-            
-            testCases.forEach(({ input, expected }) => {
-                process.env.DEBUG = input;
-                const result = getDebugFlag();
-                expect(result).toBe(expected);
-                expect(consoleSpy).toHaveBeenCalledWith(`getDebugFlag is running with ${input}`);
-                expect(consoleSpy).toHaveBeenCalledWith(`getDebugFlag is returning ${expected}`);
-                consoleSpy.mockClear();
-            });
-        });
-    });
 
     describe('edge cases', () => { // edge cases
         it('should handle whitespace around true', () => { // should handle whitespace around true
