@@ -223,7 +223,7 @@ The following functions are exported so the test suite can unit-test them in iso
 - `validateSearchQuery(query)` — Input validation helper (also documented above as a public export)
 - `createCacheKey(query)` — Normalizes a query string into a consistent lowercase-trimmed cache key
 - `sanitizeApiKey(text)` — Replaces any occurrence of the configured API key in a string with `[redacted]`
-- `normalizeNum(value, defaultVal)` — Clamps a number into the valid 1–10 API range with a fallback default
+- `normalizeNum(num)` — Clamps a number into the valid 1–10 API range; returns `null` for non-integer or out-of-range input
 - `axiosInstance` — The pre-configured Axios instance used for all requests (connection pooling, compression headers)
 
 ## Rate Limiting
@@ -258,12 +258,12 @@ safeQerrors(new Error('demo'), 'init');
 
 ### safeRun(fnName, fn, defaultVal, context)
 
-A general-purpose safe execution wrapper exported from `lib/utils.js`. It runs a provided function inside a try/catch, logs any error through qerrors with the supplied context, and returns a fallback value instead of propagating the exception.
+An async general-purpose safe execution wrapper exported from `lib/utils.js`. It runs a provided function inside a try/catch, logs any error through qerrors with the supplied context, and resolves to a fallback value instead of propagating the exception. Both sync and async inner functions are supported.
 
 ```javascript
 const { safeRun } = require('qserp/lib/utils');
 
-const result = safeRun(
+const result = await safeRun(
   'parseConfig',          // name used in log output
   () => JSON.parse(raw),  // function to run (parameterless)
   {},                     // fallback value if it throws
@@ -277,7 +277,7 @@ const result = safeRun(
 - `defaultVal` (any): Value returned if `fn` throws
 - `context` (Object): Additional data attached to the error log
 
-**Returns:** Result of `fn()` on success, `defaultVal` on failure
+**Returns:** `Promise` — resolves to the result of `fn()` on success, or `defaultVal` on failure
 
 ## Testing
 
