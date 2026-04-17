@@ -117,7 +117,7 @@ fetchSearchItems('JavaScript frameworks')
 ## API Reference
 
 **Note:**
-- `googleSearch`, `getTopSearchResults`, `fetchSearchItems`, `clearCache`, and `performCacheCleanup` are the supported API.
+- `googleSearch`, `getTopSearchResults`, `fetchSearchItems`, `validateSearchQuery`, `clearCache`, and `performCacheCleanup` are the supported public API.
 - Other exported functions are for internal use/testing and may change without notice.
 
 ### googleSearch(query)
@@ -220,6 +220,11 @@ The following functions are exported so the test suite can unit-test them in iso
 - `rateLimitedRequest(url)` — HTTP request wrapper with Bottleneck rate limiting and CODEX mock support
 - `getGoogleURL(query)` — Builds the full Google Custom Search API URL with encoded query
 - `handleAxiosError(error, contextMsg)` — Centralized error handler that distinguishes network errors from HTTP errors
+- `validateSearchQuery(query)` — Input validation helper (also documented above as a public export)
+- `createCacheKey(query)` — Normalizes a query string into a consistent lowercase-trimmed cache key
+- `sanitizeApiKey(text)` — Replaces any occurrence of the configured API key in a string with `[redacted]`
+- `normalizeNum(value, defaultVal)` — Clamps a number into the valid 1–10 API range with a fallback default
+- `axiosInstance` — The pre-configured Axios instance used for all requests (connection pooling, compression headers)
 
 ## Rate Limiting
 
@@ -479,7 +484,7 @@ The project uses Jest for testing. Before submitting a pull request:
 
 1. Run `npm test` to ensure all tests pass. The suite mocks network requests automatically — no API credentials are needed.
 2. Set `CODEX=true` in your environment for development. This bypasses credential validation and returns mock responses, so you can work on the library without a live Google API key.
-3. New functions should follow the existing `logStart` / `logReturn` logging pattern from `lib/logUtils.js` so execution flow is traceable.
+3. New functions should use `debugEntry` / `debugExit` from `lib/debugUtils.js` for DEBUG-gated tracing, or `logStart` / `logReturn` for always-on execution logging. `lib/logUtils.js` is deprecated and re-exports from `lib/debugUtils.js`.
 4. Error paths should go through `qerrors` (via `lib/qerrorsLoader.js`) rather than plain `console.error` where possible, to keep error reporting consistent.
 5. If adding a function that might fail non-fatally, consider wrapping it with `safeRun` from `lib/utils.js` to maintain graceful degradation behavior.
 
