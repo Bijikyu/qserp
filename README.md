@@ -212,11 +212,11 @@ const result = safeRun(
 
 ## Testing
 
-Run the included Jest test suite:
-
 ```bash
 npm test
 ```
+
+Tests are run via the `qtests-runner.mjs` custom runner, which discovers and executes all `*.test.js` files using Jest internally. The runner prints a summary of passed and failed files on completion.
 
 Tests include:
 - Unit tests for all public and internal functions
@@ -225,7 +225,7 @@ Tests include:
 - Environment variable validation
 - Mock response testing
 
-Tests automatically mock network requests and set required environment variables, so no API credentials are needed.
+Network requests are intercepted with `axios-mock-adapter` and required environment variables are set in test setup, so no API credentials are needed to run the suite.
 
 ## Offline Development (Codex Mode)
 
@@ -251,10 +251,17 @@ This enables development and testing in environments without internet access or 
 
 ## Dependencies
 
+Runtime dependencies (installed when you `npm install qserp`):
+
 - **axios**: HTTP client for API requests
 - **bottleneck**: Rate limiting and request scheduling
 - **qerrors**: Structured error logging with optional OpenAI-enhanced analysis. Requires `OPENAI_TOKEN` for AI-assisted error context; works without it using standard logging only.
-- **qtests**: Testing utilities providing method stubbing (`stubMethod`) and no-op stubs for axios and winston. Used in the test suite to isolate units without making real network requests or generating log output.
+
+Development dependencies (used only when contributing, not installed by consumers):
+
+- **qtests**: Custom test runner and stubbing utilities. Provides the `qtests-runner.mjs` runner, method stubbing via `stubMethod`, and no-op stubs for axios and winston to isolate units without making real network requests.
+- **jest**: Test framework used internally by the qtests runner.
+- **axios-mock-adapter**: Axios request interceptor used in tests to simulate API responses.
 
 ## Contributing
 
