@@ -133,3 +133,4 @@ dist
 
 # Ignore installed dependencies
 node_modules/
+DEBUG_TESTS.md
