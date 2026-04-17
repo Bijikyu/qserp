@@ -1,0 +1,89 @@
+~/workspace$ npm i
+
+added 60 packages, removed 1 package, changed 4 packages, and audited 381 packages in 10s
+
+46 packages are looking for funding
+  run `npm fund` for details
+
+5 moderate severity vulnerabilities
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.12.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+npm notice To update run: npm install -g npm@11.12.1
+npm notice
+~/workspace$ npm audit fix
+
+up to date, audited 381 packages in 2s
+
+46 packages are looking for funding
+  run `npm fund` for details
+
+# npm audit report
+
+langsmith  <=0.5.18
+Severity: moderate
+LangSmith Client SDK Affected by Server-Side Request Forgery via Tracing Header Injection - https://github.com/advisories/GHSA-v34v-rq6j-cj6p
+LangSmith Client SDKs has Prototype Pollution in langsmith-sdk via Incomplete `__proto__` Guard in Internal lodash `set()` - https://github.com/advisories/GHSA-fw9q-39r9-c252
+LangSmith SDK: Streaming token events bypass output redaction - https://github.com/advisories/GHSA-rr7j-v2q5-chgv
+fix available via `npm audit fix --force`
+Will install qerrors@1.2.4, which is a breaking change
+node_modules/langsmith
+  @langchain/core  0.3.64 - 1.1.6
+  Depends on vulnerable versions of langsmith
+  node_modules/@langchain/core
+    @langchain/openai  0.6.6 - 0.6.17 || 1.2.0-dev-1765431816670 - 1.2.0-dev-1765433794876
+    Depends on vulnerable versions of @langchain/core
+    node_modules/@langchain/openai
+    qerrors  >=1.2.5
+    Depends on vulnerable versions of @langchain/core
+    Depends on vulnerable versions of @langchain/openai
+    node_modules/qerrors
+  langchain  0.3.31 - 1.2.1
+  Depends on vulnerable versions of langsmith
+  node_modules/langchain
+
+5 moderate severity vulnerabilities
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+~/workspace$ npm audit fix --force
+npm warn using --force Recommended protections disabled.
+npm warn audit Updating qerrors to 1.2.4, which is a SemVer major change.
+
+added 1 package, removed 34 packages, changed 1 package, and audited 348 packages in 2s
+
+41 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+~/workspace$ npm test
+
+> qserp@1.0.8 pretest
+> node scripts/clean-dist.mjs && node scripts/ensure-runner.mjs
+
+node:internal/modules/cjs/loader:1210
+  throw err;
+  ^
+
+Error: Cannot find module '/home/runner/workspace/scripts/clean-dist.mjs'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)
+    at Module._load (node:internal/modules/cjs/loader:1038:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v20.20.0
+~/workspace$ 
