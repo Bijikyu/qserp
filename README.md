@@ -52,7 +52,7 @@ These variables enhance functionality but are not required:
 - `LOG_LEVEL` – Sets logging level: `info` shows all messages, `warn` shows only warnings and errors, `error` logs only errors, `silent` disables output (default: `info`)
 - `DEBUG` – When set to any case-insensitive `true` value, enables verbose debugging logs
 
-- `QSERP_MAX_CACHE_SIZE` – Maximum cache entries (default: 1000, `0` disables caching; range: 10-50000 when enabled) for memory management
+- `QSERP_MAX_CACHE_SIZE` – Maximum cache entries (default: 1000, range: 0-50000; `0` disables caching) for memory management.
   Non-numeric values are ignored and the default is used.
 - `GOOGLE_REFERER` – Adds a Referer header to requests when set
 
@@ -223,7 +223,7 @@ The following functions are exported so the test suite can unit-test them in iso
 - `validateSearchQuery(query)` — Input validation helper (also documented above as a public export)
 - `createCacheKey(query)` — Normalizes a query string into a consistent lowercase-trimmed cache key
 - `sanitizeApiKey(text)` — Replaces any occurrence of the configured API key in a string with `[redacted]`
-- `normalizeNum(num)` — Clamps a number into the valid 1–10 API range; returns `null` for non-integer or out-of-range input
+- `normalizeNum(num)` — Clamps a number into the valid 1–10 API range; returns `null` only for non-integer strings (out-of-range integers are clamped, not rejected)
 - `axiosInstance` — The pre-configured Axios instance used for all requests (connection pooling, compression headers)
 
 ## Rate Limiting
@@ -403,7 +403,7 @@ The module implements intelligent LRU caching with automatic memory management t
 Configure cache behavior with the `QSERP_MAX_CACHE_SIZE` environment variable:
 - **Default**: 1000 entries (~10MB typical usage)
 - **Disable**: Set to `0` to turn off caching completely
-- **Range**: 10-50000 entries when caching is enabled (automatically constrained for security)
+- **Range**: 0-50000 entries; `0` disables caching (automatically constrained for security)
 - **Eviction**: Automatic LRU eviction when size limit reached
 
 ### Cache Examples
